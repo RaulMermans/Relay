@@ -4,9 +4,9 @@
 
 ## Current status
 
-Sprint 03 establishes the Relay application foundation: a single Next.js application with a minimal root page and a deterministic `GET /api/health` endpoint. Vercel is the frontend and backend deployment target. Durable persistence is deferred, so the application has no connected database. Production deployment is currently blocked because this workspace has no Vercel CLI, authentication, or project linkage.
+Sprint 04 adds a transient CSV intake boundary to the single Next.js application. Relay accepts one CSV through a server-side Route Handler, validates it, and identifies fixture-backed header signatures for representative Meta Ads, Google Ads, and Shopify exports. Unknown or ambiguous inputs remain `unknown` and require review. Vercel remains the frontend and backend deployment target. Durable persistence is deferred, so the application has no connected database. Production deployment is currently blocked because this workspace has no Vercel CLI, authentication, or project linkage.
 
-No product workflows are implemented yet: there is no CSV ingestion, provider connector, analytics/KPI logic, AI behavior, PDF generation, or persisted client/report state.
+The current capability is intake and source detection only. It does not map or normalize provider fields, calculate KPIs, reconcile data, connect providers, use AI, generate reports/PDFs, or persist client/report/upload state. Supported signatures are synthetic-fixture-backed and will expand only through real-world validation.
 
 ## Requirements
 
@@ -21,6 +21,8 @@ npm run dev
 ```
 
 Open `http://localhost:3000`. The health endpoint is available at `http://localhost:3000/api/health`.
+
+At `/`, choose or drop one `.csv` file (up to 5 MiB and 50,000 data rows). Relay processes the file transiently and does not retain raw content. Server-side checks remain authoritative even when the UI provides selection feedback.
 
 ## Commands
 

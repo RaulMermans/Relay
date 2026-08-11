@@ -6,11 +6,11 @@ Core analytical logic must be independently testable from UI, database, and prov
 
 ## Unit tests
 
-Sprint 03 tests the server environment boundary and deterministic health-response creation. Later sprints test source detection, mappings, normalizers, canonical semantic rules, KPI formulas, period comparison, mover detection, reconciliation logic, report-fact composition, and fact-to-commentary grounding rules. Pure deterministic modules must not require a browser, database, or live provider.
+Sprint 04 retains the server environment and health tests and adds pure CSV parser, file-validation, intake-composition, and source-detection tests. They cover quoted cells, escaped quotes, CRLF/LF, empty cells, BOMs, malformed input, file/row limits, stable validation errors, supported signatures, unsupported inputs, and ambiguity. Pure deterministic modules must not require a browser, database, or live provider. Later sprints add mapping, normalizer, canonical semantic, KPI, reconciliation, and fact-grounding rules.
 
 ## Integration tests
 
-Sprint 03 creates the integration-test location but does not force an artificial integration test: no integration boundary exists yet. Later test raw CSV -> canonical data, canonical data -> analytics, analytics -> report model, and persistence boundaries when they exist. Include date/currency/availability validation and report re-rendering from persisted canonical/report snapshots.
+Sprint 04 exercises a real boundary: synthetic raw CSV -> validation -> parser -> source detector -> structured intake result, plus the `POST /api/intake/csv` Route Handler. Fixture integration tests cover Meta Ads, Google Ads, Shopify, unknown, and malformed CSV input. No canonical observations are produced in this sprint. Later test raw CSV -> canonical data, canonical data -> analytics, analytics -> report model, and persistence boundaries when they exist.
 
 ## Connector contract tests
 
@@ -18,11 +18,11 @@ Use provider response fixtures -> normalized canonical output. The key equivalen
 
 ## E2E tests
 
-Sprint 03 provides a Playwright smoke test for `/` and `/api/health`. Later exercise the bounded happy path: client -> report -> upload -> review -> PDF, including the explicit failure states for malformed upload, mapping ambiguity, unavailable connector, expired credential, mismatched periods, unavailable LLM, and PDF rendering failure.
+Sprint 04 retains the `/` and `/api/health` smoke tests and adds the first product slice: select a synthetic Meta Ads CSV, submit it, inspect the detected provider, row count, and headers; select an unsupported CSV and inspect the review state. Later exercise the bounded client -> report -> upload -> review -> PDF flow, including mapping ambiguity, unavailable connector, expired credential, mismatched periods, unavailable LLM, and PDF rendering failure.
 
 ## Regression fixtures
 
-Store synthetic/anonymized source input in `fixtures/raw/`, expected canonical output in `fixtures/normalized/`, and expected KPI/report facts in `fixtures/expected/`. Never use fabricated production evidence or unlabelled sensitive data.
+Store synthetic/anonymized source input in `fixtures/raw/`, expected canonical output in `fixtures/normalized/`, and expected KPI/report facts in `fixtures/expected/`. Sprint 04 raw fixtures cover source identification only; no canonical or KPI output fixture exists yet. Never use fabricated production evidence or unlabelled sensitive data.
 
 ## Tooling and CI expectation
 

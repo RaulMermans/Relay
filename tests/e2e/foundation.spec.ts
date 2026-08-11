@@ -4,7 +4,7 @@ test("renders the Relay foundation", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Relay" })).toBeVisible();
-  await expect(page.getByText("Marketing reporting workflow automation.")).toBeVisible();
+  await expect(page.getByText("Inspect one CSV before it enters your reporting workflow.")).toBeVisible();
 });
 
 test("returns the deterministic health payload", async ({ request }) => {

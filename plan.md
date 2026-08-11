@@ -1,211 +1,181 @@
-# Sprint 03 - Vercel-Native Application Foundation
+# Sprint 04 - CSV Intake + Source Detection
 
-### T-036 Architecture Amendment
+### T-057 CSV Intake Contract
 
-**Outcome:** Record the Vercel-native, deferred-persistence decision.
+**Outcome:** Define the transient, single-file CSV intake contract and stable outcomes.
 
-**Relevant docs/files:** `docs/decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md`, `docs/decisions/ADR-005-v1-application-stack.md`.
+**Relevant docs/files:** `docs/data/CSV_INTAKE_CONTRACT.md`, `docs/data/SOURCE_RULES.md`.
 
-**AC:** ADR-006 preserves the application stack while superseding Railway, immediate Postgres/Prisma, migrations, and `DATABASE_URL`.
-
-**Status:** Complete.
-
-### T-037 Architecture Contract Updates
-
-**Outcome:** Align active architecture, data-flow, deployment, QA, ADR index, and roadmap contracts.
-
-**Relevant docs/files:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`, `docs/operations/DEPLOYMENT.md`, `docs/qa/TEST_STRATEGY.md`, `docs/decisions/README.md`, `docs/roadmap/SPRINTS.md`.
-
-**AC:** Vercel is the single application platform; persistence is deferred without changing product semantics.
+**AC:** Accepted, rejected, and needs-review outcomes, source values, and error codes are explicit.
 
 **Status:** Complete.
 
-### T-038 Application Scaffold
+### T-058 Source Detection Rules
 
-**Outcome:** Create a minimal Next.js App Router application in the existing repository.
+**Outcome:** Define deterministic, header-based evidence rules for supported providers.
 
-**Relevant docs/files:** `app/`, `lib/`, `tests/`, `package.json`.
+**Relevant docs/files:** `docs/data/SOURCE_RULES.md`, `lib/intake/csv/detect-source.ts`.
 
-**AC:** The application contains only the foundation routes, environment boundary, and tests.
-
-**Status:** Complete.
-
-### T-039 Root Page
-
-**Outcome:** Render the intentional Relay foundation page at `/`.
-
-**Relevant docs/files:** `app/page.tsx`, `app/globals.css`.
-
-**AC:** The page identifies Relay without dashboards, metrics, navigation, or product flows.
+**AC:** Meta Ads, Google Ads, Shopify, unsupported, and ambiguous inputs have documented deterministic behavior.
 
 **Status:** Complete.
 
-### T-040 Runtime Contract
+### T-059 Synthetic Fixtures
 
-**Outcome:** Pin Node 24.14.0 and npm 11.9.0 with the required scripts.
+**Outcome:** Add small, clearly labelled synthetic raw CSV fixtures.
 
-**Relevant docs/files:** `.nvmrc`, `package.json`, `package-lock.json`.
+**Relevant docs/files:** `fixtures/raw/`, `docs/qa/REGRESSION_FIXTURES.md`.
 
-**AC:** Node/npm engines and all required development, build, test, and start scripts are present.
-
-**Status:** Complete.
-
-### T-041 Dependency Discipline
-
-**Outcome:** Install only the application, validation, linting, and test dependencies required by Sprint 03.
-
-**Relevant docs/files:** `package.json`, `package-lock.json`.
-
-**AC:** No database, ORM, connector, AI, PDF, or feature-library dependency is present.
+**AC:** Representative, alternate-header, unknown, ambiguous, and malformed coverage is available without client data.
 
 **Status:** Complete.
 
-### T-042 Environment Contract
+### T-060 Parser Selection
 
-**Outcome:** Establish a server-only environment validation boundary with no required secrets.
+**Outcome:** Select and justify the smallest reliable CSV parser.
 
-**Relevant docs/files:** `lib/env/server.ts`, `.env.example`.
+**Relevant docs/files:** `package.json`, `package-lock.json`, `docs/data/CSV_INTAKE_CONTRACT.md`.
 
-**AC:** Invalid `NODE_ENV` is rejected without exposing values; no database or provider configuration exists.
-
-**Status:** Complete.
-
-### T-043 Health Endpoint
-
-**Outcome:** Serve a deterministic `GET /api/health` response.
-
-**Relevant docs/files:** `app/api/health/route.ts`, `lib/health.ts`.
-
-**AC:** The endpoint returns only `{ "status": "ok", "service": "relay" }` without environment or host details.
+**AC:** Quoting, escaped quotes, line endings, empty cells, malformed input, BOM, and dependency scope are addressed.
 
 **Status:** Complete.
 
-### T-044 Server Function Baseline
+### T-061 Server Validation
 
-**Outcome:** Prove backend execution inside the same Next.js/Vercel application.
+**Outcome:** Validate upload presence, type, size, text decoding, headers, and data rows server-side.
 
-**Relevant docs/files:** `app/api/health/route.ts`, `docs/decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md`.
+**Relevant docs/files:** `lib/intake/csv/validate.ts`, `app/api/intake/csv/route.ts`.
 
-**AC:** The health Route Handler is the sole backend baseline; no separate service exists.
-
-**Status:** Complete.
-
-### T-045 Persistence Boundary
-
-**Outcome:** Document a future, feature-driven persistence boundary without implementing it.
-
-**Relevant docs/files:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`, `docs/decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md`.
-
-**AC:** No database, fake ORM, generic repository abstraction, schema, or `DATABASE_URL` exists.
+**AC:** A 5 MiB limit and structured validation errors protect the transient intake boundary.
 
 **Status:** Complete.
 
-### T-046 Vitest
+### T-062 CSV Parser
 
-**Outcome:** Configure meaningful deterministic foundation tests.
+**Outcome:** Parse CSV safely through a small server-side boundary.
 
-**Relevant docs/files:** `vitest.config.ts`, `tests/unit/health.test.ts`, `tests/unit/server-env.test.ts`.
+**Relevant docs/files:** `lib/intake/csv/parse.ts`, `tests/unit/csv-parse.test.ts`.
 
-**AC:** Unit tests cover health payload creation and valid/invalid server-environment behavior without external services.
-
-**Status:** Complete.
-
-### T-047 Playwright
-
-**Outcome:** Configure root-page and health-endpoint smoke tests.
-
-**Relevant docs/files:** `playwright.config.ts`, `tests/e2e/foundation.spec.ts`.
-
-**AC:** Playwright starts Relay and verifies `/` plus `/api/health`.
+**AC:** Parsing preserves headers and rows/counts while handling ordinary CSV semantics and controlled failures.
 
 **Status:** Complete.
 
-### T-048 Verification Scripts
+### T-063 Source Detector
 
-**Outcome:** Establish lint, typecheck, test, build, and E2E scripts.
+**Outcome:** Implement pure, deterministic source detection from validated headers.
 
-**Relevant docs/files:** `package.json`.
+**Relevant docs/files:** `lib/intake/csv/detect-source.ts`, `tests/unit/source-detection.test.ts`.
 
-**AC:** The required commands are configured for local and CI use.
-
-**Status:** Complete.
-
-### T-049 Vercel Deployment Contract
-
-**Outcome:** Document the actual one-project Vercel deployment target.
-
-**Relevant docs/files:** `docs/operations/DEPLOYMENT.md`.
-
-**AC:** Deployment requires no database, runtime secret, or external connector.
+**AC:** Supported, unknown, and ambiguous inputs produce transparent evidence without guessing.
 
 **Status:** Complete.
 
-### T-050 CI
+### T-064 Intake API
 
-**Outcome:** Add the base GitHub Actions verification pipeline.
+**Outcome:** Expose the intake boundary with a stable structured response.
 
-**Relevant docs/files:** `.github/workflows/ci.yml`, `docs/qa/TEST_STRATEGY.md`.
+**Relevant docs/files:** `app/api/intake/csv/route.ts`, `lib/intake/csv/intake.ts`.
 
-**AC:** CI runs npm ci, lint, typecheck, test, and build with Node 24; Playwright remains local by documented choice.
-
-**Status:** Complete.
-
-### T-051 README
-
-**Outcome:** Describe the actual application, runtime, commands, deployment target, and exclusions.
-
-**Relevant docs/files:** `README.md`.
-
-**AC:** README claims no unimplemented product capability or persistence.
+**AC:** The endpoint returns accepted/needs-review results or safe 4xx error codes without retaining content.
 
 **Status:** Complete.
 
-### T-052 Security Sanity
+### T-065 Upload UI
 
-**Outcome:** Review foundation boundaries, secrets, dependencies, and endpoint exposure.
+**Outcome:** Add a focused single-file intake experience at `/`.
 
-**Relevant docs/files:** `SECURITY.md`, `.gitignore`, `app/api/health/route.ts`, `lib/env/server.ts`, `package.json`.
+**Relevant docs/files:** `app/page.tsx`, `app/globals.css`, `app/intake-form.tsx`.
 
-**AC:** P0/P1 findings are resolved before closure.
-
-**Status:** Complete — no P0/P1 findings.
-
-### T-053 Cleanup
-
-**Outcome:** Confirm the scaffold contains no starter assets, default content, or speculative feature code.
-
-**Relevant docs/files:** `app/`, `lib/`, `public/`, `package.json`.
-
-**AC:** The repository contains only intentional foundation files and required dependencies.
+**AC:** A user can submit, inspect results, recover from errors, and reset a CSV intake.
 
 **Status:** Complete.
 
-### T-054 Vercel Deploy
+### T-066 Client Guardrails
 
-**Outcome:** Deploy only when local Vercel tooling, authentication, and project linkage are available.
+**Outcome:** Add light client-side selection feedback while retaining server authority.
 
-**Relevant docs/files:** `docs/operations/DEPLOYMENT.md`, `CHANGELOG.md`.
+**Relevant docs/files:** `app/intake-form.tsx`.
 
-**AC:** Deployment is verified at `/` and `/api/health`, or honestly recorded as blocked.
+**AC:** Empty, non-CSV, and oversized selections receive clear local guidance.
 
-**Status:** Blocked — no local Vercel CLI, authentication, or project linkage is available.
+**Status:** Complete.
 
-### T-055 Full Verification
+### T-067 Unit Tests
 
-**Outcome:** Run the complete reproducible verification ladder and inspect scope/dependencies.
+**Outcome:** Cover parsing, validation, and source detection deterministically.
 
-**Relevant docs/files:** `package-lock.json`, `package.json`, tests, application files.
+**Relevant docs/files:** `tests/unit/`.
 
-**AC:** Locked install, lint, typecheck, tests, build, and E2E pass without database or external services.
+**AC:** Normal, edge, malformed, provider, unknown, and ambiguous conditions are exercised.
 
-**Status:** Complete — clean install, lint, typecheck, test, build, and E2E checks passed.
+**Status:** Complete.
 
-### T-056 Sprint 04 Handoff
+### T-068 Integration Tests
 
-**Outcome:** Identify the next CSV-ingestion boundary without implementing it.
+**Outcome:** Test raw fixture to structured intake result.
 
-**Relevant docs/files:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`, `SCRATCHPAD.md`.
+**Relevant docs/files:** `tests/integration/`.
 
-**AC:** Upload boundary, validation, source-detection, fixture, canonical-contract, and test considerations are recorded without dependencies or implementation.
+**AC:** Meta, Google Ads, Shopify, unknown, and malformed fixture flows execute through the real modules.
+
+**Status:** Complete.
+
+### T-069 E2E
+
+**Outcome:** Test the real upload experience.
+
+**Relevant docs/files:** `tests/e2e/intake.spec.ts`.
+
+**AC:** Playwright verifies a Meta upload and an unknown-source state.
+
+**Status:** Complete.
+
+### T-070 Security Sanity
+
+**Outcome:** Review CSV trust-boundary risks and mitigations.
+
+**Relevant docs/files:** `SECURITY.md`, scoped intake files, dependency manifest.
+
+**AC:** No P0/P1 findings remain; raw CSV is neither logged nor retained.
+
+**Status:** Complete.
+
+### T-071 Observability
+
+**Outcome:** Record limited redacted server intake events.
+
+**Relevant docs/files:** `app/api/intake/csv/route.ts`.
+
+**AC:** Logs contain status/error metadata only, never uploaded contents or rows.
+
+**Status:** Complete.
+
+### T-072 Documentation
+
+**Outcome:** Align active docs with the implemented intake boundary.
+
+**Relevant docs/files:** `README.md`, `docs/data/`, `docs/qa/`, `CHANGELOG.md`.
+
+**AC:** Documentation describes fixture-backed source detection without claiming downstream capabilities.
+
+**Status:** Complete.
+
+### T-073 Verification
+
+**Outcome:** Run the Sprint 04 reproducible verification ladder.
+
+**Relevant docs/files:** `package.json`, tests, application files.
+
+**AC:** Install, lint, typecheck, test, build, and E2E evidence is recorded.
+
+**Status:** Complete.
+
+### T-074 Sprint 05 Handoff
+
+**Outcome:** Document the mapping/normalization starting boundary without implementing it.
+
+**Relevant docs/files:** `SCRATCHPAD.md`, `docs/data/CSV_INTAKE_CONTRACT.md`.
+
+**AC:** Parsed shape, detector output, aliases, deferred persistence, expected canonical fields, fixtures, and open ambiguities are recorded.
 
 **Status:** Complete.
