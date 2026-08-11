@@ -2,22 +2,45 @@
 
 ## 1. System overview
 
-Relay is a single Next.js application backed by PostgreSQL. It accepts CSV uploads and future provider connections, normalizes both into daily canonical observations, computes deterministic facts, supports optional grounded commentary with human review, and renders a structured report model to PDF. [ADR-005](../decisions/ADR-005-v1-application-stack.md) selects the V1 stack; no application code exists in Sprint 02.
+Relay is a single Next.js application deployed on Vercel. It will accept CSV uploads and future provider connections, normalize both into daily canonical observations, compute deterministic facts, support optional grounded commentary with human review, and render a structured report model to PDF. [ADR-005](../decisions/ADR-005-v1-application-stack.md) selects the application stack; [ADR-006](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md) selects Vercel and defers durable persistence. Sprint 03 has no connected database.
 
 ## 2. Architecture diagram
 
 ```text
-CSV upload -> CSV ingestion adapter ---+
-                                       +-> Provider normalizer -> Canonical observations
-API connector -> Connector adapter ----+                            |
-                                                                    v
-Raw artifact / provenance -> Data Health -> Analytics -> Report facts -> Report model -> PDF
-                                                       |                 ^
-                                                       v                 |
-                                                Draft commentary -> Human review
+                    VERCEL
 
-Next.js application service ---------------------------------------> PostgreSQL
+             Next.js Application
+        +-------------------------+
+        |       Frontend UI       |
+        |                         |
+        |   Route Handlers /      |
+        |   Server Functions      |
+        +-----------+-------------+
+                    |
+          +---------+----------+
+          |                    |
+       CSV data         External APIs
+                       Meta / Google /
+                          Shopify
+          |                    |
+          +---------+----------+
+                    |
+              Normalization
+                    |
+             Canonical Data
+                    |
+              KPI Engine
+                    |
+          Change Intelligence
+                    |
+               AI Layer
+                    |
+             Report Model
+                    |
+                  PDF
 ```
+
+Durable persistence is deferred. When a feature requires it, server/UI logic will use a persistence boundary that targets a demo/local implementation or a future Postgres-compatible durable database; Sprint 03 does not implement either one.
 
 ## 3. Components
 
@@ -28,7 +51,7 @@ Next.js application service ---------------------------------------> PostgreSQL
 - **Data Health and reconciliation:** validates coverage, dates, currency, duplicates, mappings, and commerce-versus-attribution caveats.
 - **Analytics and change intelligence:** computes deterministic KPIs, comparisons, movers, and risks from validated canonical data.
 - **Report composer/renderer:** assembles the structured report model and renders PDF without recalculating facts.
-- **PostgreSQL:** persists V1 canonical observations, configuration/rule snapshots, report snapshots, and controlled operational metadata.
+- **Persistence boundary:** deferred until a real feature needs durable state. It will separate UI/server logic from a demo/local implementation or a future Postgres-compatible durable database; it is not an unused TypeScript abstraction in Sprint 03.
 - **LLM provider:** optional draft-commentary dependency after structured facts; it is not an analytical authority.
 
 ## 4. Domain model
@@ -52,7 +75,7 @@ Campaign/ad entities are dimensions of normalized advertising observations, not 
 
 ## 5. Data architecture
 
-The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). It uses daily observations, source/entity identity, currency-compatible money, fixed-scale analytics, explicit unavailable values, and ingestion provenance. [ADR-001](../decisions/ADR-001-revenue-semantics.md) prevents commerce revenue from becoming paid-attribution revenue. [ADR-003](../decisions/ADR-003-data-retention-and-persistence.md) retains canonical/report snapshots while limiting raw payload retention.
+The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). It uses daily observations, source/entity identity, currency-compatible money, fixed-scale analytics, explicit unavailable values, and ingestion provenance. [ADR-001](../decisions/ADR-001-revenue-semantics.md) prevents commerce revenue from becoming paid-attribution revenue. [ADR-003](../decisions/ADR-003-data-retention-and-persistence.md) sets future retention principles. Sprint 03 has no durable canonical or report store; request processing is transient and must not be presented as persistence.
 
 ## 6. Interfaces and boundaries
 
@@ -80,7 +103,7 @@ Authorized connection/account selection -> bounded provider fetch -> raw result/
 
 ### Flow C: Repeat report using saved configuration
 
-Client/source configuration, mappings, rules, and targets are reused for a new reporting period. New ingestion produces a new canonical snapshot; comparison/report generation never mutates the prior report snapshot.
+This future flow begins only after a feature requires durable client/report state. Client/source configuration, mappings, rules, and targets will be reused for a new reporting period. New ingestion must produce a new canonical snapshot; comparison/report generation must never mutate a prior report snapshot.
 
 ### Flow D: AI commentary to human review
 
@@ -112,16 +135,18 @@ Record structured, redacted ingestion status, source/provider, mapping/validatio
 - [ADR-003: Data retention and persistence](../decisions/ADR-003-data-retention-and-persistence.md)
 - [ADR-004: AI after deterministic analysis](../decisions/ADR-004-ai-after-deterministic-analysis.md)
 - [ADR-005: V1 application stack](../decisions/ADR-005-v1-application-stack.md)
+- [ADR-006: Vercel-native deployment and deferred persistence](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md)
 
 ## 12. Sprint 03 implementation implications
 
 Sprint 03 may scaffold, but not implement reporting features:
 
-- **Stack:** Next.js App Router, TypeScript, Node.js 24 LTS, npm, PostgreSQL, Prisma ORM, Zod, Vitest, and Playwright Test.
-- **Expected layout:** `src/app/` for routes/UI; `src/domain/` for pure domain/analytics contracts; `src/server/` for persistence/ingestion boundaries; `prisma/` for schema/migrations; `tests/` for unit/integration/E2E support; existing `docs/` and `fixtures/` remain source-of-truth inputs.
+- **Stack:** Next.js App Router, TypeScript, Node.js 24 LTS, npm, Zod, Vitest, and Playwright Test. Vercel deploys frontend and server-side execution together.
+- **Expected layout:** `app/` for routes/UI; `lib/env/` for the server environment boundary; `tests/` for unit/integration/E2E support; existing `docs/` and `fixtures/` remain source-of-truth inputs. Do not create feature or persistence directories before their sprint.
 - **Expected base commands after scaffold:** `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e`, and `npm run build`.
-- **Health:** `GET /health` returns a non-sensitive readiness/status response; it does not expose credentials or client data.
-- **Environment validation:** server startup validates required server-side environment keys and rejects invalid/missing configuration without echoing values.
-- **CI baseline:** install locked dependencies, then lint, typecheck, unit tests, build, and run a bounded E2E smoke path; database-dependent checks use an isolated test database.
+- **Health:** `GET /api/health` returns a non-sensitive deterministic status response; it does not expose credentials, client data, or host details.
+- **Environment validation:** server-side code owns the future single environment access boundary. Sprint 03 has no required runtime variables and does not expose server configuration to the browser.
+- **Persistence:** no database, Prisma schema, `DATABASE_URL`, migrations, or fake repository abstraction exists in Sprint 03.
+- **CI baseline:** install locked dependencies, then lint, typecheck, unit tests, and build. Playwright smoke tests remain runnable locally and can be added to CI when browser-install cost is appropriate; no database-dependent checks exist.
 
 Sprint 03 must not add queues, workers, scheduled sync, additional services, or feature-specific connectors without a new task and evidence-based revisit decision.

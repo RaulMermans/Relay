@@ -22,4 +22,4 @@ Each sprint is expanded only when it becomes current.
 | 15 - Grounded AI + Human Review | Draft safe commentary | Grounded narrative and review flow | AI stays bounded by facts |
 | 16 - Report Composer + PDF | Produce client output | Structured report and PDF export | Report numbers/rendering verified |
 | 17 - Security, QA + Private Beta | Prepare real-world validation | Hardening, tests, beta process | Private beta readiness reviewed |
-| 18 - Railway Production + Public Project Closure | Launch and close project | Railway production and closure record | Production health and closure complete |
+| 18 - Vercel Production + Public Project Closure | Launch and close project | Vercel production and closure record | Production health and closure complete |

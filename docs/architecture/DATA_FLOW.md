@@ -34,3 +34,7 @@ External source
 | Report model -> Renderer | Structured report model | PDF and render status | Renderer input completeness and layout/render health | Preserve model, record failure, allow retry |
 
 CSV and connector paths differ only before the raw-representation/normalization boundary. Analytics and report generation operate only on canonical data and structured facts.
+
+## Persistence posture
+
+Sprint 03 keeps request processing transient and does not connect a database. When a real feature needs state, the boundary is `UI / Server Logic -> Persistence Boundary -> Demo/local implementation OR future durable database`. Server memory is not durable persistence, and no generic repository abstraction is created before that feature exists.

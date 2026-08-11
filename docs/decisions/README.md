@@ -10,6 +10,7 @@ Record one durable, cross-cutting decision per `ADR-###-short-title.md`. Each AD
 | [ADR-002](ADR-002-unified-source-adapter-contract.md) | Keep CSV and connector transport contracts separate; converge at normalization. |
 | [ADR-003](ADR-003-data-retention-and-persistence.md) | Persist canonical/report snapshots and purpose-limit raw retention. |
 | [ADR-004](ADR-004-ai-after-deterministic-analysis.md) | Generate AI draft commentary only after deterministic structured facts. |
-| [ADR-005](ADR-005-v1-application-stack.md) | Use a single Next.js application with PostgreSQL on Railway for V1. |
+| [ADR-005](ADR-005-v1-application-stack.md) | Use a single Next.js application; deployment and immediate persistence are superseded by ADR-006. |
+| [ADR-006](ADR-006-vercel-native-deployment-and-deferred-persistence.md) | Deploy one Next.js application on Vercel and defer durable persistence until a real feature requires it. |
 
 Implementation details that do not alter these contracts do not need an ADR.

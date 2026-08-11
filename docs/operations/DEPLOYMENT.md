@@ -3,31 +3,34 @@
 ## Planned topology
 
 ```text
-Railway project
-  -> Relay Next.js application service
-  -> Railway PostgreSQL service
-
-External dependencies, introduced only when their features are built:
-  Meta, Google, Shopify, and an LLM provider
+Vercel project
+  -> Relay Next.js application
+     -> frontend UI
+     -> Route Handlers / server-side execution / Vercel Functions
 ```
 
-V1 uses the minimum two services: one application service and one PostgreSQL service. The application service owns UI, server-side routes, ingestion orchestration, deterministic analytics, report composition, and future PDF rendering. PostgreSQL is private to the project and exposed to the application through a reference `DATABASE_URL`.
+One Vercel project deploys Relay's frontend and backend execution together. There is no separate backend service and no database currently connected. External dependencies (Meta, Google, Shopify, or an LLM provider) remain deferred until their product features are built.
 
 ## Runtime and deployment expectations
 
-- Node.js 24 LTS and npm are pinned during Sprint 03 scaffold.
-- The Next.js production build uses standalone output and starts through the scaffolded `npm run start` command.
-- Prisma migrations run as a Railway pre-deploy step after migrations exist; a failed migration prevents the new release from serving.
-- `GET /health` provides a non-sensitive health/readiness response for deployment checks.
-- Server environment validation fails closed for missing/invalid required keys and never echoes values.
-- Production configuration includes `NODE_ENV`, `DATABASE_URL`, and feature-specific server-side keys only when the related feature exists. Real values never enter Git.
+- Node.js 24 LTS and npm are pinned by the Sprint 03 application contract.
+- The Next.js production build starts through `npm run start`.
+- `GET /api/health` provides a fast, deterministic, non-sensitive deployment check.
+- Sprint 03 requires no runtime secrets. Server environment validation remains the future single access boundary and never exposes values to browser code.
+- There is no `DATABASE_URL`, database migration, Prisma schema, or production persistence configuration.
 
-Railway documents deployment of a Next.js application with PostgreSQL, reference database variables, and pre-deploy migrations. [Railway Next.js + Postgres guide](https://docs.railway.com/guides/nextjs), [Railway PostgreSQL](https://docs.railway.com/databases/postgresql).
+## Deployment checklist
+
+Before a deployment, run `npm run lint`, `npm run typecheck`, `npm run test`, and `npm run build`. Deploy only the Next.js application to Vercel. Verify `/` and `/api/health` in production when Vercel authentication and project linking are available.
+
+## Deployment status
+
+Sprint 03 deployment is pending local verification and Vercel authentication/project-linking availability. If either is unavailable, the deployment is recorded as blocked without inventing a production URL.
 
 ## Logging, rollback, and operations
 
-Use structured, redacted application/deployment logs for ingestion, Data Health, report lifecycle, and render failures. Roll back to the last healthy application deployment when a health check, migration, or release validation fails; preserve database migration discipline so application rollback remains safe.
+Use structured, redacted application/deployment logs once product behavior exists. Roll back to the last healthy Vercel deployment if health or release validation fails. No migration rollback policy exists yet because no database is connected.
 
 ## Deferred services and triggers
 
-Do not add Redis, queues, workers, cron, or object storage in V1. Revisit only when measured upload size, fetch duration/rate limits, scheduled sync, PDF duration, or retry behavior cannot meet reliability needs in the single application service. Any addition requires a documented workload, failure-mode, security, and operations decision.
+Do not add a database, Redis, queues, workers, cron, object storage, or external connectors in Sprint 03. Revisit durable persistence under the triggers in [ADR-006](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md). Any future service requires a documented workload, failure-mode, security, and operations decision.

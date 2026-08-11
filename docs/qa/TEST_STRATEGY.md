@@ -6,11 +6,11 @@ Core analytical logic must be independently testable from UI, database, and prov
 
 ## Unit tests
 
-Test source detection, mappings, normalizers, canonical semantic rules, KPI formulas, period comparison, mover detection, reconciliation logic, report-fact composition, and fact-to-commentary grounding rules. Pure deterministic modules must not require a browser, database, or live provider.
+Sprint 03 tests the server environment boundary and deterministic health-response creation. Later sprints test source detection, mappings, normalizers, canonical semantic rules, KPI formulas, period comparison, mover detection, reconciliation logic, report-fact composition, and fact-to-commentary grounding rules. Pure deterministic modules must not require a browser, database, or live provider.
 
 ## Integration tests
 
-Test raw CSV -> canonical data, canonical data -> analytics, analytics -> report model, and persistence boundaries when they exist. Include date/currency/availability validation and report re-rendering from persisted canonical/report snapshots.
+Sprint 03 creates the integration-test location but does not force an artificial integration test: no integration boundary exists yet. Later test raw CSV -> canonical data, canonical data -> analytics, analytics -> report model, and persistence boundaries when they exist. Include date/currency/availability validation and report re-rendering from persisted canonical/report snapshots.
 
 ## Connector contract tests
 
@@ -18,7 +18,7 @@ Use provider response fixtures -> normalized canonical output. The key equivalen
 
 ## E2E tests
 
-Exercise the bounded happy path: client -> report -> upload -> review -> PDF. Cover explicit failure states for malformed upload, mapping ambiguity, unavailable connector, expired credential, mismatched periods, unavailable LLM, and PDF rendering failure.
+Sprint 03 provides a Playwright smoke test for `/` and `/api/health`. Later exercise the bounded happy path: client -> report -> upload -> review -> PDF, including the explicit failure states for malformed upload, mapping ambiguity, unavailable connector, expired credential, mismatched periods, unavailable LLM, and PDF rendering failure.
 
 ## Regression fixtures
 
@@ -26,4 +26,4 @@ Store synthetic/anonymized source input in `fixtures/raw/`, expected canonical o
 
 ## Tooling and CI expectation
 
-Sprint 03 will establish Vitest for unit/integration tests and Playwright Test for E2E. Expected commands after scaffold are `npm test`, `npm run test:e2e`, `npm run lint`, `npm run typecheck`, and `npm run build`; do not run them in Sprint 02 because no application exists. CI will run locked install, lint, typecheck, unit tests, build, and a bounded E2E smoke path using an isolated test database.
+Sprint 03 establishes Vitest for unit/integration tests and Playwright Test for E2E. Expected commands are `npm test`, `npm run test:e2e`, `npm run lint`, `npm run typecheck`, and `npm run build`; all run without external services. Base CI runs locked install, lint, typecheck, unit tests, and build. Playwright remains available locally but outside base CI because browser installation would add disproportionate overhead to the foundation pipeline; it needs no database.
