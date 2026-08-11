@@ -1,31 +1,23 @@
 # Current status
 
-Sprint 00 is complete at baseline commit `60243b2`. Sprint 01 defines the product and validation contract; no application implementation exists.
+Sprint 01 is complete at `888d504`. Sprint 02 defines the V1 architecture and data semantics; no application implementation exists.
 
-# Completed
+# Files read
 
-- Refined the product brief, V1 boundaries, success metrics, research protocol, report-analysis framework, validation experiment, assumption register, and Sprint 02 decision inputs.
+- Product, architecture, data, integration, QA, deployment, security, decision, planning, and Sprint 01 baseline contracts required for architecture decisions.
 
-# Blocked
+# Decisions made
 
-- Research evidence is not yet collected: no participants, anonymized exports, real reports, timed cycles, or observed metric results are available.
+- Daily canonical observations; separate commerce/attribution revenue; separate transport contracts converging at normalization; purpose-limited raw retention with persisted canonical/report snapshots; deterministic facts before AI; one Next.js/PostgreSQL deployment.
 
-# Files inspected
+# ADRs created
 
-- `CLAUDE.md`, prior `plan.md`, Sprint 01 roadmap entry, product/data/research/connector contracts, architecture contract, `CHANGELOG.md`, and the Sprint 00 baseline.
+- ADR-001 through ADR-005 in `docs/decisions/`.
 
-# Files changed
+# Unresolved architecture risks
 
-- `plan.md`, `SCRATCHPAD.md`, `CHANGELOG.md`, product and research contracts, and `docs/architecture/ARCHITECTURE.md`.
-
-# Assumptions surfaced
-
-- A-001 through A-010 remain untested in `docs/product/ASSUMPTIONS.md`.
-
-# Research blockers
-
-- Product hypotheses require real, anonymized workflow and report evidence before they can be promoted to observed results.
+- Product assumptions A-001 through A-010 remain untested. Worker/queue/object-storage needs, precise retention controls, PDF library, and provider-specific implementation constraints require evidence in later sprints.
 
 # Next action
 
-- Do not begin Sprint 02 until the Sprint 01 validation plan is accepted; then create the first Sprint 02 architecture task specification.
+- Do not begin Sprint 03 until Sprint 02 is accepted; then scaffold only the selected application foundation and verification baseline.

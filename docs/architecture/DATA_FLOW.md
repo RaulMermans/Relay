@@ -1,12 +1,36 @@
-# Conceptual data flow
+# Relay data flow
 
-1. Receive a CSV export or connector response as a raw dataset, preserving source identity and reporting-period context.
-2. Detect the source, map known fields, and ask for confirmation where mapping is ambiguous.
-3. Normalize through a source adapter into canonical advertising or commerce semantics.
-4. Validate required fields, dates, currencies, duplicates, and source coverage at the canonical boundary.
-5. Reconcile compatible datasets while retaining the distinction between advertising attribution and commerce truth.
-6. Compute deterministic KPIs and period comparisons from validated canonical data.
-7. Derive bounded change facts and risks; a narrative layer may express only those verified facts.
-8. Route the structured report model through human review before PDF rendering.
+```text
+External source
+  -> Ingestion
+  -> Raw representation
+  -> Normalization
+  -> Canonical data
+  -> Validation
+  -> Reconciliation
+  -> Metrics
+  -> Change intelligence
+  -> Report facts
+  -> AI commentary
+  -> Human review
+  -> Report model
+  -> Renderer
+```
 
-Validation boundaries exist at intake (file/provider trust), mapping (unknown or ambiguous fields), canonicalization (type/semantic integrity), reconciliation (cross-source comparability), KPI calculation (inputs/edge cases), and pre-report review (narrative/report consistency).
+| Boundary | Input | Output | Validation responsibility | Failure behavior |
+| --- | --- | --- | --- | --- |
+| External source -> Ingestion | CSV file or provider response/session | Ingestion request and source context | Trust boundary, file/session/account eligibility | Reject/record structured, redacted intake error |
+| Ingestion -> Raw representation | Validated upload or fetch result | Transport-specific raw dataset/result plus provenance | File shape, provider/source detection, pagination/retry outcome | Mark ingestion failed/partial; never infer missing values |
+| Raw representation -> Normalization | Provider-shaped raw input and mapping | Daily canonical observations, provenance, findings | Required field/type mapping, availability, source identifiers, currency | Emit mapping/normalization findings; request confirmation where ambiguous |
+| Normalization -> Canonical data | Normalized observations | Persistable canonical advertising/commerce data | Daily grain, null versus zero, money/currency, identity, dedupe candidates | Block unsupported aggregate or incompatible data from analytics |
+| Canonical data -> Validation | Canonical observations | Data Health findings and eligible data set | Coverage, date alignment, duplicate candidates, required report inputs | Errors block affected analysis; warnings retain caveat |
+| Validation -> Reconciliation | Eligible observations and findings | Compatibility/comparison notes | Commerce versus attribution distinction, source coverage, currency compatibility | Warn/block only according to explicit incompatibility; do not fabricate attribution |
+| Reconciliation -> Metrics | Compatible validated canonical data | Deterministic KPIs and period comparisons | Formula inputs, denominator/availability, revenue-basis rules | Mark KPI unavailable with reason rather than calculate from invalid inputs |
+| Metrics -> Change intelligence | KPIs/comparisons | Movers, risks, explanatory facts | Deterministic thresholds/rules and fact provenance | Omit unsupported conclusion; retain source finding |
+| Change intelligence -> Report facts | Analytics facts, health, reconciliation, targets | Renderer-neutral structured facts | Fact completeness, target evidence, provenance references | Report incomplete state; no invented commentary |
+| Report facts -> AI commentary | Approved facts and explicit context | Editable draft commentary with fact references | Grounding and quantitative claim traceability | Continue without commentary if unavailable/invalid |
+| AI commentary -> Human review | Draft text and facts | Accepted, edited, or removed commentary | Reviewer confirms client-facing suitability | Exclude unreviewed/rejected narrative |
+| Human review -> Report model | Reviewed commentary plus facts/findings | Structured report model snapshot | Required sections, methodology, reviewed state | Preserve model error/status; do not mutate facts |
+| Report model -> Renderer | Structured report model | PDF and render status | Renderer input completeness and layout/render health | Preserve model, record failure, allow retry |
+
+CSV and connector paths differ only before the raw-representation/normalization boundary. Analytics and report generation operate only on canonical data and structured facts.

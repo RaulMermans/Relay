@@ -6,7 +6,7 @@ Relay is a reporting workflow platform for freelance performance marketers and s
 
 ## Current status
 
-Sprint 00 only: repository operating system. No product code, application scaffold, dependencies, connectors, database, or credentials exist.
+Sprint 02: architecture and data semantics are documented. No product code, application scaffold, dependencies, connectors, database, or credentials exist.
 
 ## Working protocol
 

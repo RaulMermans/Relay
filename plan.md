@@ -1,91 +1,161 @@
-# Sprint 01 - Product Contract + Validation Design
+# Sprint 02 - Architecture + Data Semantics
 
-## Goal
+### T-020 Canonical Data Semantics
 
-Turn Relay's product hypothesis into a precise, testable product contract before architecture or application implementation begins.
+**Outcome:** Define daily, provenance-preserving canonical advertising and commerce observations.
 
-## Boundary
+**Relevant docs:** `docs/data/DATA_CONTRACT.md`, `docs/data/KPI_DEFINITIONS.md`.
 
-Documentation and validation specification only. No application scaffold, dependencies, product code, database, APIs, OAuth, connectors, parsers, UI, AI SDKs, or detailed architecture choices.
-
-## Tasks
-
-### T-010 Product Brief
-
-**Outcome:** Define the first customer, recurring reporting job, promise, boundaries, dual ingestion model, cadence, PDF output, and human review.
-
-**Relevant docs:** `docs/product/PROJECT_BRIEF.md`, `docs/product/MVP_SCOPE.md`.
-
-**Acceptance criteria:** Customer and manual workaround are concrete; boundaries are explicit; hypotheses are not evidence.
+**Acceptance criteria:** Optionality, currency, precision, null/zero, identifiers, names, and source provenance are explicit; revenue is not ambiguous.
 
 **Status:** Complete.
 
-### T-011 MVP Scope
+### T-021 Revenue Semantics ADR
 
-**Outcome:** Set V1 scope, validation work that may remain manual, and explicit post-V1 exclusions.
+**Outcome:** Decide permitted representation and KPI use of commerce versus paid-attribution revenue.
 
-**Relevant docs:** `docs/product/MVP_SCOPE.md`.
+**Relevant docs:** `docs/decisions/ADR-001-revenue-semantics.md`, `docs/data/KPI_DEFINITIONS.md`.
 
-**Acceptance criteria:** Exactly three scope categories; every V1 item contributes to source data -> decision-ready report.
-
-**Status:** Complete.
-
-### T-012 Success Metrics
-
-**Outcome:** Make primary and secondary validation metrics calculable and evidence-bound.
-
-**Relevant docs:** `docs/product/SUCCESS_METRICS.md`.
-
-**Acceptance criteria:** Every metric states definition, formula, numerator, denominator where applicable, unit, measurement moment, evidence, and status.
+**Acceptance criteria:** ROAS, MER, reconciliation, overlap, and no-authoritative-cross-platform-sum rules are explicit.
 
 **Status:** Complete.
 
-### T-013 User Research
+### T-022 Core Domain Model
 
-**Outcome:** Provide an executable, privacy-aware research protocol for 3-5 target users.
+**Outcome:** Define V1 entity ownership, lifecycle, relationships, and exclusions.
 
-**Relevant docs:** `docs/research/USER_RESEARCH.md`.
+**Relevant docs:** `docs/architecture/ARCHITECTURE.md`.
 
-**Acceptance criteria:** Participant IDs, workflow timing, inputs, non-leading questions, privacy, and session output are specified.
-
-**Status:** Complete.
-
-### T-014 Report Analysis
-
-**Outcome:** Define repeatable reverse-engineering of client reports and cross-report comparison.
-
-**Relevant docs:** `docs/research/REPORT_ANALYSIS.md`.
-
-**Acceptance criteria:** Report IDs, capture fields, comparison matrix, and common/configurable/human layers are specified.
+**Acceptance criteria:** Every chosen entity is V1-justified without database-column design.
 
 **Status:** Complete.
 
-### T-015 Validation Experiment
+### T-023 Ingestion Architecture
 
-**Outcome:** Define one measured Relay-style reporting experiment and evidence-based decision rules.
+**Outcome:** Define CSV, connector, and shared downstream convergence boundaries.
 
-**Relevant docs:** `docs/research/VALIDATION_EXPERIMENT.md`, `docs/product/SUCCESS_METRICS.md`.
+**Relevant docs:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`.
 
-**Acceptance criteria:** Inputs, output, measurements, grounding, and PASS/WEAK PASS/FAIL criteria are explicit.
-
-**Status:** Complete.
-
-### T-016 Assumption Register
-
-**Outcome:** Track the initial product hypotheses and how each will be tested.
-
-**Relevant docs:** `docs/product/ASSUMPTIONS.md`.
-
-**Acceptance criteria:** A-001 through A-010 include all required fields and remain untested.
+**Acceptance criteria:** Analytics is transport/provider-payload agnostic after normalization.
 
 **Status:** Complete.
 
-### T-017 Sprint 02 Decision Inputs
+### T-024 Source Adapter ADR
 
-**Outcome:** Hand off unresolved product-driven architecture questions without deciding them.
+**Outcome:** Decide the semantic source-adapter contract.
+
+**Relevant docs:** `docs/decisions/ADR-002-unified-source-adapter-contract.md`, `docs/integrations/CONNECTOR_CONTRACT.md`.
+
+**Acceptance criteria:** CSV/API convergence, structured errors, provenance, and revisit triggers are documented without code interfaces.
+
+**Status:** Complete.
+
+### T-025 Data Persistence ADR
+
+**Outcome:** Decide raw-retention and canonical/report persistence strategy.
+
+**Relevant docs:** `docs/decisions/ADR-003-data-retention-and-persistence.md`.
+
+**Acceptance criteria:** Privacy, reproducibility, debugging, and retention principles are explicit without arbitrary policies.
+
+**Status:** Complete.
+
+### T-026 Report Model
+
+**Outcome:** Define the renderer-neutral structured report boundary.
+
+**Relevant docs:** `docs/architecture/REPORT_MODEL.md`, `docs/architecture/ARCHITECTURE.md`.
+
+**Acceptance criteria:** Facts, health, insights, review, methodology, and PDF boundary are structured and AI is not arbitrary report HTML.
+
+**Status:** Complete.
+
+### T-027 AI Boundary ADR
+
+**Outcome:** Formalize deterministic analysis before AI commentary.
+
+**Relevant docs:** `docs/decisions/ADR-004-ai-after-deterministic-analysis.md`.
+
+**Acceptance criteria:** Allowed inputs, suggestion-only output, grounding, review, and validation path are explicit.
+
+**Status:** Complete.
+
+### T-028 Stack Evaluation
+
+**Outcome:** Compare single-application and split-service options against V1 needs.
+
+**Relevant docs:** `docs/decisions/ADR-005-v1-application-stack.md`.
+
+**Acceptance criteria:** Speed, connectors, CSV, PDF, testing, Railway operations, future sync, and maintainability are considered.
+
+**Status:** Complete.
+
+### T-029 Stack ADR
+
+**Outcome:** Select the V1 implementation stack.
+
+**Relevant docs:** `docs/decisions/ADR-005-v1-application-stack.md`, `docs/architecture/ARCHITECTURE.md`.
+
+**Acceptance criteria:** One stack, alternatives, consequences, revisit triggers, and validation plan are documented without installation.
+
+**Status:** Complete.
+
+### T-030 Deployment Architecture
+
+**Outcome:** Define minimal Railway topology and deployment expectations.
+
+**Relevant docs:** `docs/operations/DEPLOYMENT.md`.
+
+**Acceptance criteria:** One application service plus PostgreSQL, health, migration, rollback, logging, and future-service triggers are explicit.
+
+**Status:** Complete.
+
+### T-031 Security Architecture
+
+**Outcome:** Define credential, upload, AI, logging, and data-access boundaries.
+
+**Relevant docs:** `docs/integrations/CONNECTOR_SECURITY.md`, `SECURITY.md`, `docs/architecture/ARCHITECTURE.md`.
+
+**Acceptance criteria:** Least privilege, server-side credentials, untrusted input/output, and user-to-client ownership are explicit.
+
+**Status:** Complete.
+
+### T-032 Test Architecture
+
+**Outcome:** Define deterministic testing layers and connector equivalence coverage.
+
+**Relevant docs:** `docs/qa/TEST_STRATEGY.md`, `docs/architecture/DATA_FLOW.md`.
+
+**Acceptance criteria:** Unit, integration, contract, E2E, regression, fixtures, tooling, and CI expectations are explicit.
+
+**Status:** Complete.
+
+### T-033 Architecture Snapshot
+
+**Outcome:** Finalize the executable V1 architecture snapshot.
 
 **Relevant docs:** `docs/architecture/ARCHITECTURE.md`, `docs/decisions/README.md`.
 
-**Acceptance criteria:** Required decision areas and highest-risk questions are explicit; no architecture decision is prematurely accepted.
+**Acceptance criteria:** Components, entities, flows, failure handling, security, observability, ADR index, and Sprint 03 implications agree.
+
+**Status:** Complete.
+
+### T-034 Data Flow
+
+**Outcome:** Define validation responsibilities and failure behavior at every data boundary.
+
+**Relevant docs:** `docs/architecture/DATA_FLOW.md`.
+
+**Acceptance criteria:** External source through renderer is explicit and CSV/API converge before analytics.
+
+**Status:** Complete.
+
+### T-035 Sprint 03 Handoff
+
+**Outcome:** Define the bounded application foundation Sprint 03 may scaffold.
+
+**Relevant docs:** `docs/architecture/ARCHITECTURE.md`, `docs/operations/DEPLOYMENT.md`, `docs/qa/TEST_STRATEGY.md`.
+
+**Acceptance criteria:** Stack, layout, package manager, runtime, persistence, validation/tests, commands, health, environment validation, and CI baseline are explicit.
 
 **Status:** Complete.

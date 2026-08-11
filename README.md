@@ -27,7 +27,7 @@ All ingestion methods feed a shared canonical data layer.
 
 ## Current status
 
-Sprint 00 / pre-implementation. There are no installation steps or runnable application yet.
+Sprint 02 / pre-implementation. The product, validation, and V1 architecture contracts are documented; there are no installation steps or runnable application yet.
 
 ## Repository navigation
 
