@@ -1,6 +1,7 @@
 import { detectSource, type SourceDetection } from "./detect-source";
-import { parseCsv } from "./parse";
-import { CsvValidationError, validateCsvFile } from "./validate";
+import { parseCsv, type ParsedCsv } from "./parse";
+import { CsvValidationError, validateCsvFile, type ValidatedCsvFile } from "./validate";
+import { proposeFieldMapping, type MappingProposal } from "../../mapping/field-mapping";
 
 export type CsvIntakeResult = {
   status: "accepted" | "needs_review";
@@ -15,21 +16,34 @@ export type CsvIntakeResult = {
     parseWarnings: string[];
   };
   sourceDetection: SourceDetection;
+  mapping: MappingProposal | null;
 };
 
-export async function processCsvFile(file: File | null | undefined): Promise<CsvIntakeResult> {
-  const validatedFile = await validateCsvFile(file);
-  const parsedCsv = parseCsv(validatedFile.content);
+export type PreparedCsvIntake = {
+  file: ValidatedCsvFile;
+  parsed: ParsedCsv;
+  sourceDetection: SourceDetection;
+};
 
-  if (parsedCsv.headers.length === 0 || parsedCsv.headers.every((header) => header.trim().length === 0)) {
+export async function prepareCsvFile(file: File | null | undefined): Promise<PreparedCsvIntake> {
+  const validatedFile = await validateCsvFile(file);
+  const parsed = parseCsv(validatedFile.content);
+
+  if (parsed.headers.length === 0 || parsed.headers.every((header) => header.trim().length === 0)) {
     throw new CsvValidationError("CSV_NO_HEADERS", "The CSV file must include a header row.");
   }
 
-  if (parsedCsv.rowCount === 0) {
+  if (parsed.rowCount === 0) {
     throw new CsvValidationError("CSV_NO_DATA", "The CSV file must include at least one data row.");
   }
 
-  const sourceDetection = detectSource(parsedCsv.headers);
+  return { file: validatedFile, parsed, sourceDetection: detectSource(parsed.headers) };
+}
+
+export async function processCsvFile(file: File | null | undefined): Promise<CsvIntakeResult> {
+  const { file: validatedFile, parsed: parsedCsv, sourceDetection } = await prepareCsvFile(file);
+  const mapping =
+    sourceDetection.source === "unknown" ? null : proposeFieldMapping(sourceDetection.source, parsedCsv.headers);
 
   return {
     status: sourceDetection.source === "unknown" ? "needs_review" : "accepted",
@@ -44,5 +58,6 @@ export async function processCsvFile(file: File | null | undefined): Promise<Csv
       parseWarnings: parsedCsv.parseWarnings,
     },
     sourceDetection,
+    mapping,
   };
 }

@@ -1,181 +1,151 @@
-# Sprint 04 - CSV Intake + Source Detection
+# Sprint 05 - Field Mapping + Canonical Normalization
 
-### T-057 CSV Intake Contract
-
-**Outcome:** Define the transient, single-file CSV intake contract and stable outcomes.
-
-**Relevant docs/files:** `docs/data/CSV_INTAKE_CONTRACT.md`, `docs/data/SOURCE_RULES.md`.
-
-**AC:** Accepted, rejected, and needs-review outcomes, source values, and error codes are explicit.
-
+### T-075 Canonical Observation Contract
+**Outcome:** Lock explicit V1 advertising and commerce observation shapes.
+**Relevant docs/files:** `docs/data/DATA_CONTRACT.md`, `lib/normalization/types.ts`.
+**AC:** Two daily domains, revenue separation, identifiers, names, and provenance are explicit.
 **Status:** Complete.
 
-### T-058 Source Detection Rules
-
-**Outcome:** Define deterministic, header-based evidence rules for supported providers.
-
-**Relevant docs/files:** `docs/data/SOURCE_RULES.md`, `lib/intake/csv/detect-source.ts`.
-
-**AC:** Meta Ads, Google Ads, Shopify, unsupported, and ambiguous inputs have documented deterministic behavior.
-
+### T-076 Numeric Representation
+**Outcome:** Normalize money and measures without binary floating-point semantics.
+**Relevant docs/files:** `docs/data/DATA_CONTRACT.md`, `lib/normalization/values.ts`, `tests/unit/normalization-values.test.ts`.
+**AC:** Fixed decimal strings, currency, null/zero, invalid input, negatives, separators, locale, and dates are explicit and tested.
 **Status:** Complete.
 
-### T-059 Synthetic Fixtures
-
-**Outcome:** Add small, clearly labelled synthetic raw CSV fixtures.
-
-**Relevant docs/files:** `fixtures/raw/`, `docs/qa/REGRESSION_FIXTURES.md`.
-
-**AC:** Representative, alternate-header, unknown, ambiguous, and malformed coverage is available without client data.
-
+### T-077 Alias Catalog
+**Outcome:** Document fixture-backed Meta, Google, and Shopify aliases.
+**Relevant docs/files:** `docs/data/SOURCE_RULES.md`, `lib/mapping/catalog.ts`.
+**AC:** Exact/normalized matching and ambiguity behavior are documented without speculative aliases.
 **Status:** Complete.
 
-### T-060 Parser Selection
-
-**Outcome:** Select and justify the smallest reliable CSV parser.
-
-**Relevant docs/files:** `package.json`, `package-lock.json`, `docs/data/CSV_INTAKE_CONTRACT.md`.
-
-**AC:** Quoting, escaped quotes, line endings, empty cells, malformed input, BOM, and dependency scope are addressed.
-
+### T-078 Mapping Engine
+**Outcome:** Propose deterministic provider-header mappings.
+**Relevant docs/files:** `lib/mapping/field-mapping.ts`, `lib/mapping/types.ts`.
+**AC:** Mapped, unmapped, ambiguous, ignored, and required-missing outcomes are structured.
 **Status:** Complete.
 
-### T-061 Server Validation
-
-**Outcome:** Validate upload presence, type, size, text decoding, headers, and data rows server-side.
-
-**Relevant docs/files:** `lib/intake/csv/validate.ts`, `app/api/intake/csv/route.ts`.
-
-**AC:** A 5 MiB limit and structured validation errors protect the transient intake boundary.
-
+### T-079 Mapping Status
+**Outcome:** Expose interpretable mapping origin and readiness status.
+**Relevant docs/files:** `lib/mapping/types.ts`, `docs/data/SOURCE_RULES.md`.
+**AC:** Exact alias, normalized alias, and manual origin replace fake confidence percentages.
 **Status:** Complete.
 
-### T-062 CSV Parser
-
-**Outcome:** Parse CSV safely through a small server-side boundary.
-
-**Relevant docs/files:** `lib/intake/csv/parse.ts`, `tests/unit/csv-parse.test.ts`.
-
-**AC:** Parsing preserves headers and rows/counts while handling ordinary CSV semantics and controlled failures.
-
+### T-080 Required Fields
+**Outcome:** Enforce minimum provider semantics before normalization.
+**Relevant docs/files:** `docs/data/DATA_CONTRACT.md`, `lib/mapping/field-mapping.ts`.
+**AC:** Advertising context/measure and Shopify order-row requirements return structured correction states.
 **Status:** Complete.
 
-### T-063 Source Detector
-
-**Outcome:** Implement pure, deterministic source detection from validated headers.
-
-**Relevant docs/files:** `lib/intake/csv/detect-source.ts`, `tests/unit/source-detection.test.ts`.
-
-**AC:** Supported, unknown, and ambiguous inputs produce transparent evidence without guessing.
-
+### T-081 Mapping UI
+**Outcome:** Add a focused provider-column mapping review after detection.
+**Relevant docs/files:** `app/intake-form.tsx`, `app/globals.css`.
+**AC:** Users can inspect proposals, required corrections, and normalization status.
 **Status:** Complete.
 
-### T-064 Intake API
-
-**Outcome:** Expose the intake boundary with a stable structured response.
-
-**Relevant docs/files:** `app/api/intake/csv/route.ts`, `lib/intake/csv/intake.ts`.
-
-**AC:** The endpoint returns accepted/needs-review results or safe 4xx error codes without retaining content.
-
+### T-082 Manual Mapping Rules
+**Outcome:** Support transient, domain-valid manual overrides and optional ignores.
+**Relevant docs/files:** `app/intake-form.tsx`, `lib/mapping/field-mapping.ts`.
+**AC:** Cross-domain and duplicate targets fail; mappings are not persisted.
 **Status:** Complete.
 
-### T-065 Upload UI
-
-**Outcome:** Add a focused single-file intake experience at `/`.
-
-**Relevant docs/files:** `app/page.tsx`, `app/globals.css`, `app/intake-form.tsx`.
-
-**AC:** A user can submit, inspect results, recover from errors, and reset a CSV intake.
-
+### T-083 Provider Normalizers
+**Outcome:** Isolate provider normalization behind canonical inputs/outputs.
+**Relevant docs/files:** `lib/normalization/`.
+**AC:** Downstream results contain no provider raw column names.
 **Status:** Complete.
 
-### T-066 Client Guardrails
-
-**Outcome:** Add light client-side selection feedback while retaining server authority.
-
-**Relevant docs/files:** `app/intake-form.tsx`.
-
-**AC:** Empty, non-CSV, and oversized selections receive clear local guidance.
-
+### T-084 Meta Normalization
+**Outcome:** Normalize fixture-backed Meta primitives into advertising observations.
+**Relevant docs/files:** `lib/normalization/meta-ads.ts`, `fixtures/normalized/meta_ads/`.
+**AC:** Meta purchase value remains attributed advertising revenue with provenance.
 **Status:** Complete.
 
-### T-067 Unit Tests
-
-**Outcome:** Cover parsing, validation, and source detection deterministically.
-
-**Relevant docs/files:** `tests/unit/`.
-
-**AC:** Normal, edge, malformed, provider, unknown, and ambiguous conditions are exercised.
-
+### T-085 Google Normalization
+**Outcome:** Normalize fixture-backed Google primitives into advertising observations.
+**Relevant docs/files:** `lib/normalization/google-ads.ts`, `fixtures/normalized/google_ads/`.
+**AC:** Conversion value remains attributed advertising revenue; cost micros are safe.
 **Status:** Complete.
 
-### T-068 Integration Tests
-
-**Outcome:** Test raw fixture to structured intake result.
-
-**Relevant docs/files:** `tests/integration/`.
-
-**AC:** Meta, Google Ads, Shopify, unknown, and malformed fixture flows execute through the real modules.
-
+### T-086 Shopify Normalization
+**Outcome:** Normalize supported Shopify order rows into commerce observations.
+**Relevant docs/files:** `lib/normalization/shopify.ts`, `fixtures/normalized/shopify/`.
+**AC:** Gross revenue remains commerce revenue and duplicate order rows are rejected.
 **Status:** Complete.
 
-### T-069 E2E
+### T-087 Provenance
+**Outcome:** Preserve minimal source-row and mapping provenance.
+**Relevant docs/files:** `lib/normalization/types.ts`, `docs/data/DATA_CONTRACT.md`.
+**AC:** Transport, request ID, safe filename, source row, and mapping origins remain available without raw rows.
+**Status:** Complete.
 
-**Outcome:** Test the real upload experience.
+### T-088 Normalization API
+**Outcome:** Add the server-authoritative transient normalization boundary.
+**Relevant docs/files:** `app/api/normalize/csv/route.ts`, `lib/normalization/normalize-csv.ts`.
+**AC:** A re-upload plus valid overrides returns a compact safe summary or structured correction/error.
+**Status:** Complete.
 
+### T-089 Normalized Fixtures
+**Outcome:** Add independent canonical golden outcomes.
+**Relevant docs/files:** `fixtures/normalized/`, `tests/integration/csv-normalization.test.ts`.
+**AC:** Representative and alternate Meta, Google, and Shopify outputs are manually reviewable JSON.
+**Status:** Complete.
+
+### T-090 Failure Fixtures
+**Outcome:** Cover realistic mapping and value failures.
+**Relevant docs/files:** `fixtures/raw/failures/`, `fixtures/normalized/failures/`.
+**AC:** Missing date, invalid value/date, ambiguity, duplicate mapping/order, and mixed-currency cases are covered.
+**Status:** Complete.
+
+### T-091 Unit Tests
+**Outcome:** Exercise mapping, numeric/date parsing, and provider normalizers.
+**Relevant docs/files:** `tests/unit/field-mapping.test.ts`, `tests/unit/normalization-values.test.ts`, `tests/unit/provider-normalizers.test.ts`.
+**AC:** Deterministic happy, override, boundary, and failure behavior is covered.
+**Status:** Complete.
+
+### T-092 Integration Tests
+**Outcome:** Exercise raw CSV through canonical goldens and API responses.
+**Relevant docs/files:** `tests/integration/csv-normalization.test.ts`, `tests/integration/csv-normalize-api.test.ts`.
+**AC:** Meta, Google, Shopify, unresolved mapping, and invalid canonical values execute through real modules.
+**Status:** Complete.
+
+### T-093 Equivalence Preparation
+**Outcome:** Establish reusable canonical outcomes for future connector equivalence.
+**Relevant docs/files:** `docs/data/DATA_CONTRACT.md`, `fixtures/normalized/`.
+**AC:** The CSV/API semantic-equivalence invariant and fixture reuse boundary are documented.
+**Status:** Complete.
+
+### T-094 E2E
+**Outcome:** Verify mapping review, manual resolution, and normalization summary in the browser.
 **Relevant docs/files:** `tests/e2e/intake.spec.ts`.
-
-**AC:** Playwright verifies a Meta upload and an unknown-source state.
-
+**AC:** Supported and required-mapping correction flows are automated.
 **Status:** Complete.
 
-### T-070 Security Sanity
-
-**Outcome:** Review CSV trust-boundary risks and mitigations.
-
-**Relevant docs/files:** `SECURITY.md`, scoped intake files, dependency manifest.
-
-**AC:** No P0/P1 findings remain; raw CSV is neither logged nor retained.
-
+### T-095 Security/Data Integrity
+**Outcome:** Review mapping/normalization trust boundaries and data integrity.
+**Relevant docs/files:** `SECURITY.md`, scoped intake/mapping/normalization files.
+**AC:** No P0/P1 finding remains; raw data remains unpersisted and unlogged.
 **Status:** Complete.
 
-### T-071 Observability
-
-**Outcome:** Record limited redacted server intake events.
-
-**Relevant docs/files:** `app/api/intake/csv/route.ts`.
-
-**AC:** Logs contain status/error metadata only, never uploaded contents or rows.
-
+### T-096 Data Contract Review Skill
+**Outcome:** Add a narrow reusable semantic-review skill.
+**Relevant docs/files:** `.agents/skills/data-contract-review/SKILL.md`.
+**AC:** It uses progressive disclosure and focuses on semantic, currency, provenance, and mapping regressions.
 **Status:** Complete.
 
-### T-072 Documentation
-
-**Outcome:** Align active docs with the implemented intake boundary.
-
-**Relevant docs/files:** `README.md`, `docs/data/`, `docs/qa/`, `CHANGELOG.md`.
-
-**AC:** Documentation describes fixture-backed source detection without claiming downstream capabilities.
-
+### T-097 Documentation
+**Outcome:** Align data, architecture, QA, README, and changelog documentation.
+**Relevant docs/files:** `docs/data/`, `docs/architecture/DATA_FLOW.md`, `docs/qa/`, `README.md`, `CHANGELOG.md`.
+**AC:** Documentation describes only fixture-backed mapping/normalization and deferred boundaries.
 **Status:** Complete.
 
-### T-073 Verification
-
-**Outcome:** Run the Sprint 04 reproducible verification ladder.
-
+### T-098 Verification
+**Outcome:** Run the required reproducible verification ladder.
 **Relevant docs/files:** `package.json`, tests, application files.
-
-**AC:** Install, lint, typecheck, test, build, and E2E evidence is recorded.
-
+**AC:** Install, lint, typecheck, all test scopes, build, and E2E evidence is recorded.
 **Status:** Complete.
 
-### T-074 Sprint 05 Handoff
-
-**Outcome:** Document the mapping/normalization starting boundary without implementing it.
-
-**Relevant docs/files:** `SCRATCHPAD.md`, `docs/data/CSV_INTAKE_CONTRACT.md`.
-
-**AC:** Parsed shape, detector output, aliases, deferred persistence, expected canonical fields, fixtures, and open ambiguities are recorded.
-
+### T-099 Sprint 06 Handoff
+**Outcome:** Record the normalized-input and Data Health starting boundary.
+**Relevant docs/files:** `SCRATCHPAD.md`, `docs/data/DATA_CONTRACT.md`.
+**AC:** Provenance, findings, date/currency, duplicate, and attribution/commerce questions are explicit without reconciliation implementation.
 **Status:** Complete.

@@ -14,7 +14,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -304,6 +305,96 @@ summary {
 
 .reset-button {
   margin-top: 1.4rem;
+}
+
+.mapping-review,
+.normalization-summary {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #bed0d5;
+}
+
+.mapping-review h3,
+.normalization-summary h3 {
+  margin: 0.35rem 0 0.6rem;
+  color: #10272e;
+  font-size: 1.45rem;
+}
+
+.mapping-review > p:not(.section-label),
+.normalization-summary > p:not(.section-label) {
+  color: #45616a;
+  line-height: 1.5;
+}
+
+.mapping-corrections {
+  margin: 1rem 0;
+  padding: 0.75rem 0.9rem;
+  border-left: 0.3rem solid #e97047;
+  background: #fff6e8;
+  color: #6c4815;
+}
+
+.mapping-corrections p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.mapping-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #bed0d5;
+}
+
+.mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.mapping-table th,
+.mapping-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #d8e4e6;
+  text-align: left;
+  vertical-align: top;
+}
+
+.mapping-table th {
+  color: #3c5d65;
+  background: #f4f8f8;
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mapping-table td:first-child {
+  overflow-wrap: anywhere;
+  color: #2e525b;
+  font-family: "Courier New", monospace;
+}
+
+.mapping-table select {
+  width: 100%;
+  min-width: 11rem;
+  padding: 0.35rem;
+  border: 1px solid #70919a;
+  border-radius: 0.2rem;
+  background: #ffffff;
+  color: #10272e;
+}
+
+.normalize-button {
+  margin-top: 1rem;
+  min-height: 2.7rem;
+  padding: 0.7rem 1rem;
+  background: #17616c;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.normalize-button:hover:not(:disabled) {
+  background: #10272e;
 }
 
 .visually-hidden {

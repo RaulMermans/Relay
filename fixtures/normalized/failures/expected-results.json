@@ -1,0 +1,9 @@
+[
+  { "fixture": "meta-missing-date.csv", "status": "mapping_required", "requiredMissing": ["date"] },
+  { "fixture": "meta-ambiguous-mapping.csv", "status": "mapping_required", "requiredMissing": [] },
+  { "fixture": "meta-invalid-amount.csv", "errorCode": "NORMALIZATION_INVALID_VALUE" },
+  { "fixture": "meta-invalid-date.csv", "errorCode": "NORMALIZATION_INVALID_DATE" },
+  { "fixture": "shopify-duplicate-order.csv", "errorCode": "UNSUPPORTED_SHOPIFY_EXPORT_GRAIN" },
+  { "fixture": "google-mixed-currency.csv", "status": "normalized", "findingCode": "MIXED_CURRENCIES" },
+  { "fixture": "manual-duplicate-canonical-field", "errorCode": "DUPLICATE_CANONICAL_MAPPING" }
+]

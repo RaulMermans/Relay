@@ -1,0 +1,30 @@
+[
+  {
+    "domain": "commerce",
+    "source": "shopify",
+    "sourceStoreId": null,
+    "sourceStoreName": null,
+    "orderId": "#1003",
+    "date": "2026-07-03",
+    "sourceTimezone": null,
+    "currencyCode": "USD",
+    "orders": "1",
+    "grossRevenue": "90.75",
+    "netRevenue": null,
+    "refunds": null,
+    "customers": null,
+    "newCustomers": null,
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-shopify-alt",
+      "originalFileName": "alternate-headers.csv",
+      "sourceRow": 2,
+      "mappingOrigins": {
+        "order_id": "exact_alias",
+        "date": "exact_alias",
+        "gross_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  }
+]

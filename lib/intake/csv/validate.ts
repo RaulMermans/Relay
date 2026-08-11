@@ -9,6 +9,8 @@ export type CsvIntakeErrorCode =
   | "INVALID_FILE_TYPE"
   | "CSV_PARSE_ERROR"
   | "CSV_TOO_MANY_ROWS"
+  | "CSV_TOO_MANY_COLUMNS"
+  | "CSV_FIELD_TOO_LARGE"
   | "CSV_NO_HEADERS"
   | "CSV_NO_DATA";
 

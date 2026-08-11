@@ -6,23 +6,23 @@ Core analytical logic must be independently testable from UI, database, and prov
 
 ## Unit tests
 
-Sprint 04 retains the server environment and health tests and adds pure CSV parser, file-validation, intake-composition, and source-detection tests. They cover quoted cells, escaped quotes, CRLF/LF, empty cells, BOMs, malformed input, file/row limits, stable validation errors, supported signatures, unsupported inputs, and ambiguity. Pure deterministic modules must not require a browser, database, or live provider. Later sprints add mapping, normalizer, canonical semantic, KPI, reconciliation, and fact-grounding rules.
+Sprint 05 retains the parser, validation, intake, and source-detection tests and adds pure mapping and normalization tests. Mapping coverage includes exact and normalized aliases, unmapped columns, duplicate aliases, required semantics, manual override origin, cross-domain rejection, and duplicate manual targets. Numeric/date coverage includes fixed-decimal money, zero versus unavailable, thousands separators, invalid text, negative money/count rejection, Google micros, and invalid dates. Provider normalizer tests independently cover Meta, Google, and Shopify semantics and Shopify duplicate-order protection.
 
 ## Integration tests
 
-Sprint 04 exercises a real boundary: synthetic raw CSV -> validation -> parser -> source detector -> structured intake result, plus the `POST /api/intake/csv` Route Handler. Fixture integration tests cover Meta Ads, Google Ads, Shopify, unknown, and malformed CSV input. No canonical observations are produced in this sprint. Later test raw CSV -> canonical data, canonical data -> analytics, analytics -> report model, and persistence boundaries when they exist.
+Integration tests exercise synthetic raw CSV -> validation -> parser -> detector -> mapping -> normalizer -> independently maintained canonical JSON. Six representative/alternate golden files cover Meta Ads, Google Ads, and Shopify. Failure fixtures cover missing date, ambiguous mapping, duplicate canonical mapping, invalid number, invalid date, duplicate Shopify order rows, and mixed currencies. `POST /api/normalize/csv` is also tested for its compact, raw-data-free response and malformed mapping payload handling.
 
 ## Connector contract tests
 
-Use provider response fixtures -> normalized canonical output. The key equivalence test is: when CSV and API inputs represent equivalent source data, they produce equivalent canonical semantics, provenance shape, and relevant validation findings.
+No connector exists yet. The prepared connector contract is: equivalent provider CSV and API reporting data must produce equivalent canonical observation semantics, supported provenance shape, and relevant findings. `fixtures/normalized/` is the CSV-independent golden boundary for that future test suite.
 
 ## E2E tests
 
-Sprint 04 retains the `/` and `/api/health` smoke tests and adds the first product slice: select a synthetic Meta Ads CSV, submit it, inspect the detected provider, row count, and headers; select an unsupported CSV and inspect the review state. Later exercise the bounded client -> report -> upload -> review -> PDF flow, including mapping ambiguity, unavailable connector, expired credential, mismatched periods, unavailable LLM, and PDF rendering failure.
+Playwright verifies source detection, mapping proposal display, successful Meta mapping/normalization summary, required-field correction state, and manually resolving an ambiguous mapping. It still has no KPI, Data Health, persistence, connector, AI, or report assertions.
 
 ## Regression fixtures
 
-Store synthetic/anonymized source input in `fixtures/raw/`, expected canonical output in `fixtures/normalized/`, and expected KPI/report facts in `fixtures/expected/`. Sprint 04 raw fixtures cover source identification only; no canonical or KPI output fixture exists yet. Never use fabricated production evidence or unlabelled sensitive data.
+Store labelled synthetic/anonymized provider input in `fixtures/raw/`, independent canonical expectation JSON in `fixtures/normalized/`, and future KPI/report facts in `fixtures/expected/`. Never generate expected canonical files from implementation code, use fabricated production evidence, or include client data.
 
 ## Tooling and CI expectation
 

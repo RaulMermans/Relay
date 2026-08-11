@@ -1,0 +1,58 @@
+[
+  {
+    "domain": "commerce",
+    "source": "shopify",
+    "sourceStoreId": null,
+    "sourceStoreName": null,
+    "orderId": "#1001",
+    "date": "2026-07-01",
+    "sourceTimezone": null,
+    "currencyCode": "USD",
+    "orders": "1",
+    "grossRevenue": "126",
+    "netRevenue": null,
+    "refunds": null,
+    "customers": null,
+    "newCustomers": null,
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-shopify",
+      "originalFileName": "representative-export.csv",
+      "sourceRow": 2,
+      "mappingOrigins": {
+        "order_id": "exact_alias",
+        "date": "exact_alias",
+        "gross_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  },
+  {
+    "domain": "commerce",
+    "source": "shopify",
+    "sourceStoreId": null,
+    "sourceStoreName": null,
+    "orderId": "#1002",
+    "date": "2026-07-02",
+    "sourceTimezone": null,
+    "currencyCode": "USD",
+    "orders": "1",
+    "grossRevenue": "60.5",
+    "netRevenue": null,
+    "refunds": null,
+    "customers": null,
+    "newCustomers": null,
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-shopify",
+      "originalFileName": "representative-export.csv",
+      "sourceRow": 3,
+      "mappingOrigins": {
+        "order_id": "exact_alias",
+        "date": "exact_alias",
+        "gross_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  }
+]

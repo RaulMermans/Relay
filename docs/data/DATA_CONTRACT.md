@@ -2,64 +2,109 @@
 
 ## Purpose and scope
 
-This contract defines the minimum semantic model for Relay reporting. It is not a provider-field catalog or database schema. Meta Ads, Google Ads, and Shopify CSV/API inputs normalize into this model before validation, reconciliation, analytics, or report generation.
+Relay accepts provider-shaped CSV/API inputs but downstream validation, reconciliation, and analytics receive only canonical daily observations. This V1 contract deliberately has two domains instead of one oversized universal record. It establishes data semantics only; it is not a database schema and Sprint 05 keeps all processing transient.
 
-## Canonical observation envelope
+## Exact V1 normalized shapes
 
-Every normalized observation has these conceptual parts:
+```ts
+type FixedDecimalString = string; // canonical decimal text: -?\d+(\.\d+)?
 
-- `domain`: `advertising` or `commerce`.
-- `source`: the provider and ingestion path identity; V1 providers are Meta Ads, Google Ads, and Shopify.
-- `source_account`: provider account/store identifier and separate display name when available.
-- `date`: one local calendar day in the source reporting timezone, plus the timezone used for that date.
-- `dimensions`: optional provider entity identifiers and display names at the granularity supplied.
-- `measures`: domain-specific reported values with explicit availability.
-- `currency_code`: ISO 4217 code for all monetary measures in the observation.
-- `provenance`: ingestion identifier, source reference, raw-artifact reference when retained, mapping version, and normalization version.
+type ObservationProvenance = {
+  transport: "csv";
+  ingestionId: string;
+  originalFileName: string;
+  sourceRow: number; // one-based CSV row, including the header row in the source file
+  mappingOrigins: Partial<Record<CanonicalField, "exact_alias" | "normalized_alias" | "manual">>;
+};
 
-Canonical observations are daily. A source artifact that contains only an arbitrary-period aggregate must not be fabricated into daily rows; it is unsupported for daily normalization until a daily extract is obtained. Daily grain makes reporting-period comparison, reaggregation, and reconciliation safer.
+type AdvertisingObservation = {
+  domain: "advertising";
+  source: "meta_ads" | "google_ads";
+  sourceAccountId: string | null;
+  sourceAccountName: string | null;
+  date: "YYYY-MM-DD";
+  sourceTimezone: null; // unavailable in the supported fixture-backed CSVs; never guessed as UTC
+  campaignId: string | null;
+  campaignName: string | null;
+  groupId: string | null; // Meta ad set or Google ad group where supplied
+  groupName: string | null;
+  adId: string | null;
+  adName: string | null;
+  currencyCode: string | null;
+  spend: FixedDecimalString | null;
+  impressions: FixedDecimalString | null;
+  clicks: FixedDecimalString | null;
+  conversions: FixedDecimalString | null;
+  attributedRevenue: FixedDecimalString | null;
+  provenance: ObservationProvenance;
+};
 
-## Advertising performance observation
+type CommerceObservation = {
+  domain: "commerce";
+  source: "shopify";
+  sourceStoreId: string | null;
+  sourceStoreName: string | null;
+  orderId: string;
+  date: "YYYY-MM-DD";
+  sourceTimezone: null;
+  currencyCode: string;
+  orders: FixedDecimalString; // "1" for each supported Shopify order row
+  grossRevenue: FixedDecimalString;
+  netRevenue: FixedDecimalString | null;
+  refunds: FixedDecimalString | null;
+  customers: FixedDecimalString | null;
+  newCustomers: FixedDecimalString | null;
+  provenance: ObservationProvenance;
+};
+```
 
-An advertising observation represents one day for a source account and the most specific available paid-media dimensions:
+`sourceAccountId`, `sourceStoreId`, campaign/group/ad IDs, and `orderId` are provider identifiers. Their corresponding `Name` fields are display metadata; Relay never substitutes a display name for an available identifier. `orderId` is retained because it protects the supported Shopify order-row grain from accidental duplication.
 
-- Required identity: source, source account, and date.
-- Optional dimensions: campaign, ad group/ad set, and ad/creative. Each dimension retains provider identifier separately from display name when supplied.
-- Measures: spend, impressions, clicks, conversions, and `attributed_revenue`.
+## Daily grain and aggregation decision
 
-No source is required to populate every optional dimension or measure. A missing campaign is not a synthetic "unknown campaign" value; it remains unavailable at that grain and is surfaced through Data Health where it affects analysis.
+Sprint 05 preserves one normalized observation per input row. It does not aggregate rows that share day, account, campaign, or order dimensions. This is the smallest approach that preserves source-row provenance and avoids hiding duplicate/overlap questions before Sprint 06 Data Health. Downstream aggregation must respect date, currency, dimensions, and Data Health findings.
 
-## Commerce performance observation
+The date parser accepts an ISO calendar date (`YYYY-MM-DD`) followed optionally by a valid ISO time portion and retains the supplied calendar component without a timezone conversion. It rejects impossible dates and malformed time suffixes. A source timezone remains `null` when the export does not supply one; Relay does not manufacture a timezone.
 
-A commerce observation represents one day for a store/account:
+## Revenue semantics
 
-- Required identity: source, source account/store, and date.
-- Measures: orders, gross revenue, net revenue, refunds when available, customers when available, and new customers when available.
+There is no generic canonical `revenue` field.
 
-Commerce observations do not contain advertising `attributed_revenue`. Advertising observations do not contain Shopify/store gross or net revenue.
+- `attributedRevenue` belongs only to `AdvertisingObservation`. Meta purchase value and Google conversion value remain provider-attributed advertising measures.
+- `grossRevenue` and `netRevenue` belong only to `CommerceObservation`. Shopify/store revenue remains commerce truth.
 
-## Semantic rules
+The allowed future KPI use of these measures is defined in [ADR-001](../decisions/ADR-001-revenue-semantics.md). Sprint 05 calculates no KPIs, ratios, or revenue aggregates.
 
-### Source identity and external identifiers
+## Numeric and currency representation
 
-Every record preserves provider, provider account/store ID, and source entity IDs where available. Identifiers are stable references; human-readable names are display metadata and may change without changing identity.
+Money and counts use normalized fixed decimal strings rather than JavaScript numbers. This avoids binary floating-point changes to authoritative values while keeping the V1 contract independent of a currency-exponent table. A money field is paired with the observation's explicit ISO 4217 `currencyCode`.
 
-### Currency and numeric precision
+- Accepted numeric grammar: optional leading minus for money, digits, an optional `.` decimal fraction, and optional correctly grouped `,` thousands separators. The locale is deliberately fixed to period-decimal/comma-thousands.
+- Canonicalization removes thousands separators and insignificant fractional zeroes (`1,234.500` becomes `"1234.5"`; `0.00` becomes `"0"`). It never uses floating-point arithmetic.
+- Google `Cost (micros)` is converted by decimal-string placement, not floating-point division.
+- Empty optional cells become `null`; empty required row values fail normalization. Numeric text that does not match the grammar fails with a structured error and never becomes zero.
+- Negative money is preserved for provider-reported reversals or adjustments. Counts must be non-negative.
+- Currency codes are uppercased only after validating three ASCII letters. If a row has a monetary value but no currency, normalization fails.
 
-Monetary values are represented as integer minor units paired with an ISO 4217 currency code. Persisted and computed non-money ratios use fixed-scale decimal semantics, not binary floating point. Currency conversion is out of scope for V1: incompatible currencies cannot be silently combined and must block the affected aggregate or produce a Data Health warning.
+Mixed currencies are preserved per record and produce a `MIXED_CURRENCIES` warning. Sprint 05 never combines or converts them; Sprint 06 will decide affected Data Health eligibility.
 
-### Null, unavailable, and zero
+## Availability, required semantics, and Shopify grain
 
-An actual value of `0` is meaningful. An unavailable metric is represented as unavailable/null with an optional reason; it must never normalize to zero. For example, zero reported conversions differs from conversion data not supplied by the source.
+`null` means unavailable/not supplied; `"0"` means the provider supplied an actual zero. Missing dimensions are not replaced by synthetic labels.
 
-### Provenance and deduplication
+| Provider domain | Mapping requirements | Row requirements |
+| --- | --- | --- |
+| Meta Ads / Google Ads | `date`; at least one account/campaign/group/ad context; at least one primitive measure; `currency` when `spend` or `attributedRevenue` is mapped | Date, context, and at least one measure must have a value. Currency is required when a monetary value is present. |
+| Shopify | `date`, `orderId`, `grossRevenue`, and `currency` | Every supported row must contain those values. |
 
-Each normalized observation remains traceable to source plus ingestion event. Adapters supply the source reference or row/page locator needed for diagnosis without leaking provider payload structures into analytics. Deduplication uses the observation's provider identity, daily grain, available dimensions, and ingestion provenance; ambiguous duplicates are a validation concern, not an overwrite rule.
+V1 Shopify support is intentionally limited to order-row exports: one row per order ID and a `Total`/`Total sales` gross-revenue value. A repeated order ID fails with `UNSUPPORTED_SHOPIFY_EXPORT_GRAIN`; Relay does not guess whether line-item totals are safe to sum. Customer email is not normalized and does not create a customer metric.
 
-### Revenue invariant
+## Mapping and provenance
 
-There is no ambiguous canonical `revenue` field. `gross_revenue` and `net_revenue` are commerce measures. `attributed_revenue` is a paid-platform measure. Their permitted KPI use is defined in [ADR-001](../decisions/ADR-001-revenue-semantics.md).
+Provider-specific aliases are defined in [SOURCE_RULES.md](SOURCE_RULES.md). Mapping is deterministic and reports `mapped`, `unmapped`, `ambiguous`, or manually `ignored` columns. The only mapping origins are `exact_alias`, `normalized_alias`, and `manual`; Relay does not emit fake percentage confidence.
 
-## Normalization result
+Provenance retains the transient request ID, safe original filename, source-row reference, transport, and mapping origin. It intentionally excludes raw rows, unselected customer fields, and raw CSV content. Raw uploads and parsed rows are not persisted or logged.
 
-Each adapter produces canonical observations, provenance, and structured validation findings. Unknown fields, ambiguous mappings, unsupported period aggregates, missing currency, and duplicate candidates remain explicit findings for Data Health; adapters do not silently guess.
+## Connector equivalence preparation
+
+Future Meta, Google, and Shopify connectors must produce these same shapes and semantics for reporting-equivalent provider data. The synthetic files in `fixtures/normalized/` are independent golden outcomes for that future connector-contract work. Transport-specific provenance may differ only in the transport locator; analytics must not branch on CSV versus connector payload shape.

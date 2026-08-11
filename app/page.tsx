@@ -8,8 +8,8 @@ export default function Home() {
         <h1>Relay</h1>
         <p className="page-thesis">Inspect one CSV before it enters your reporting workflow.</p>
         <p className="page-context">
-          Relay validates the file on the server and identifies fixture-backed Meta Ads, Google Ads,
-          and Shopify export signatures. It does not save the upload.
+          Relay validates the file on the server, identifies fixture-backed export signatures, and lets you review
+          canonical field mappings before transient normalization. It does not save the upload.
         </p>
       </header>
       <IntakeForm />

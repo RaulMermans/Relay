@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MAX_CSV_DATA_ROWS, parseCsv } from "../../lib/intake/csv/parse";
+import { MAX_CSV_COLUMNS, MAX_CSV_DATA_ROWS, MAX_CSV_FIELD_CHARACTERS, parseCsv } from "../../lib/intake/csv/parse";
 
 describe("parseCsv", () => {
   it("preserves quoted commas, escaped quotes, empty cells, and CRLF rows", () => {
@@ -46,6 +46,26 @@ describe("parseCsv", () => {
       throw new Error("Expected parsing to fail");
     } catch (error) {
       expect(error).toMatchObject({ code: "CSV_TOO_MANY_ROWS" });
+    }
+  });
+
+  it("rejects excessive CSV columns before they can create an unbounded mapping UI", () => {
+    const headers = Array.from({ length: MAX_CSV_COLUMNS + 1 }, (_, index) => `Column ${index}`).join(",");
+
+    try {
+      parseCsv(`${headers}\n${headers}\n`);
+      throw new Error("Expected column limit to fail.");
+    } catch (error) {
+      expect(error).toMatchObject({ code: "CSV_TOO_MANY_COLUMNS" });
+    }
+  });
+
+  it("rejects an unexpected field length without echoing its contents", () => {
+    try {
+      parseCsv(`Campaign\n${"x".repeat(MAX_CSV_FIELD_CHARACTERS + 1)}\n`);
+      throw new Error("Expected field length limit to fail.");
+    } catch (error) {
+      expect(error).toMatchObject({ code: "CSV_FIELD_TOO_LARGE" });
     }
   });
 });

@@ -4,9 +4,9 @@
 
 ## Current status
 
-Sprint 04 adds a transient CSV intake boundary to the single Next.js application. Relay accepts one CSV through a server-side Route Handler, validates it, and identifies fixture-backed header signatures for representative Meta Ads, Google Ads, and Shopify exports. Unknown or ambiguous inputs remain `unknown` and require review. Vercel remains the frontend and backend deployment target. Durable persistence is deferred, so the application has no connected database. Production deployment is currently blocked because this workspace has no Vercel CLI, authentication, or project linkage.
+Sprint 05 adds fixture-backed CSV field mapping and canonical normalization to the single Next.js application. Relay accepts one CSV through server-side Route Handlers, validates it, identifies representative Meta Ads, Google Ads, and Shopify export signatures, proposes deterministic provider-valid mappings, accepts transient manual overrides, and normalizes the data into daily advertising or commerce observations. Unknown source or ambiguous mappings are never guessed. Vercel remains the frontend and backend deployment target. Durable persistence is deferred, so the application has no connected database. Production deployment is currently blocked because this workspace has no Vercel CLI, authentication, or project linkage.
 
-The current capability is intake and source detection only. It does not map or normalize provider fields, calculate KPIs, reconcile data, connect providers, use AI, generate reports/PDFs, or persist client/report/upload state. Supported signatures are synthetic-fixture-backed and will expand only through real-world validation.
+Relay now supports fixture-backed CSV source detection, field mapping, and canonical normalization for representative Meta Ads, Google Ads, and Shopify exports. It does not calculate KPIs, perform Data Health/reconciliation, connect providers, use AI, generate reports/PDFs, or persist client/report/upload state. Money is normalized as fixed decimal text with explicit currency; Meta/Google attributed revenue remains advertising data and Shopify revenue remains commerce data. Supported aliases are synthetic-fixture-backed and will expand only through explicit evidence and regression fixtures.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ npm run dev
 
 Open `http://localhost:3000`. The health endpoint is available at `http://localhost:3000/api/health`.
 
-At `/`, choose or drop one `.csv` file (up to 5 MiB and 50,000 data rows). Relay processes the file transiently and does not retain raw content. Server-side checks remain authoritative even when the UI provides selection feedback.
+At `/`, choose or drop one `.csv` file (up to 5 MiB, 50,000 data rows, 256 columns, and 32,768 characters per field). Review the detected provider's field proposal, make any valid manual mapping override, and normalize the same selected file transiently. The server revalidates and reparses the file for normalization; it retains neither raw content nor mapping state. Server-side checks remain authoritative even when the UI provides selection feedback.
 
 ## Commands
 

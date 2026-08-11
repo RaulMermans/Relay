@@ -1,31 +1,30 @@
 # Current status
 
-- Sprint 03 is complete. Production deployment remains externally blocked/deferred: Vercel CLI, authentication, and project linkage are unavailable locally.
-- Sprint 04 implemented a transient single-file CSV intake boundary: server validation, parsing, deterministic detection, redacted logging, and a minimal upload UI. It excludes mapping, normalization, KPIs, connectors, persistence, AI, and reports.
+- Sprint 04 is complete at baseline `41dc9f6`.
+- Sprint 05 implementation and verification are complete: transient CSV mapping and canonical daily normalization cover synthetic representative Meta Ads, Google Ads, and Shopify exports. Production deployment remains deferred because local Vercel CLI/auth/project linkage are unavailable.
 
 # Decisions and fixtures
 
-- Parser: `csv-parse` 7.0.2, selected over hand-written parsing for quoted cells, escaped quotes, CRLF/LF, empty cells, BOMs, and malformed records. The sole new dependency is locked in `package-lock.json`.
-- Limits: 5 MiB per upload and 50,000 data rows. The server rejects overflow rather than truncating it; no raw CSV or parsed rows are retained or logged.
-- Source signatures: explicit weighted header evidence for Meta Ads, Google Ads, and Shopify; insufficient or close competing evidence stays `unknown` and returns `needs_review`.
-- Fixtures: clearly labelled synthetic representative/alternate provider files, unknown and ambiguous cases, and malformed/empty/headers-only cases under `fixtures/raw/`.
+- Canonical data uses separate row-level `advertising` and `commerce` observations. Meta/Google conversion value is `attributedRevenue`; Shopify totals are `grossRevenue`. No KPI or reconciliation logic exists.
+- Money and counts are canonical fixed decimal strings with explicit ISO currency, preserving null versus `"0"`. Invalid text does not coerce. Google micros use decimal-string placement.
+- Mapping is provider-specific and deterministic: exact/normalized alias, manual, unmapped, ambiguous, or ignored. Manual selection is limited to the detected domain and lives only in the current request.
+- Supported Shopify grain is one order row per order ID. Duplicate IDs fail rather than risking line-item double-counting.
+- Synthetic raw inputs, failure inputs, and independent canonical JSON are under `fixtures/raw/` and `fixtures/normalized/`.
 
 # Commands and findings
 
-- Targeted Vitest parser, detector, validation, intake, API, and fixture checks passed; the combined unit/integration run reported 30 passing tests before the row-limit regression was added.
-- Targeted Playwright checks passed: 4 tests covering the root page, health endpoint, Meta upload, and unknown-source review.
-- Full verification with the temporary pinned Node 24.14.0/npm 11.9.0 runtime passed: `npm ci` (388 packages, 0 vulnerabilities), `npm run lint`, `npm run typecheck`, `npm run test` (8 files, 31 tests), `npm run test:unit` (6 files, 23 tests), `npm run test:integration` (2 files, 8 tests), `npm run build`, and `npm run test:e2e` (4 tests).
-- `npm audit --omit=dev --audit-level=high` reported 0 production vulnerabilities. Security review found no P0/P1 issue; the row limit addresses the residual synchronous-parser resource-risk concern.
-- Early verification failures: the system PATH lacks npm; Vite needs sandbox-external child-process permission; `Array.prototype.at` was incompatible with the ES2020 target and was replaced with indexed access.
+- Full verification passed: `npm ci` (388 packages), lint, typecheck, `npm run test` (13 files/69 tests), `npm run test:unit` (9 files/46 tests), `npm run test:integration` (4 files/23 tests), production build, and `npm run test:e2e` (7 tests).
+- Targeted Vitest mapping, values, provider-normalizer, raw-to-golden, API, and parser-boundary tests passed after test-first implementation. Targeted Playwright mapping/normalization, required-field correction, and manual-ambiguity flows also passed.
+- Initial clean-install attempts hit a Windows `ENOTEMPTY` generated-directory cleanup race and a wrapper PATH propagation issue. Triage found no lingering Node/npm process; removing the exact generated dependency directory and running cached npm 11.9 with inherited Node path produced the successful clean install. No project dependency changed.
+- Initial typecheck exposed ES2020 `replaceAll` incompatibility and narrow type-model issues; focused fixes restored clean lint/typecheck. An initial E2E selector became ambiguous after the mapping table was added and was narrowed to the pre-existing header list.
+- The default shell lacks `npm`; use the bundled Node 24.14.0 executable with the cached npm 11.9 CLI. Vitest/Playwright require normal child-process permission in this environment.
 
-# Sprint 05 handoff
+# Sprint 06 handoff
 
-- Parsed input available for mapping: original `headers`, minimally parsed string rows, `rowCount`, delimiter, and parse warnings. The API exposes headers/counts but never rows.
-- Detection output available: `source` (`meta_ads`, `google_ads`, `shopify`, `unknown`), semantic confidence, matched signals, and conflicting signals. Known header aliases are in `docs/data/SOURCE_RULES.md`.
-- Mapping persistence remains deferred; there is no database, mapping store, canonical observation, or provider normalizer.
-- Sprint 05 should map the detected provider shape to the canonical daily observation requirements in `docs/data/DATA_CONTRACT.md`: provider/account identity, date/timezone, dimensions, currency, and the distinct advertising `attributed_revenue` or commerce `gross_revenue`/`net_revenue` semantics.
-- Reuse the synthetic raw fixtures as mapping inputs and add expected normalized fixtures only when mappings are explicit. Preserve `unknown`/ambiguous source outcomes and decide how a user confirms mapping without silently guessing.
+- Input: row-level `AdvertisingObservation`/`CommerceObservation`, fixed-decimal values, explicit per-row currency, source-row provenance, mapping origin, and `MIXED_CURRENCIES` findings.
+- Data Health should evaluate date coverage/alignment, currency compatibility, duplicate candidates beyond Shopify order IDs, missing/unavailable required analysis inputs, and provenance/mapping findings.
+- Reconciliation must compare compatible coverage only and present Shopify commerce revenue beside, never as a replacement for, Meta/Google attributed revenue. It must not implement cross-platform attribution deduplication.
 
 # Next action
 
-- Sprint 04 is ready to commit. Sprint 05 must begin with explicit field mapping and canonical normalization; it must not add persistence implicitly.
+- Sprint 06 should first define and test a canonical Data Health finding model for date coverage/alignment, per-row currency compatibility, mapping/provenance review, and duplicate candidates. Do not implement reconciliation/KPIs in that first task.

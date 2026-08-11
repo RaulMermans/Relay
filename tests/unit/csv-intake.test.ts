@@ -19,6 +19,7 @@ describe("processCsvFile", () => {
       file: { name: "meta-week.csv", sizeBytes: file.size },
       csv: {
         headers: [
+          "Date start",
           "Campaign name",
           "Ad set name",
           "Amount spent",
@@ -26,6 +27,7 @@ describe("processCsvFile", () => {
           "Link clicks",
           "Purchases",
           "Purchase conversion value",
+          "Currency",
         ],
         rowCount: 2,
         delimiter: ",",
@@ -34,6 +36,19 @@ describe("processCsvFile", () => {
       sourceDetection: {
         source: "meta_ads",
         confidence: "high",
+      },
+    });
+  });
+
+  it("includes a deterministic field-mapping proposal for a detected source", async () => {
+    const file = await fixtureFile("meta_ads/representative-export.csv", "meta-week.csv");
+
+    await expect(processCsvFile(file)).resolves.toMatchObject({
+      mapping: {
+        provider: "meta_ads",
+        domain: "advertising",
+        status: "ready",
+        requiredMissing: [],
       },
     });
   });

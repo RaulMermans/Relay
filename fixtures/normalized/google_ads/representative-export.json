@@ -1,0 +1,76 @@
+[
+  {
+    "domain": "advertising",
+    "source": "google_ads",
+    "sourceAccountId": null,
+    "sourceAccountName": null,
+    "date": "2026-07-01",
+    "sourceTimezone": null,
+    "campaignId": null,
+    "campaignName": "Brand search",
+    "groupId": null,
+    "groupName": "Brand terms",
+    "adId": null,
+    "adName": null,
+    "currencyCode": "USD",
+    "spend": "89.3",
+    "impressions": "7000",
+    "clicks": "412",
+    "conversions": "23",
+    "attributedRevenue": "690",
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-google",
+      "originalFileName": "representative-export.csv",
+      "sourceRow": 2,
+      "mappingOrigins": {
+        "date": "exact_alias",
+        "campaign_name": "exact_alias",
+        "group_name": "exact_alias",
+        "spend": "exact_alias",
+        "impressions": "exact_alias",
+        "clicks": "exact_alias",
+        "conversions": "exact_alias",
+        "attributed_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  },
+  {
+    "domain": "advertising",
+    "source": "google_ads",
+    "sourceAccountId": null,
+    "sourceAccountName": null,
+    "date": "2026-07-02",
+    "sourceTimezone": null,
+    "campaignId": null,
+    "campaignName": "Non-brand search",
+    "groupId": null,
+    "groupName": "Core terms",
+    "adId": null,
+    "adName": null,
+    "currencyCode": "USD",
+    "spend": "154.2",
+    "impressions": "12400",
+    "clicks": "633",
+    "conversions": "19",
+    "attributedRevenue": "532",
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-google",
+      "originalFileName": "representative-export.csv",
+      "sourceRow": 3,
+      "mappingOrigins": {
+        "date": "exact_alias",
+        "campaign_name": "exact_alias",
+        "group_name": "exact_alias",
+        "spend": "exact_alias",
+        "impressions": "exact_alias",
+        "clicks": "exact_alias",
+        "conversions": "exact_alias",
+        "attributed_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  }
+]

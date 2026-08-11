@@ -35,6 +35,25 @@ External source
 
 CSV and connector paths differ only before the raw-representation/normalization boundary. Analytics and report generation operate only on canonical data and structured facts.
 
+## Sprint 05 implemented CSV boundary
+
+The current CSV flow is deliberately staged and transient:
+
+```text
+CSV upload
+  -> server validation + csv-parse
+  -> deterministic source detection
+  -> deterministic mapping proposal returned to browser
+  -> user confirms only provider-valid mapping overrides
+  -> browser re-uploads the same selected file to normalization
+  -> server revalidates, reparses, redetects, validates overrides, and normalizes
+  -> compact summary returned; canonical observations remain request-local
+```
+
+The second upload is intentional: raw rows never move to client-visible intake output and are never retained on the server between mapping review and normalization. Provider normalizers receive parsed rows plus an approved mapping and return only canonical advertising/commerce observations, provenance, and structured findings. The UI receives a count, date range, currencies, mapped/ignored-field summary, and warnings, never the normalized dataset or raw CSV rows.
+
+Sprint 05 preserves row-level daily observations. `MIXED_CURRENCIES` is a normalization finding, not a conversion or reconciliation result. Data Health, duplicate investigation beyond Shopify order-row protection, reconciliation, KPI computation, persistence, connectors, AI, and reporting remain subsequent boundaries.
+
 ## Persistence posture
 
 Sprint 03 keeps request processing transient and does not connect a database. When a real feature needs state, the boundary is `UI / Server Logic -> Persistence Boundary -> Demo/local implementation OR future durable database`. Server memory is not durable persistence, and no generic repository abstraction is created before that feature exists.
