@@ -1,161 +1,211 @@
-# Sprint 02 - Architecture + Data Semantics
+# Sprint 03 - Vercel-Native Application Foundation
 
-### T-020 Canonical Data Semantics
+### T-036 Architecture Amendment
 
-**Outcome:** Define daily, provenance-preserving canonical advertising and commerce observations.
+**Outcome:** Record the Vercel-native, deferred-persistence decision.
 
-**Relevant docs:** `docs/data/DATA_CONTRACT.md`, `docs/data/KPI_DEFINITIONS.md`.
+**Relevant docs/files:** `docs/decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md`, `docs/decisions/ADR-005-v1-application-stack.md`.
 
-**Acceptance criteria:** Optionality, currency, precision, null/zero, identifiers, names, and source provenance are explicit; revenue is not ambiguous.
-
-**Status:** Complete.
-
-### T-021 Revenue Semantics ADR
-
-**Outcome:** Decide permitted representation and KPI use of commerce versus paid-attribution revenue.
-
-**Relevant docs:** `docs/decisions/ADR-001-revenue-semantics.md`, `docs/data/KPI_DEFINITIONS.md`.
-
-**Acceptance criteria:** ROAS, MER, reconciliation, overlap, and no-authoritative-cross-platform-sum rules are explicit.
+**AC:** ADR-006 preserves the application stack while superseding Railway, immediate Postgres/Prisma, migrations, and `DATABASE_URL`.
 
 **Status:** Complete.
 
-### T-022 Core Domain Model
+### T-037 Architecture Contract Updates
 
-**Outcome:** Define V1 entity ownership, lifecycle, relationships, and exclusions.
+**Outcome:** Align active architecture, data-flow, deployment, QA, ADR index, and roadmap contracts.
 
-**Relevant docs:** `docs/architecture/ARCHITECTURE.md`.
+**Relevant docs/files:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`, `docs/operations/DEPLOYMENT.md`, `docs/qa/TEST_STRATEGY.md`, `docs/decisions/README.md`, `docs/roadmap/SPRINTS.md`.
 
-**Acceptance criteria:** Every chosen entity is V1-justified without database-column design.
-
-**Status:** Complete.
-
-### T-023 Ingestion Architecture
-
-**Outcome:** Define CSV, connector, and shared downstream convergence boundaries.
-
-**Relevant docs:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`.
-
-**Acceptance criteria:** Analytics is transport/provider-payload agnostic after normalization.
+**AC:** Vercel is the single application platform; persistence is deferred without changing product semantics.
 
 **Status:** Complete.
 
-### T-024 Source Adapter ADR
+### T-038 Application Scaffold
 
-**Outcome:** Decide the semantic source-adapter contract.
+**Outcome:** Create a minimal Next.js App Router application in the existing repository.
 
-**Relevant docs:** `docs/decisions/ADR-002-unified-source-adapter-contract.md`, `docs/integrations/CONNECTOR_CONTRACT.md`.
+**Relevant docs/files:** `app/`, `lib/`, `tests/`, `package.json`.
 
-**Acceptance criteria:** CSV/API convergence, structured errors, provenance, and revisit triggers are documented without code interfaces.
-
-**Status:** Complete.
-
-### T-025 Data Persistence ADR
-
-**Outcome:** Decide raw-retention and canonical/report persistence strategy.
-
-**Relevant docs:** `docs/decisions/ADR-003-data-retention-and-persistence.md`.
-
-**Acceptance criteria:** Privacy, reproducibility, debugging, and retention principles are explicit without arbitrary policies.
+**AC:** The application contains only the foundation routes, environment boundary, and tests.
 
 **Status:** Complete.
 
-### T-026 Report Model
+### T-039 Root Page
 
-**Outcome:** Define the renderer-neutral structured report boundary.
+**Outcome:** Render the intentional Relay foundation page at `/`.
 
-**Relevant docs:** `docs/architecture/REPORT_MODEL.md`, `docs/architecture/ARCHITECTURE.md`.
+**Relevant docs/files:** `app/page.tsx`, `app/globals.css`.
 
-**Acceptance criteria:** Facts, health, insights, review, methodology, and PDF boundary are structured and AI is not arbitrary report HTML.
-
-**Status:** Complete.
-
-### T-027 AI Boundary ADR
-
-**Outcome:** Formalize deterministic analysis before AI commentary.
-
-**Relevant docs:** `docs/decisions/ADR-004-ai-after-deterministic-analysis.md`.
-
-**Acceptance criteria:** Allowed inputs, suggestion-only output, grounding, review, and validation path are explicit.
+**AC:** The page identifies Relay without dashboards, metrics, navigation, or product flows.
 
 **Status:** Complete.
 
-### T-028 Stack Evaluation
+### T-040 Runtime Contract
 
-**Outcome:** Compare single-application and split-service options against V1 needs.
+**Outcome:** Pin Node 24.14.0 and npm 11.9.0 with the required scripts.
 
-**Relevant docs:** `docs/decisions/ADR-005-v1-application-stack.md`.
+**Relevant docs/files:** `.nvmrc`, `package.json`, `package-lock.json`.
 
-**Acceptance criteria:** Speed, connectors, CSV, PDF, testing, Railway operations, future sync, and maintainability are considered.
-
-**Status:** Complete.
-
-### T-029 Stack ADR
-
-**Outcome:** Select the V1 implementation stack.
-
-**Relevant docs:** `docs/decisions/ADR-005-v1-application-stack.md`, `docs/architecture/ARCHITECTURE.md`.
-
-**Acceptance criteria:** One stack, alternatives, consequences, revisit triggers, and validation plan are documented without installation.
+**AC:** Node/npm engines and all required development, build, test, and start scripts are present.
 
 **Status:** Complete.
 
-### T-030 Deployment Architecture
+### T-041 Dependency Discipline
 
-**Outcome:** Define minimal Railway topology and deployment expectations.
+**Outcome:** Install only the application, validation, linting, and test dependencies required by Sprint 03.
 
-**Relevant docs:** `docs/operations/DEPLOYMENT.md`.
+**Relevant docs/files:** `package.json`, `package-lock.json`.
 
-**Acceptance criteria:** One application service plus PostgreSQL, health, migration, rollback, logging, and future-service triggers are explicit.
-
-**Status:** Complete.
-
-### T-031 Security Architecture
-
-**Outcome:** Define credential, upload, AI, logging, and data-access boundaries.
-
-**Relevant docs:** `docs/integrations/CONNECTOR_SECURITY.md`, `SECURITY.md`, `docs/architecture/ARCHITECTURE.md`.
-
-**Acceptance criteria:** Least privilege, server-side credentials, untrusted input/output, and user-to-client ownership are explicit.
+**AC:** No database, ORM, connector, AI, PDF, or feature-library dependency is present.
 
 **Status:** Complete.
 
-### T-032 Test Architecture
+### T-042 Environment Contract
 
-**Outcome:** Define deterministic testing layers and connector equivalence coverage.
+**Outcome:** Establish a server-only environment validation boundary with no required secrets.
 
-**Relevant docs:** `docs/qa/TEST_STRATEGY.md`, `docs/architecture/DATA_FLOW.md`.
+**Relevant docs/files:** `lib/env/server.ts`, `.env.example`.
 
-**Acceptance criteria:** Unit, integration, contract, E2E, regression, fixtures, tooling, and CI expectations are explicit.
-
-**Status:** Complete.
-
-### T-033 Architecture Snapshot
-
-**Outcome:** Finalize the executable V1 architecture snapshot.
-
-**Relevant docs:** `docs/architecture/ARCHITECTURE.md`, `docs/decisions/README.md`.
-
-**Acceptance criteria:** Components, entities, flows, failure handling, security, observability, ADR index, and Sprint 03 implications agree.
+**AC:** Invalid `NODE_ENV` is rejected without exposing values; no database or provider configuration exists.
 
 **Status:** Complete.
 
-### T-034 Data Flow
+### T-043 Health Endpoint
 
-**Outcome:** Define validation responsibilities and failure behavior at every data boundary.
+**Outcome:** Serve a deterministic `GET /api/health` response.
 
-**Relevant docs:** `docs/architecture/DATA_FLOW.md`.
+**Relevant docs/files:** `app/api/health/route.ts`, `lib/health.ts`.
 
-**Acceptance criteria:** External source through renderer is explicit and CSV/API converge before analytics.
+**AC:** The endpoint returns only `{ "status": "ok", "service": "relay" }` without environment or host details.
 
 **Status:** Complete.
 
-### T-035 Sprint 03 Handoff
+### T-044 Server Function Baseline
 
-**Outcome:** Define the bounded application foundation Sprint 03 may scaffold.
+**Outcome:** Prove backend execution inside the same Next.js/Vercel application.
 
-**Relevant docs:** `docs/architecture/ARCHITECTURE.md`, `docs/operations/DEPLOYMENT.md`, `docs/qa/TEST_STRATEGY.md`.
+**Relevant docs/files:** `app/api/health/route.ts`, `docs/decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md`.
 
-**Acceptance criteria:** Stack, layout, package manager, runtime, persistence, validation/tests, commands, health, environment validation, and CI baseline are explicit.
+**AC:** The health Route Handler is the sole backend baseline; no separate service exists.
+
+**Status:** Complete.
+
+### T-045 Persistence Boundary
+
+**Outcome:** Document a future, feature-driven persistence boundary without implementing it.
+
+**Relevant docs/files:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`, `docs/decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md`.
+
+**AC:** No database, fake ORM, generic repository abstraction, schema, or `DATABASE_URL` exists.
+
+**Status:** Complete.
+
+### T-046 Vitest
+
+**Outcome:** Configure meaningful deterministic foundation tests.
+
+**Relevant docs/files:** `vitest.config.ts`, `tests/unit/health.test.ts`, `tests/unit/server-env.test.ts`.
+
+**AC:** Unit tests cover health payload creation and valid/invalid server-environment behavior without external services.
+
+**Status:** Complete.
+
+### T-047 Playwright
+
+**Outcome:** Configure root-page and health-endpoint smoke tests.
+
+**Relevant docs/files:** `playwright.config.ts`, `tests/e2e/foundation.spec.ts`.
+
+**AC:** Playwright starts Relay and verifies `/` plus `/api/health`.
+
+**Status:** Complete.
+
+### T-048 Verification Scripts
+
+**Outcome:** Establish lint, typecheck, test, build, and E2E scripts.
+
+**Relevant docs/files:** `package.json`.
+
+**AC:** The required commands are configured for local and CI use.
+
+**Status:** Complete.
+
+### T-049 Vercel Deployment Contract
+
+**Outcome:** Document the actual one-project Vercel deployment target.
+
+**Relevant docs/files:** `docs/operations/DEPLOYMENT.md`.
+
+**AC:** Deployment requires no database, runtime secret, or external connector.
+
+**Status:** Complete.
+
+### T-050 CI
+
+**Outcome:** Add the base GitHub Actions verification pipeline.
+
+**Relevant docs/files:** `.github/workflows/ci.yml`, `docs/qa/TEST_STRATEGY.md`.
+
+**AC:** CI runs npm ci, lint, typecheck, test, and build with Node 24; Playwright remains local by documented choice.
+
+**Status:** Complete.
+
+### T-051 README
+
+**Outcome:** Describe the actual application, runtime, commands, deployment target, and exclusions.
+
+**Relevant docs/files:** `README.md`.
+
+**AC:** README claims no unimplemented product capability or persistence.
+
+**Status:** Complete.
+
+### T-052 Security Sanity
+
+**Outcome:** Review foundation boundaries, secrets, dependencies, and endpoint exposure.
+
+**Relevant docs/files:** `SECURITY.md`, `.gitignore`, `app/api/health/route.ts`, `lib/env/server.ts`, `package.json`.
+
+**AC:** P0/P1 findings are resolved before closure.
+
+**Status:** Complete — no P0/P1 findings.
+
+### T-053 Cleanup
+
+**Outcome:** Confirm the scaffold contains no starter assets, default content, or speculative feature code.
+
+**Relevant docs/files:** `app/`, `lib/`, `public/`, `package.json`.
+
+**AC:** The repository contains only intentional foundation files and required dependencies.
+
+**Status:** Complete.
+
+### T-054 Vercel Deploy
+
+**Outcome:** Deploy only when local Vercel tooling, authentication, and project linkage are available.
+
+**Relevant docs/files:** `docs/operations/DEPLOYMENT.md`, `CHANGELOG.md`.
+
+**AC:** Deployment is verified at `/` and `/api/health`, or honestly recorded as blocked.
+
+**Status:** Blocked — no local Vercel CLI, authentication, or project linkage is available.
+
+### T-055 Full Verification
+
+**Outcome:** Run the complete reproducible verification ladder and inspect scope/dependencies.
+
+**Relevant docs/files:** `package-lock.json`, `package.json`, tests, application files.
+
+**AC:** Locked install, lint, typecheck, tests, build, and E2E pass without database or external services.
+
+**Status:** Complete — clean install, lint, typecheck, test, build, and E2E checks passed.
+
+### T-056 Sprint 04 Handoff
+
+**Outcome:** Identify the next CSV-ingestion boundary without implementing it.
+
+**Relevant docs/files:** `docs/architecture/ARCHITECTURE.md`, `docs/architecture/DATA_FLOW.md`, `SCRATCHPAD.md`.
+
+**AC:** Upload boundary, validation, source-detection, fixture, canonical-contract, and test considerations are recorded without dependencies or implementation.
 
 **Status:** Complete.

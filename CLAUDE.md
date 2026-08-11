@@ -6,7 +6,7 @@ Relay is a reporting workflow platform for freelance performance marketers and s
 
 ## Current status
 
-Sprint 02: architecture and data semantics are documented. No product code, application scaffold, dependencies, connectors, database, or credentials exist.
+Sprint 03: a minimal Next.js application foundation, health Route Handler, environment boundary, tests, and CI are present. No product workflow, connector, database, credential, CSV ingestion, analytics, AI, or PDF feature exists. Vercel deployment remains blocked until local authentication and project linking are available.
 
 ## Working protocol
 
