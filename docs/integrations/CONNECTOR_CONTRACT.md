@@ -1,0 +1,12 @@
+# Future connector contract
+
+Each connector must eventually provide concepts equivalent to:
+
+- Connect and disconnect
+- Connection status
+- Account discovery and selection
+- Reporting-data fetch
+- Provider-output normalization
+- Structured errors
+
+Provider-specific API responses must not leak into analytics or business logic. CSV adapters and API connectors converge at the canonical-data boundary.
