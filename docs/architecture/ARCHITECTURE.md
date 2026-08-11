@@ -21,3 +21,16 @@ Validation / reconciliation -> KPI engine -> Change intelligence
 7. Report generation should eventually consume a structured report model.
 
 Implementation stack choices are **to be formally locked in Sprint 02**, not decided here.
+
+## Sprint 02 decision inputs
+
+Sprint 01 does not resolve the following decisions. Sprint 02 should evaluate application stack, deployment model, canonical marketing schema, commerce versus attributed-revenue representation, normalized-data persistence, raw-upload retention, client/report entities, CSV adapter contract, connector adapter contract, connection credential storage, sync/fetch model, report JSON model, LLM service boundary, and test architecture.
+
+### Highest-risk questions from Sprint 01
+
+- How can the canonical model preserve provenance and the distinction between commerce truth and platform attribution while still supporting report-level comparisons?
+- What raw-data retention and normalized-data persistence model permits reproducible reports without retaining unnecessary client-sensitive inputs?
+- How should CSV and connector adapters converge so equivalent provider data has the same semantics?
+- Which client-specific rules belong in structured report memory, and which remain human context?
+- How can credential storage and fetch/sync behavior stay least-privilege, observable, and recoverable?
+- Where is the boundary between deterministic facts, report JSON, LLM narration, and the test suite that verifies them?

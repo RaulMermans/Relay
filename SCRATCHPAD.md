@@ -1,30 +1,31 @@
 # Current status
 
-Sprint 00 operating-system baseline: documentation, skills, fixture folders, and Git initialization are complete. This remains temporary execution memory, not durable product documentation.
+Sprint 00 is complete at baseline commit `60243b2`. Sprint 01 defines the product and validation contract; no application implementation exists.
 
 # Completed
 
-- Confirmed the intended folder was empty and preserved that starting condition.
-- Created the requested project, product, architecture, data, connector, QA, research, operations, and roadmap contracts.
-- Created eight composable agent skills and Git-retained fixture folders.
-- Initialized Git and completed the pre-commit verification pass.
+- Refined the product brief, V1 boundaries, success metrics, research protocol, report-analysis framework, validation experiment, assumption register, and Sprint 02 decision inputs.
 
 # Blocked
 
-- None.
+- Research evidence is not yet collected: no participants, anonymized exports, real reports, timed cycles, or observed metric results are available.
 
-# Files touched
+# Files inspected
 
-- Root operating files, `docs/`, `fixtures/`, and `.agents/skills/` for Sprint 00 only.
+- `CLAUDE.md`, prior `plan.md`, Sprint 01 roadmap entry, product/data/research/connector contracts, architecture contract, `CHANGELOG.md`, and the Sprint 00 baseline.
 
-# Commands run
+# Files changed
 
-- Directory/hidden-file/Git-state inspection, structural content checks, secret-pattern scan, Git initialization, and Git status checks.
+- `plan.md`, `SCRATCHPAD.md`, `CHANGELOG.md`, product and research contracts, and `docs/architecture/ARCHITECTURE.md`.
 
-# Errors / observations
+# Assumptions surfaced
 
-- The folder began empty and without Git history; no application scaffold or dependencies were found or added.
+- A-001 through A-010 remain untested in `docs/product/ASSUMPTIONS.md`.
+
+# Research blockers
+
+- Product hypotheses require real, anonymized workflow and report evidence before they can be promoted to observed results.
 
 # Next action
 
-- After Sprint 00 acceptance, create a task specification for Sprint 01 product-contract and validation-design work.
+- Do not begin Sprint 02 until the Sprint 01 validation plan is accepted; then create the first Sprint 02 architecture task specification.

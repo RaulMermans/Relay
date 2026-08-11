@@ -1,17 +1,37 @@
 # MVP scope
 
-## In scope eventually
+Every V1 capability must directly move source data to a decision-ready report.
 
-- Clients, reporting periods, and report history
-- Meta Ads, Google Ads, and Shopify through CSV and connectors
-- Mixed connector/CSV reporting, field mapping, mapping memory, and canonical normalized data
-- Data Health, reconciliation, deterministic KPIs, period comparison, channel/campaign movers, and performance risks
-- Client KPI targets and reporting rules
-- Grounded AI narrative, human review, client-ready report, and PDF export
+## V1 Product Scope
 
-## Out of scope for V1
+- Client records and reporting periods
+- Meta Ads CSV, Google Ads CSV, and Shopify CSV
+- Meta Ads connector, Google Ads connector, and Shopify connector
+- Mixed connector plus CSV reporting
+- Source detection, field mapping, and saved mappings
+- Canonical normalized data and Data Health
+- Date validation and reconciliation warnings
+- Deterministic KPI engine and current versus previous-period comparison
+- Channel analysis and campaign analysis
+- Positive/negative drivers and performance risks
+- KPI targets and client reporting rules
+- Grounded AI commentary and human review
+- Structured report model, PDF export, and report history
 
-- Klaviyo, HubSpot, TikTok Ads, GA4, and LinkedIn Ads
-- Predictive analytics, MMM, proprietary attribution, or autonomous campaign/budget/bid changes
-- Live-dashboard replacement or chat-with-data
-- Scheduled autonomous sending, Google Slides, PPTX, enterprise RBAC, or a mobile app
+## Required for Validation, May Initially Be Manual
+
+- Recruiting research participants
+- Anonymizing sample exports
+- Manually timing existing workflows
+- Manually reviewing whether generated observations are useful
+- Manually confirming whether reports were actually sent
+
+## Explicitly Post-V1
+
+- Klaviyo, HubSpot, TikTok Ads, GA4, LinkedIn Ads, Pinterest, and email connectors
+- Automated campaign changes, budget optimization, and bid management
+- Attribution modeling, MMM, and predictive forecasting
+- Chat-with-data
+- Google Slides export and PPTX export
+- Automated report sending and autonomous scheduled reporting
+- Enterprise RBAC and a mobile application
