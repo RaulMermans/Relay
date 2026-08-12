@@ -41,6 +41,11 @@ test("reviews the detected mapping and normalizes a supported CSV", async ({ pag
 
   await expect(page.getByRole("heading", { name: "Normalization complete" })).toBeVisible();
   await expect(page.getByText("2 canonical advertising observations")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Data Health" })).toBeVisible();
+  await expect(page.getByText("Review required", { exact: true })).toBeVisible();
+  await expect(page.getByText("Paid-platform attribution is present without a commerce source for store-side context.")).toBeVisible();
+  await page.getByRole("button", { name: "Acknowledge warnings" }).click();
+  await expect(page.getByText("Ready for analytics", { exact: true })).toBeVisible();
 });
 
 test("shows a clear mapping correction state when a required field is absent", async ({ page }) => {

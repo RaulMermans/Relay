@@ -308,21 +308,24 @@ summary {
 }
 
 .mapping-review,
-.normalization-summary {
+.normalization-summary,
+.data-health {
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid #bed0d5;
 }
 
 .mapping-review h3,
-.normalization-summary h3 {
+.normalization-summary h3,
+.data-health h3 {
   margin: 0.35rem 0 0.6rem;
   color: #10272e;
   font-size: 1.45rem;
 }
 
 .mapping-review > p:not(.section-label),
-.normalization-summary > p:not(.section-label) {
+.normalization-summary > p:not(.section-label),
+.data-health > p:not(.section-label) {
   color: #45616a;
   line-height: 1.5;
 }
@@ -397,6 +400,148 @@ summary {
   background: #10272e;
 }
 
+.data-health-status {
+  display: inline-block;
+  margin: 0.1rem 0 0.45rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid currentColor;
+  font-family: "Courier New", monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-healthy {
+  color: #17616c;
+  background: #e1f0ed;
+}
+
+.status-review_required {
+  color: #6c4815;
+  background: #fff6e8;
+}
+
+.status-blocked {
+  color: #782d24;
+  background: #fff0eb;
+}
+
+.data-health h4,
+.data-health h5 {
+  margin: 1rem 0 0.55rem;
+  color: #10272e;
+}
+
+.data-health h4 {
+  font-size: 1rem;
+}
+
+.data-health h5 {
+  color: #3c5d65;
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.data-health-coverage dl {
+  margin: 0;
+  border: 1px solid #bed0d5;
+}
+
+.data-health-coverage dl > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(8rem, 1.2fr) auto;
+  gap: 0.7rem;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #d8e4e6;
+}
+
+.data-health-coverage dl > div:last-child {
+  border-bottom: 0;
+}
+
+.data-health-coverage dt,
+.data-health-coverage dd {
+  margin: 0;
+}
+
+.data-health-coverage dt {
+  font-weight: 700;
+}
+
+.data-health-coverage dd {
+  color: #45616a;
+}
+
+.data-health-coverage dd:last-child {
+  font-family: "Courier New", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.coverage-ready {
+  color: #17616c !important;
+}
+
+.coverage-review {
+  color: #6c4815 !important;
+}
+
+.coverage-blocked,
+.coverage-missing {
+  color: #782d24 !important;
+}
+
+.data-health-findings ul {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.data-health-findings li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.65rem 0.75rem;
+  border-left: 0.25rem solid #70919a;
+  background: #f4f8f8;
+  color: #2e525b;
+}
+
+.data-health-findings .finding-warning {
+  border-left-color: #e97047;
+  background: #fff6e8;
+  color: #6c4815;
+}
+
+.data-health-findings .finding-error {
+  border-left-color: #b43f32;
+  background: #fff0eb;
+  color: #782d24;
+}
+
+.data-health-findings small {
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+}
+
+.acknowledge-button {
+  margin-top: 1rem;
+  min-height: 2.7rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid #17616c;
+  background: transparent;
+  color: #17616c;
+  font-weight: 700;
+}
+
+.acknowledge-button:hover {
+  background: #dff0ed;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -431,6 +576,11 @@ summary {
 
   .intake-facts {
     grid-template-columns: 1fr;
+  }
+
+  .data-health-coverage dl > div {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
   }
 }
 

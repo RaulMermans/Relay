@@ -1,0 +1,5 @@
+{
+  "status": "healthy",
+  "findingCodes": ["ATTRIBUTION_AND_COMMERCE_SEPARATED"],
+  "forbiddenFindingCodes": ["REVENUE_DIFFERENCE", "COMBINED_REVENUE"]
+}

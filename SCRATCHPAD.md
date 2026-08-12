@@ -1,30 +1,27 @@
 # Current status
 
-- Sprint 04 is complete at baseline `41dc9f6`.
-- Sprint 05 implementation and verification are complete: transient CSV mapping and canonical daily normalization cover synthetic representative Meta Ads, Google Ads, and Shopify exports. Production deployment remains deferred because local Vercel CLI/auth/project linkage are unavailable.
+- Sprint 05 is complete at baseline `b8cdcd4`.
+- Sprint 06 is complete: a transient deterministic trust layer now sits between canonical normalization and future analytics.
 
-# Decisions and fixtures
+# Sprint 06 decisions
 
-- Canonical data uses separate row-level `advertising` and `commerce` observations. Meta/Google conversion value is `attributedRevenue`; Shopify totals are `grossRevenue`. No KPI or reconciliation logic exists.
-- Money and counts are canonical fixed decimal strings with explicit ISO currency, preserving null versus `"0"`. Invalid text does not coerce. Google micros use decimal-string placement.
-- Mapping is provider-specific and deterministic: exact/normalized alias, manual, unmapped, ambiguous, or ignored. Manual selection is limited to the detected domain and lives only in the current request.
-- Supported Shopify grain is one order row per order ID. Duplicate IDs fail rather than risking line-item double-counting.
-- Synthetic raw inputs, failure inputs, and independent canonical JSON are under `fixtures/raw/` and `fixtures/normalized/`.
+- Data Health findings are deterministic, safe metadata; they never include raw rows or raw CSV values.
+- A blocking error prevents analytics readiness. Warnings require local acknowledgement before the UI shows readiness; nothing is persisted.
+- Reporting context is request-scoped. The current period is selected or derived from canonical coverage; comparison defaults to the immediately preceding equal-length calendar range.
+- Advertising coverage may be expected daily; Shopify order-row absence does not invent a missing-day/zero-activity finding.
+- Mixed or cross-source monetary currencies block without FX conversion. Duplicate detection explains but never deletes data.
+- Shopify/store revenue stays commerce truth. Meta/Google attributed revenue stays provider attribution and is never summed into total commerce revenue.
 
 # Commands and findings
 
-- Full verification passed: `npm ci` (388 packages), lint, typecheck, `npm run test` (13 files/69 tests), `npm run test:unit` (9 files/46 tests), `npm run test:integration` (4 files/23 tests), production build, and `npm run test:e2e` (7 tests).
-- Targeted Vitest mapping, values, provider-normalizer, raw-to-golden, API, and parser-boundary tests passed after test-first implementation. Targeted Playwright mapping/normalization, required-field correction, and manual-ambiguity flows also passed.
-- Initial clean-install attempts hit a Windows `ENOTEMPTY` generated-directory cleanup race and a wrapper PATH propagation issue. Triage found no lingering Node/npm process; removing the exact generated dependency directory and running cached npm 11.9 with inherited Node path produced the successful clean install. No project dependency changed.
-- Initial typecheck exposed ES2020 `replaceAll` incompatibility and narrow type-model issues; focused fixes restored clean lint/typecheck. An initial E2E selector became ambiguous after the mapping table was added and was narrowed to the pre-existing header list.
-- The default shell lacks `npm`; use the bundled Node 24.14.0 executable with the cached npm 11.9 CLI. Vitest/Playwright require normal child-process permission in this environment.
-
-# Sprint 06 handoff
-
-- Input: row-level `AdvertisingObservation`/`CommerceObservation`, fixed-decimal values, explicit per-row currency, source-row provenance, mapping origin, and `MIXED_CURRENCIES` findings.
-- Data Health should evaluate date coverage/alignment, currency compatibility, duplicate candidates beyond Shopify order IDs, missing/unavailable required analysis inputs, and provenance/mapping findings.
-- Reconciliation must compare compatible coverage only and present Shopify commerce revenue beside, never as a replacement for, Meta/Google attributed revenue. It must not implement cross-platform attribution deduplication.
+- Preflight observed clean `main` at `b8cdcd4` (`git status --short --branch`, `git log -1 --oneline`).
+- Inspected the pinned Node/npm/dependency set in `package.json`; no new package is planned.
+- Read the scoped Sprint 06 contracts and current intake/mapping/normalization/API/UI/test boundaries. No Data Health engine, reconciliation engine, or KPI engine exists.
+- Targeted red/green: the initial missing-engine unit test failed as expected; Data Health unit coverage now passes (11 tests), API coverage passes (4 tests), and raw CSV → Data Health integration coverage passes (7 tests).
+- Final verification from a clean `npm ci`: lint, typecheck, full Vitest (15 files/89 tests), unit Vitest (10 files/57 tests), integration Vitest (5 files/32 tests), production build, and Playwright E2E (7 tests) all passed. npm installed 388 packages and audited 389 with 0 vulnerabilities.
+- The first `npm ci` attempt failed because its postinstall child process could not resolve `node` on PATH. Re-running with the bundled Node 24.14.0 directory on PATH completed successfully; no project dependency changed.
+- Focused security and data-contract reviews found no P0/P1 issue: findings contain safe metadata only, malformed context is rejected, currencies are not converted, duplicates are not deleted, missing provenance blocks, and advertising attribution remains separate from commerce revenue.
 
 # Next action
 
-- Sprint 06 should first define and test a canonical Data Health finding model for date coverage/alignment, per-row currency compatibility, mapping/provenance review, and duplicate candidates. Do not implement reconciliation/KPIs in that first task.
+- Commit Sprint 06 as `feat: add data health and reconciliation`. Vercel deployment remains independently deferred.

@@ -6,11 +6,11 @@ Core analytical logic must be independently testable from UI, database, and prov
 
 ## Unit tests
 
-Sprint 05 retains the parser, validation, intake, and source-detection tests and adds pure mapping and normalization tests. Mapping coverage includes exact and normalized aliases, unmapped columns, duplicate aliases, required semantics, manual override origin, cross-domain rejection, and duplicate manual targets. Numeric/date coverage includes fixed-decimal money, zero versus unavailable, thousands separators, invalid text, negative money/count rejection, Google micros, and invalid dates. Provider normalizer tests independently cover Meta, Google, and Shopify semantics and Shopify duplicate-order protection.
+Sprint 06 retains the parser, validation, intake, mapping, and normalization tests and adds pure Data Health checks. Data Health coverage includes period derivation/validation, aligned/partial/outside date coverage, advertising-only missing days, within- and cross-source currencies, manual/ignored/required mappings, provenance requirements, duplicate candidates, expected-source completeness, attribution/commerce separation, and `healthy`/`review_required`/`blocked` aggregation. Tests use canonical synthetic observations and never assert a fabricated KPI or combined revenue.
 
 ## Integration tests
 
-Integration tests exercise synthetic raw CSV -> validation -> parser -> detector -> mapping -> normalizer -> independently maintained canonical JSON. Six representative/alternate golden files cover Meta Ads, Google Ads, and Shopify. Failure fixtures cover missing date, ambiguous mapping, duplicate canonical mapping, invalid number, invalid date, duplicate Shopify order rows, and mixed currencies. `POST /api/normalize/csv` is also tested for its compact, raw-data-free response and malformed mapping payload handling.
+Integration tests exercise synthetic raw CSV -> validation -> parser -> detector -> mapping -> normalizer -> independently maintained canonical JSON. Six representative/alternate golden files cover Meta Ads, Google Ads, and Shopify. Failure fixtures cover missing date, ambiguous mapping, duplicate canonical mapping, invalid number, invalid date, duplicate Shopify order rows, and mixed currencies. Sprint 06 adds raw CSV through Data Health goldens for healthy multi-source, date mismatch, currency mismatch, missing source, provenance failure, advertising duplicate candidate, and revenue semantic separation. `POST /api/normalize/csv` is tested for its compact, raw-data-free Data Health response and malformed mapping/Data Health-context handling.
 
 ## Connector contract tests
 
@@ -18,7 +18,7 @@ No connector exists yet. The prepared connector contract is: equivalent provider
 
 ## E2E tests
 
-Playwright verifies source detection, mapping proposal display, successful Meta mapping/normalization summary, required-field correction state, and manually resolving an ambiguous mapping. It still has no KPI, Data Health, persistence, connector, AI, or report assertions.
+Playwright verifies source detection, mapping proposal display, successful Meta normalization, the one-file Data Health review state, local warning acknowledgement, required-field correction state, and manually resolving an ambiguous mapping. Multi-source reconciliation remains covered below the UI boundary because the intentionally scoped V1 flow accepts one CSV at a time. It has no KPI, persistence, connector, AI, or report assertions.
 
 ## Regression fixtures
 

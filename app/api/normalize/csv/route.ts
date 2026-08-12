@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 
 import { type MappingOverride, MappingError } from "../../../../lib/mapping/field-mapping";
+import { createDataHealthInput } from "../../../../lib/data-health/request-context";
+import { runDataHealth } from "../../../../lib/data-health/run-data-health";
+import { DataHealthInputError } from "../../../../lib/data-health/types";
 import { normalizeCsvFile } from "../../../../lib/normalization/normalize-csv";
 import { type CsvIntakeErrorCode } from "../../../../lib/intake/csv/validate";
 
@@ -17,7 +20,8 @@ type NormalizeErrorCode =
   | "CURRENCY_REQUIRED"
   | "UNSUPPORTED_SHOPIFY_EXPORT_GRAIN"
   | "ROW_REQUIRED_VALUE_MISSING"
-  | "SOURCE_UNSUPPORTED";
+  | "SOURCE_UNSUPPORTED"
+  | "INVALID_DATA_HEALTH_CONTEXT";
 
 const NORMALIZE_ERROR_CODES = new Set<NormalizeErrorCode>([
   "FILE_MISSING",
@@ -39,6 +43,7 @@ const NORMALIZE_ERROR_CODES = new Set<NormalizeErrorCode>([
   "UNSUPPORTED_SHOPIFY_EXPORT_GRAIN",
   "ROW_REQUIRED_VALUE_MISSING",
   "SOURCE_UNSUPPORTED",
+  "INVALID_DATA_HEALTH_CONTEXT",
 ]);
 const MAX_MAPPING_OVERRIDE_CHARACTERS = 65_536;
 
@@ -117,23 +122,32 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json(result, { headers: { "Cache-Control": "no-store" } });
     }
 
+    const dataHealth = runDataHealth(createDataHealthInput(formData.get("dataHealthContext"), result));
+
     console.info("csv_normalization_processed", {
       provider: result.provider,
       normalizedRowCount: result.summary.normalizedRowCount,
-      warningCodes: result.summary.warnings,
+      dataHealthStatus: dataHealth.status,
+      findingCodes: dataHealth.findings.map((finding) => finding.code),
     });
     return Response.json(
       {
         status: result.status,
         provider: result.provider,
         summary: result.summary,
-        findings: result.findings,
+        dataHealth,
       },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
-    const code = isNormalizeError(error) ? error.code : "CSV_PARSE_ERROR";
-    const message = isNormalizeError(error)
+    const code = error instanceof DataHealthInputError
+      ? "INVALID_DATA_HEALTH_CONTEXT"
+      : isNormalizeError(error)
+        ? error.code
+        : "CSV_PARSE_ERROR";
+    const message = error instanceof DataHealthInputError
+      ? "The Data Health context is invalid."
+      : isNormalizeError(error)
       ? error.message
       : "The CSV could not be normalized safely.";
     console.warn("csv_normalization_rejected", { code });

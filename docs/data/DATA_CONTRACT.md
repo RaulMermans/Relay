@@ -86,7 +86,7 @@ Money and counts use normalized fixed decimal strings rather than JavaScript num
 - Negative money is preserved for provider-reported reversals or adjustments. Counts must be non-negative.
 - Currency codes are uppercased only after validating three ASCII letters. If a row has a monetary value but no currency, normalization fails.
 
-Mixed currencies are preserved per record and produce a `MIXED_CURRENCIES` warning. Sprint 05 never combines or converts them; Sprint 06 will decide affected Data Health eligibility.
+Mixed currencies are preserved per record. Data Health treats within-source mixed currency and cross-source monetary currency mismatch as blocking; it never combines or converts them.
 
 ## Availability, required semantics, and Shopify grain
 
@@ -103,7 +103,7 @@ V1 Shopify support is intentionally limited to order-row exports: one row per or
 
 Provider-specific aliases are defined in [SOURCE_RULES.md](SOURCE_RULES.md). Mapping is deterministic and reports `mapped`, `unmapped`, `ambiguous`, or manually `ignored` columns. The only mapping origins are `exact_alias`, `normalized_alias`, and `manual`; Relay does not emit fake percentage confidence.
 
-Provenance retains the transient request ID, safe original filename, source-row reference, transport, and mapping origin. It intentionally excludes raw rows, unselected customer fields, and raw CSV content. Raw uploads and parsed rows are not persisted or logged.
+Provenance retains the transient request ID, safe original filename, source-row reference, transport, and mapping origin. Data Health blocks downstream readiness if required provenance is absent or invalid. It intentionally excludes raw rows, unselected customer fields, and raw CSV content. Raw uploads and parsed rows are not persisted or logged.
 
 ## Connector equivalence preparation
 

@@ -6,7 +6,7 @@ External source
   -> Raw representation
   -> Normalization
   -> Canonical data
-  -> Validation
+  -> Data Health
   -> Reconciliation
   -> Metrics
   -> Change intelligence
@@ -23,8 +23,8 @@ External source
 | Ingestion -> Raw representation | Validated upload or fetch result | Transport-specific raw dataset/result plus provenance | File shape, provider/source detection, pagination/retry outcome | Mark ingestion failed/partial; never infer missing values |
 | Raw representation -> Normalization | Provider-shaped raw input and mapping | Daily canonical observations, provenance, findings | Required field/type mapping, availability, source identifiers, currency | Emit mapping/normalization findings; request confirmation where ambiguous |
 | Normalization -> Canonical data | Normalized observations | Persistable canonical advertising/commerce data | Daily grain, null versus zero, money/currency, identity, dedupe candidates | Block unsupported aggregate or incompatible data from analytics |
-| Canonical data -> Validation | Canonical observations | Data Health findings and eligible data set | Coverage, date alignment, duplicate candidates, required report inputs | Errors block affected analysis; warnings retain caveat |
-| Validation -> Reconciliation | Eligible observations and findings | Compatibility/comparison notes | Commerce versus attribution distinction, source coverage, currency compatibility | Warn/block only according to explicit incompatibility; do not fabricate attribution |
+| Canonical data -> Data Health | Canonical observations plus transient reporting context | Data Health findings, source coverage, readiness status, and eligible canonical facts | Date coverage/alignment, expected sources, currency, mapping, provenance, and duplicate candidates | Blocking errors prevent analytics; warnings remain reviewable without changing observations |
+| Data Health -> Reconciliation | Non-mutated canonical observations plus health context | Compatibility/comparison findings | Commerce versus attribution distinction, source coverage, currency compatibility | Warn/block only according to explicit incompatibility; do not fabricate attribution or combined revenue |
 | Reconciliation -> Metrics | Compatible validated canonical data | Deterministic KPIs and period comparisons | Formula inputs, denominator/availability, revenue-basis rules | Mark KPI unavailable with reason rather than calculate from invalid inputs |
 | Metrics -> Change intelligence | KPIs/comparisons | Movers, risks, explanatory facts | Deterministic thresholds/rules and fact provenance | Omit unsupported conclusion; retain source finding |
 | Change intelligence -> Report facts | Analytics facts, health, reconciliation, targets | Renderer-neutral structured facts | Fact completeness, target evidence, provenance references | Report incomplete state; no invented commentary |
@@ -52,7 +52,20 @@ CSV upload
 
 The second upload is intentional: raw rows never move to client-visible intake output and are never retained on the server between mapping review and normalization. Provider normalizers receive parsed rows plus an approved mapping and return only canonical advertising/commerce observations, provenance, and structured findings. The UI receives a count, date range, currencies, mapped/ignored-field summary, and warnings, never the normalized dataset or raw CSV rows.
 
-Sprint 05 preserves row-level daily observations. `MIXED_CURRENCIES` is a normalization finding, not a conversion or reconciliation result. Data Health, duplicate investigation beyond Shopify order-row protection, reconciliation, KPI computation, persistence, connectors, AI, and reporting remain subsequent boundaries.
+## Sprint 06 implemented Data Health boundary
+
+The current single-file endpoint now runs a deterministic, server-authoritative Data Health pass immediately after normalization:
+
+```text
+CSV upload
+  -> server validation + parsing + source detection + mapping + normalization
+  -> request-scoped Data Health and reconciliation
+  -> compact normalization plus Data Health result returned to the browser
+```
+
+Canonical observations remain request-local and never appear in the response. The browser receives only a health status, safe source-coverage metadata, and safe findings. A one-file request derives its current reporting period from canonical coverage and expects the one detected source. Unit and integration tests cover multi-source Data Health/reconciliation; Sprint 06 deliberately does not introduce a multi-file reporting workflow.
+
+Data Health detects date coverage and alignment, expected source completeness, currency incompatibility, mapping/provenance gaps, duplicate evidence, and revenue semantic compatibility. It never fills missing days with zeroes, deletes duplicates, performs FX conversion, aggregates revenue, calculates KPIs, persists state, connects providers, or invokes AI. `blocked` prevents future KPI use; `review_required` needs local acknowledgement in the current UI before it displays readiness.
 
 ## Persistence posture
 

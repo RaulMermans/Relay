@@ -15,6 +15,30 @@ type RejectedIntakeResponse = {
   };
 };
 
+type DataHealthFinding = {
+  id: string;
+  code: string;
+  category: string;
+  severity: "info" | "warning" | "error";
+  status: "open";
+  source?: "meta_ads" | "google_ads" | "shopify";
+  message: string;
+  blocking: boolean;
+};
+
+type DataHealthResult = {
+  status: "healthy" | "review_required" | "blocked";
+  counts: { info: number; warning: number; error: number };
+  sourceCoverage: Array<{
+    source: "meta_ads" | "google_ads" | "shopify";
+    status: "ready" | "review" | "blocked" | "missing";
+    observationCount: number;
+    start: string | null;
+    end: string | null;
+  }>;
+  findings: DataHealthFinding[];
+};
+
 type NormalizeResponse =
   | {
       status: "normalized";
@@ -27,7 +51,7 @@ type NormalizeResponse =
         ignoredFields: string[];
         warnings: string[];
       };
-      findings: { code: string; severity: "warning"; message: string }[];
+      dataHealth: DataHealthResult;
     }
   | {
       status: "mapping_required";
@@ -73,6 +97,21 @@ function canonicalFieldLabel(field: CanonicalField): string {
   return field.replace(/_/g, " ");
 }
 
+function dataHealthStatusLabel(status: DataHealthResult["status"]): string {
+  switch (status) {
+    case "healthy":
+      return "Healthy";
+    case "review_required":
+      return "Review required";
+    case "blocked":
+      return "Blocked";
+  }
+}
+
+function sourceHealthLabel(source: DataHealthResult["sourceCoverage"][number]["source"]): string {
+  return sourceLabel(source);
+}
+
 function requiredSemanticLabel(semantic: MappingProposal["requiredMissing"][number]): string {
   switch (semantic) {
     case "date":
@@ -99,6 +138,7 @@ export function IntakeForm() {
   const [normalization, setNormalization] = useState<Extract<NormalizeResponse, { status: "normalized" }> | null>(
     null,
   );
+  const [warningsAcknowledged, setWarningsAcknowledged] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isNormalizing, setIsNormalizing] = useState(false);
@@ -106,6 +146,7 @@ export function IntakeForm() {
   function selectFile(nextFile: File | null) {
     setResult(null);
     setNormalization(null);
+    setWarningsAcknowledged(false);
     setMappingOverrides(new Map());
 
     if (!nextFile) {
@@ -141,6 +182,7 @@ export function IntakeForm() {
     setError(null);
     setResult(null);
     setNormalization(null);
+    setWarningsAcknowledged(false);
     setMappingOverrides(new Map());
 
     try {
@@ -180,6 +222,7 @@ export function IntakeForm() {
     setIsNormalizing(true);
     setError(null);
     setNormalization(null);
+    setWarningsAcknowledged(false);
     try {
       const formData = new FormData();
       formData.set("file", file);
@@ -201,6 +244,7 @@ export function IntakeForm() {
         return;
       }
       setNormalization(payload);
+      setWarningsAcknowledged(false);
     } catch {
       setError("The CSV could not be normalized. Try again.");
     } finally {
@@ -213,6 +257,7 @@ export function IntakeForm() {
     setError(null);
     setResult(null);
     setNormalization(null);
+    setWarningsAcknowledged(false);
     setMappingOverrides(new Map());
     inputRef.current?.form?.reset();
   }
@@ -414,11 +459,60 @@ export function IntakeForm() {
                     <dd>{normalization.summary.mappedFieldCount}</dd>
                   </div>
                 </dl>
-                {normalization.findings.map((finding) => (
-                  <p className="signal-summary" key={finding.code}>
-                    {finding.message}
+                <section className="data-health" aria-labelledby="data-health-heading">
+                  <p className="section-label">Trust check</p>
+                  <h3 id="data-health-heading">Data Health</h3>
+                  <p className={`data-health-status status-${normalization.dataHealth.status}`}>
+                    {dataHealthStatusLabel(normalization.dataHealth.status)}
                   </p>
-                ))}
+                  <p>
+                    {normalization.dataHealth.status === "blocked"
+                      ? "Blocked before analytics"
+                      : normalization.dataHealth.status === "review_required" && !warningsAcknowledged
+                        ? "Review the warnings before treating this data as ready for analytics."
+                        : "Ready for analytics"}
+                  </p>
+                  <div className="data-health-coverage">
+                    <h4>Source coverage</h4>
+                    <dl>
+                      {normalization.dataHealth.sourceCoverage.map((coverage) => (
+                        <div key={coverage.source}>
+                          <dt>{sourceHealthLabel(coverage.source)}</dt>
+                          <dd>
+                            {coverage.start && coverage.end ? `${coverage.start} — ${coverage.end}` : "No observations"}
+                          </dd>
+                          <dd className={`coverage-${coverage.status}`}>{coverage.status}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                  <div className="data-health-findings">
+                    <h4>Findings</h4>
+                    {(["error", "warning", "info"] as const).map((severity) => {
+                      const findings = normalization.dataHealth.findings.filter((finding) => finding.severity === severity);
+                      return findings.length > 0 ? (
+                        <section key={severity} aria-label={`${severity} findings`}>
+                          <h5>{severity}</h5>
+                          <ul>
+                            {findings.map((finding) => (
+                              <li key={finding.id} className={`finding-${severity}`}>
+                                <span>{finding.message}</span>
+                                <small>
+                                  {finding.category.replace(/_/g, " ")} · {finding.blocking ? "Blocks continuation" : "Does not block continuation"}
+                                </small>
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+                      ) : null;
+                    })}
+                  </div>
+                  {normalization.dataHealth.status === "review_required" && !warningsAcknowledged ? (
+                    <button type="button" className="acknowledge-button" onClick={() => setWarningsAcknowledged(true)}>
+                      Acknowledge warnings
+                    </button>
+                  ) : null}
+                </section>
               </section>
             ) : null}
 

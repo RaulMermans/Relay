@@ -18,6 +18,9 @@
 - Fixed-decimal money/count normalization, currency preservation, canonical provenance, normalized golden fixtures, and mapping/normalization integration coverage.
 - `POST /api/normalize/csv`, which reparses a transient re-upload and returns a compact normalization summary without rows.
 - A reusable, scoped data-contract review skill for canonical metric changes.
+- Deterministic request-scoped Data Health and reconciliation after normalization, with date coverage/alignment, expected-source, currency, mapping, provenance, duplicate, and revenue-semantics findings.
+- A compact Data Health response from `POST /api/normalize/csv` and a focused single-file Data Health UI with local warning acknowledgement and blocked readiness state.
+- Synthetic, independently maintained Data Health regression fixtures and unit/integration/E2E coverage.
 
 ### Changed
 
@@ -25,7 +28,7 @@
 - Added documentation-only validation-experiment design; no application functionality was implemented.
 - Defined V1 architecture, canonical data semantics, revenue rules, ingestion/persistence boundaries, report/AI boundaries, deployment, security, testing, and Sprint 03 handoff.
 - Superseded ADR-005's Railway/PostgreSQL/Prisma deployment assumptions with Vercel and no currently connected database.
-- Relay now supports fixture-backed CSV source detection, mapping, and canonical normalization. KPI calculation, Data Health/reconciliation, connectors, AI, reports, and persistence remain unimplemented.
+- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, and Data Health/reconciliation. KPI calculation, connectors, AI, reports, and persistence remain unimplemented.
 
 ### Deployment
 
