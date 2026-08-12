@@ -1,19 +1,28 @@
 # Current status
 
-- Sprint 07 is complete at baseline `6e3c426`.
-- Sprint 08 deterministic Change Intelligence is complete pending commit.
+- Sprint 08 is complete at baseline `cd9b385`.
+- Sprint 09 generic connector framework is complete pending commit; no live provider, OAuth, network request, durable state, or production connector UI was added.
 
-# Sprint 08 execution memory
+# Sprint 09 decisions
 
-- Polarity/significance: higher-favorable is commerce revenue, orders, ROAS, MER, CTR, and conversion rate; lower-favorable is CPA/CPC; other V1 metrics require context. Magnitude is minor below 5%, notable from 5% through 15%, and major above 15%; undefined percentages stay unavailable.
-- Intelligence rules: metric movements, top-three percentage movers, positive-baseline spend/revenue divergence, CPA/provider ROAS/MER and commerce movement, source efficiency, additive spend contribution only, four explainable signals, stable deduplication, deterministic priority, and a 12-observation default.
-- Targets: explicit transient targets only; strict bounded shape, fixed operators, metric/scope/unit/currency validation, met/breached/unavailable evaluation, no code evaluation or persistence.
-- Fixtures: four synthetic raw comparison fixtures and ten manually maintained expected cases under `fixtures/expected/change-intelligence/`.
-- Review: data-contract, security-sanity, and Change Intelligence reviews have no remaining P0/P1 findings. Review hardening added strict target fields, non-inflated breach magnitude, and positive-baseline divergence.
-- Verification observed with pinned npm 11.9.0 via the bundled Node runtime: `npm ci` added 388/audited 389 with 0 vulnerabilities; lint passed; typecheck passed; full Vitest passed 22 files/130 tests; unit passed 15/88; integration passed 7/42; production build passed; Playwright passed 8 tests; `git diff --check`, dependency diff, skill structure, forbidden-scope, and unsupported-causation checks passed.
-- Tooling limitation: the generated review skill is structurally present, but the provided `quick_validate.py` could not start because the bundled Python environment lacks its own `yaml` module. No repository dependency was added for that external validator.
-- Failures resolved: default shell lacked npm; sandboxed test/build helpers required approved local execution; the first single-file What Changed E2E exposed missing explicit period selection, so the UI now supplies optional server-validated current-period dates.
+- Transport: connectors own status, discovered/server-validated account selection, bounded read-only daily fetch, pagination, retry classification, and structured provider-bound results. Analytics begins only after canonical normalization.
+- Lifecycle/readiness: fetch requires a framework implementation, server configuration, `ready` state, selected account, opaque credential reference, and `reporting_fetch`. Transient fetch errors do not mutate credential state.
+- Connection/security: analytical connection records exclude raw credentials. Errors expose stable safe fields only; provider causes/payloads stay out. API record locators reject control, URL, and token/auth-like patterns.
+- Provenance: CSV retains request/file/row/mapping lineage; API retains provider/account/fetch/date/optional safe record locator. Data Health validates provider/account identity and observation date within fetch range.
+- Equivalence: connector test support ignores only provenance/order. Dates, source/account fields, dimensions, primitive measures, currency, null/zero, and revenue domain remain strict. Advertising API revenue stays `attributedRevenue`.
+- Registry/UI: Shopify, Meta Ads, and Google Ads are framework-known but `not_built` and unconfigured. No decorative cards, fake connected state, or inert OAuth controls were added.
 
-# Next action
+# Review and verification
 
-- Sprint 09 T-188 — Lock Generic Connector Transport Contract: document provider-neutral connection lifecycle states, account-selection boundary, paginated read-only fetch result, structured/redacted errors, transport provenance, and CSV/API canonical-equivalence acceptance tests. Do not implement a provider connector or token persistence in the contract slice.
+- Data-contract, security-sanity, and PR reviews found no P0/P1 issue. Two P2 API-lineage gaps (observation outside fetch range; secret-bearing locator) were resolved with failing-then-passing regression coverage.
+- `npm ci` via pinned npm 11.9.0 and bundled Node 24 added 388/audited 389 with 0 vulnerabilities. The initial attempt failed because child scripts could not resolve `node`; rerun with the bundled Node directory on `PATH` passed.
+- `npm run lint` passed with no warnings after two test-support cleanup edits; `npm run typecheck` passed.
+- `npm run test` passed 27 files/158 tests; unit passed 19/111; integration passed 8/47.
+- `npm run build` passed; Playwright passed 8/8; `git diff --check` passed.
+- Dependency diff is empty. Scope checks found no provider/OAuth/database dependency, analytics transport branch, runtime connector network call, raw credential domain field, secret-like connector fixture value, or production mock exposure.
+- Connector skill has valid frontmatter/no placeholders and matching UI metadata. The provided `quick_validate.py` could not start because the bundled Python lacks `yaml`; no repository dependency was added for the external validator.
+
+# Blockers and next action
+
+- Live persisted connections remain blocked until Sprint 10 evaluates a secure durable server-side credential/ownership path. Vercel CLI/auth/project linkage remains independently deferred.
+- Exact next task: Sprint 10 T-222 — verify current official Shopify authorization, read-only scopes, account/store selection semantics, reporting endpoints, pagination, limits, and secure-persistence options; produce an executable Shopify connector contract and activation decision before implementing OAuth or network code.

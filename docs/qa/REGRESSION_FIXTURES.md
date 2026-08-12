@@ -2,12 +2,13 @@
 
 Fixture layout:
 
-- `fixtures/raw/`: clearly labelled synthetic `meta_ads/`, `google_ads/`, and `shopify/` representative/alternate CSVs; `unknown/`, `malformed/`, and focused `failures/` inputs
-- `fixtures/normalized/`: independently maintained canonical JSON for each supported representative/alternate export, plus expected structured failure outcomes
-- `fixtures/expected/`: independently maintained Data Health and KPI output
+- `fixtures/raw/`: labelled synthetic Meta Ads, Google Ads, Shopify, failure, Data Health, and Change Intelligence CSV inputs
+- `fixtures/normalized/`: independently maintained canonical outcomes for supported CSV exports
+- `fixtures/expected/`: independently maintained Data Health, KPI, and Change Intelligence expectations
+- `fixtures/connectors/mock/`: provider-neutral synthetic API-like records for connector framework tests, with no real-provider compatibility claim
 
-Sprint 05 regressions compare raw provider input -> validated parsed structure -> source detection -> mapping -> canonical output. The six current goldens cover Meta Ads, alternate Meta, Google Ads, alternate Google (including cost micros), Shopify, and alternate Shopify. Failure fixtures cover missing date, invalid amount, invalid date, ambiguous mapping, duplicate canonical target, duplicate Shopify order IDs, and mixed currencies.
+Sprint 05 covers representative/alternate provider normalization and invalid mapping/value/date/currency/grain cases. Sprint 06 adds multi-source Data Health/reconciliation fixtures. Sprint 07 adds manual KPI goldens and formula verification. Sprint 08 adds comparison-period inputs plus manual Change Intelligence expectations and revenue-separation cases.
 
-Sprint 06 adds synthetic multi-source raw inputs in `fixtures/raw/data-health/` and manually maintained expected findings in `fixtures/expected/data-health/`. Sprint 07 adds `fixtures/expected/kpi/` with healthy complete, advertising-only, commerce-only, zero-denominator, previous-zero, null-input, and currency-safe cases plus a manually reviewable formula table.
+Sprint 09 adds a two-page provider-neutral mock advertising result equivalent to the representative Meta CSV business facts. Integration runs each transport through its own adapter/normalizer and compares canonical semantics while ignoring only provenance/order. Focused negative tests change spend, attributed revenue, null/zero, and currency so semantic drift cannot pass. API attribution remains `attributedRevenue`, never commerce revenue.
 
-Sprint 08 adds four comparison-period raw fixtures under `fixtures/raw/change-intelligence/` and ten manual expected cases under `fixtures/expected/change-intelligence/`: commerce growth, efficiency deterioration/improvement, Meta deterioration, Google improvement, target breach/met, previous zero, missing KPI, and revenue semantics. Raw-pipeline integration proves healthy/review/blocked gates and Shopify/provider revenue separation. Expected files are never regenerated from either engine. Future connector tests reuse canonical goldens. Never add fabricated production evidence; label every synthetic fixture explicitly as synthetic.
+Expected artifacts are never regenerated from implementation code. Never add fabricated production evidence, client data, auth material, or real provider payload compatibility claims; label every synthetic fixture explicitly.

@@ -35,6 +35,26 @@ External source
 
 CSV and connector paths differ only before the raw-representation/normalization boundary. Analytics and report generation operate only on canonical data and structured facts.
 
+## Sprint 09 generic connector boundary
+
+Sprint 09 implements the provider-neutral connector contract without a live provider:
+
+```text
+request/test-scoped connection
+  -> deterministic lifecycle/readiness
+  -> discovered account + server-validated selection
+  -> bounded daily fetch intent
+  -> provider-owned page fetch callback
+  -> pagination/retry/error guards
+  -> provider-specific raw result
+  -> provider normalizer
+  -> existing canonical observation union
+```
+
+The static registry marks Shopify, Meta Ads, and Google Ads as framework-known but `not_built` and unconfigured. A synthetic test-only advertising connector proves discovery, selection, pagination, safe failure, API provenance, provider normalization, and canonical equivalence against the existing Meta CSV fixture without network access or a production UI surface.
+
+CSV and API provenance are different discriminated shapes. Data Health validates the relevant locator fields; the KPI Engine and Change Intelligence continue consuming canonical observations without transport branches. Connections and opaque mock credential references are request/test scoped. No OAuth, provider SDK, database, durable token persistence, provider network call, or new service exists.
+
 ## Sprint 05 implemented CSV boundary
 
 The current CSV flow is deliberately staged and transient:

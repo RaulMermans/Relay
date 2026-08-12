@@ -4,12 +4,13 @@ import { runDataHealth } from "../../lib/data-health/run-data-health";
 import type {
   AdvertisingObservation,
   CommerceObservation,
+  CsvObservationProvenance,
   ObservationProvenance,
 } from "../../lib/normalization/types";
 
 function advertising(
-  overrides: Partial<AdvertisingObservation> = {},
-): AdvertisingObservation {
+  overrides: Partial<Omit<AdvertisingObservation, "provenance">> & { provenance?: CsvObservationProvenance } = {},
+): AdvertisingObservation & { provenance: CsvObservationProvenance } {
   return {
     domain: "advertising",
     source: "meta_ads",
@@ -52,7 +53,9 @@ function advertising(
   };
 }
 
-function commerce(overrides: Partial<CommerceObservation> = {}): CommerceObservation {
+function commerce(
+  overrides: Partial<Omit<CommerceObservation, "provenance">> & { provenance?: CsvObservationProvenance } = {},
+): CommerceObservation & { provenance: CsvObservationProvenance } {
   return {
     domain: "commerce",
     source: "shopify",

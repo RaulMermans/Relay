@@ -1,36 +1,38 @@
-# Sprint 08 - Deterministic Change Intelligence
+# Sprint 09 - Generic Connector Framework
 
 | Task | Outcome | Relevant files/docs | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
-| T-156 Execution Contract | Gate structured KPI interpretation with Data Health. | `docs/data/CHANGE_INTELLIGENCE.md`, `lib/change-intelligence/types.ts` | Blocked returns stable refusal; healthy/review-required may execute; no raw rows enter the engine. | Complete |
-| T-157 Observation Model | Expose structured, auditable observations. | Change Intelligence contract and types | Direction, assessment, significance, evidence, scope, source, and optional target are explicit. | Complete |
-| T-158 Metric Polarity | Define one explicit interpretation source. | Change Intelligence contract and rules | Higher/lower/context-dependent metrics and caveats are documented and tested. | Complete |
-| T-159 Significance Rules | Define transparent V1 change-magnitude thresholds. | Change Intelligence contract and rules | Minor/notable/major behavior covers unavailable percentage, zero baseline, and null values. | Complete |
-| T-160 Change Classification | Classify every comparable KPI fact. | `lib/change-intelligence/`, unit tests | Increase/decrease/unchanged/unavailable remain separate from business assessment. | Complete |
-| T-161 Movers | Rank meaningful positive and negative movers. | Engine and unit tests | Top three use comparable percentage magnitude; undefined percentages are not falsely ranked. | Complete |
-| T-162 Spend/Revenue Divergence | Detect deterministic commerce-efficiency divergence. | Efficiency rules and tests | Spend/revenue change and MER evidence produce non-causal improvement/deterioration observations. | Complete |
-| T-163 CPA Rules | Detect CPA improvement and deterioration. | Metric/efficiency rules and tests | Available report/source CPA movements respect polarity and comparison availability. | Complete |
-| T-164 ROAS Rules | Detect provider-specific ROAS movement. | Metric/source rules and tests | Meta and Google remain separate; no combined attributed ROAS exists. | Complete |
-| T-165 MER Rules | Detect MER improvement, deterioration, and stability. | Metric/efficiency rules and tests | MER retains commerce-revenue/compatible-spend semantics. | Complete |
-| T-166 Revenue/Order Rules | Detect meaningful commerce movement. | Metric rules and tests | Commerce revenue and orders produce structured non-causal observations. | Complete |
-| T-167 Source Performance | Detect source-level efficiency facts. | Source rules and tests | Meta/Google observations cite exact spend/ROAS/CPA facts without campaign causes. | Complete |
-| T-168 Contribution | Attribute additive spend movement by source. | Contribution rules and tests | Contribution uses fixed-decimal source deltas only; ratios are excluded; zero total is safe. | Complete |
-| T-169 Target Model | Accept transient explicit targets. | Types, target parser/evaluator, UI | Only supported metrics/scopes/operators/units are accepted; Relay invents no targets. | Complete |
-| T-170 Target Breaches | Evaluate explicit target facts. | Target rules and tests | Breaches are emitted; met/unavailable/incompatible targets do not create false breaches. | Complete |
-| T-171 Rule-Based Signals | Surface small explainable cross-metric signals. | Signal rules and tests | Supported conjunctions are deterministic, structured, and make no statistical or causal claim. | Complete |
-| T-172 Deduplication | Prevent overlapping rule floods. | Engine prioritization and tests | Stable IDs and precedence remove exact/semantically redundant observations. | Complete |
-| T-173 Prioritization | Order observations deterministically. | Engine and contract | Target breaches and major movements precede lower-value context; output limit is documented. | Complete |
-| T-174 Evidence Lineage | Preserve KPI and target evidence. | Types, rules, fixtures | Every observation explains itself from structured facts without raw CSV rereads. | Complete |
-| T-175 Intelligence Engine | Deliver a focused pure engine. | `lib/change-intelligence/` | Provider-independent orchestration has no browser, database, AI, or new dependency. | Complete |
-| T-176 Server Integration | Extend the authoritative normalization pipeline. | `app/api/normalize/csv/route.ts`, integration tests | Data Health -> KPI -> Change Intelligence gate runs server-side and returns only structured facts. | Complete |
-| T-177 What Changed UI | Present compact deterministic observations. | `app/intake-form.tsx`, `app/globals.css`, E2E | A minimal What Changed section follows KPIs and does not manufacture interpretation. | Complete |
-| T-178 Target UI | Supply minimal transient MER/CPA targets. | Intake UI and Route Handler | Current-request targets are optional, bounded, validated, and never persisted. | Complete |
-| T-179 Goldens | Add manually reviewable intelligence fixtures. | `fixtures/expected/change-intelligence/` | Required growth, efficiency, source, target, zero/null, and revenue-semantic cases exist. | Complete |
-| T-180 Unit Tests | Cover deterministic rules and boundaries. | `tests/unit/change-intelligence*.test.ts` | Classification, movers, rules, contribution, targets, dedupe, priority, evidence, and gate pass. | Complete |
-| T-181 Integration Tests | Cover raw pipeline through observations. | `tests/integration/change-intelligence-pipeline.test.ts` | Healthy, deterioration, target, review, blocked, and revenue-semantic cases pass. | Complete |
-| T-182 E2E | Verify the What Changed upload flow. | `tests/e2e/intake.spec.ts` | Supported CSV reaches at least one deterministic observation in the UI. | Complete |
-| T-183 Review Skill | Add a scoped semantic review workflow. | `.agents/skills/change-intelligence-review/SKILL.md` | Review scope covers polarity, causation, significance, revenue, targets, duplicates, and lineage. | Complete |
-| T-184 Security/Data Integrity | Review trust and semantic boundaries. | Security/data contracts, implementation, focused reviews | No P0/P1 target, division, leakage, gate, authority, or revenue issue remains. | Complete |
-| T-185 Documentation | Align implemented capability and deferrals. | Change contract, data flow, QA docs, README, changelog | Documentation claims only deterministic structured behavior that exists. | Complete |
-| T-186 Verification | Run the full required ladder. | Repository commands and focused semantic checks | Install, lint, typecheck, tests, build, E2E, diff, gates, semantics, and exclusions are observed. | Complete |
-| T-187 Sprint 09 Handoff | Prepare only the connector-framework boundary. | `SCRATCHPAD.md`, roadmap context | Exact next task states transport/account/lifecycle/error/equivalence contracts without connector implementation. | Complete |
+| T-188 Transport Contract | Lock the provider-neutral connector transport boundary. | `docs/integrations/CONNECTOR_CONTRACT.md` | Connector responsibilities and analytics exclusions are explicit. | Complete |
+| T-189 Lifecycle | Define deterministic connection states and transitions. | Connector contract, `lib/connectors/lifecycle.ts` | Every state defines transitions, fetch eligibility, and user action. | Complete |
+| T-190 Connection Model | Define a credential-free connection record. | Connector contract, `lib/connectors/types.ts` | Raw tokens are impossible domain fields; any credential reference is opaque. | Complete |
+| T-191 Capabilities | Define small read-only reporting capabilities. | Connector contract, connector types | Only discovery/fetch/date-range/pagination capabilities exist. | Complete |
+| T-192 Account Discovery | Define provider-neutral external accounts. | Connector contract, connector types | Common useful metadata is optional and discovery errors are structured. | Complete |
+| T-193 Account Selection | Validate selected provider account identity. | Connector types/helpers, unit tests | Exactly one provider ID is checked against discovered accounts server-side. | Complete |
+| T-194 Fetch Request | Define bounded daily reporting intent. | Connector contract, connector schemas | Provider, account, valid date range, and `daily` grain are accepted. | Complete |
+| T-195 Fetch Result | Define provider-bound raw fetch output. | Connector contract, connector types | Pages, records, warnings, account, date range, and provenance are explicit. | Complete |
+| T-196 Pagination Contract | Define provider-neutral pagination and limits. | Connector contract, `lib/connectors/pagination.ts` | Provider cursors remain internal and guardrails prevent runaway fetches. | Complete |
+| T-197 Retry Model | Define bounded retry categories and policy. | Connector contract, `lib/connectors/retry.ts` | Only explicit retryable failures retry; attempts and delay are bounded/testable. | Complete |
+| T-198 Connector Errors | Define stable safe connector errors. | `lib/connectors/errors.ts`, connector contract | Codes, provider, retryability, safe message, and cause category are structured. | Complete |
+| T-199 Error Redaction | Add a focused provider-error redaction boundary. | Connector errors, unit tests | Known tokens, headers, URLs, payloads, and sensitive account data do not escape. | Complete |
+| T-200 Transport Provenance | Add API-specific canonical provenance. | `lib/normalization/types.ts`, Data Health provenance check | API uses account/fetch/date/record locators without fake CSV fields. | Complete |
+| T-201 Canonical Convergence | Keep one canonical downstream contract. | Data/architecture docs, integration tests | Data Health, KPIs, and Change Intelligence need no normal transport branch. | Complete |
+| T-202 Semantic Equivalence | Define CSV/API business-semantic equality. | Data/connector contracts, QA docs | Transport-only provenance differs while canonical values/nulls/currency remain equal. | Complete |
+| T-203 Connector Types | Implement minimal connector contracts and schemas. | `lib/connectors/types.ts` | Untrusted requests validate with Zod and contracts stay provider-neutral. | Complete |
+| T-204 Connector Interface | Define the smallest connector behavior. | `lib/connectors/types.ts` | Status, account discovery, and fetch are explicit; OAuth stays separate. | Complete |
+| T-205 Mock Harness | Build a test-only connector harness. | `tests/support/connectors/` | Ready, discovery, selection, pagination, retryable, and terminal cases are deterministic. | Complete |
+| T-206 Pagination Helper | Implement generic page coordination. | `lib/connectors/pagination.ts`, unit tests | Completion, maximums, repeated-token, and no-progress cases are enforced. | Complete |
+| T-207 Retry Helper | Implement bounded injected-delay retry. | `lib/connectors/retry.ts`, unit tests | No real sleeps or retry of terminal failures occurs. | Complete |
+| T-208 Registry | Describe planned providers truthfully. | `lib/connectors/registry.ts` | Providers are framework-known but explicitly not implemented/configured. | Complete |
+| T-209 Readiness | Separate existence, configuration, connection, and fetch readiness. | `lib/connectors/readiness.ts`, unit tests | Fetch is allowed only in `ready` with selection and required capability. | Complete |
+| T-210 No-Persistence Behavior | State request/test scope honestly. | Connector contract, architecture docs, tests | No browser/server-memory/token persistence is implemented or claimed. | Complete |
+| T-211 Security | Strengthen connector security rules. | `docs/integrations/CONNECTOR_SECURITY.md` | Least privilege, OAuth state/redirect, ownership, redaction, revocation, and no writes are explicit. | Complete |
+| T-212 Equivalence Fixtures | Add synthetic mock API equivalents. | `fixtures/connectors/mock/` | Fixtures represent existing canonical facts without real-provider compatibility claims. | Complete |
+| T-213 Semantic Comparator | Compare only canonical business semantics. | `tests/support/connectors/semantic-equivalence.ts`, tests | Spend, attribution, null/zero, and currency mismatches fail. | Complete |
+| T-214 Unit Tests | Cover all generic connector boundaries. | `tests/unit/connectors*.test.ts` | Deterministic lifecycle, schemas, guards, errors, provenance, readiness, and equivalence pass. | Complete |
+| T-215 Integration Tests | Prove mock connector through normalization. | `tests/integration/connector-framework.test.ts` | Discovery/selection/fetch/normalize equivalence and failure guards pass without network. | Complete |
+| T-216 UI Shell | Keep the UI truthful and minimal. | Existing UI, connector docs | No fake connected state or inert OAuth control is added; omission is documented. | Complete |
+| T-217 Connector Skill | Add focused future connector guidance. | `.agents/skills/connector-implementation/SKILL.md` | Progressive workflow enforces read-only, secrets, convergence, current provider docs, and scoped reading. | Complete |
+| T-218 Documentation | Align all capability and deferral claims. | Connector/data/architecture/QA docs, `README.md`, `CHANGELOG.md` | Framework readiness is distinguished from live providers/OAuth/persistence. | Complete |
+| T-219 Security/Architecture Review | Review trust and semantic boundaries. | Review skills and Sprint diff | No P0/P1 secret, authority, persistence, payload, or semantic finding remains. | Complete |
+| T-220 Verification | Run the complete required ladder and exclusions. | Repository commands | Install, lint, typecheck, tests, build, E2E, diff, security, and scope checks are observed. | Complete |
+| T-221 Sprint 10 Handoff | Prepare only the Shopify connector boundary. | `SCRATCHPAD.md`, roadmap context | Exact next task preserves secure-persistence uncertainty and does not begin Sprint 10. | Complete |

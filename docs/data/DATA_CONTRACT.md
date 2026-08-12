@@ -9,13 +9,24 @@ Relay accepts provider-shaped CSV/API inputs but downstream validation, reconcil
 ```ts
 type FixedDecimalString = string; // canonical decimal text: -?\d+(\.\d+)?
 
-type ObservationProvenance = {
+type CsvObservationProvenance = {
   transport: "csv";
   ingestionId: string;
   originalFileName: string;
   sourceRow: number; // one-based CSV row, including the header row in the source file
   mappingOrigins: Partial<Record<CanonicalField, "exact_alias" | "normalized_alias" | "manual">>;
 };
+
+type ApiObservationProvenance = {
+  transport: "api";
+  provider: "meta_ads" | "google_ads" | "shopify";
+  externalAccountId: string; // server-validated provider account/store ID
+  fetchRequestId: string;
+  dateRange: { start: "YYYY-MM-DD"; end: "YYYY-MM-DD" };
+  providerRecordLocator?: string; // safe, non-secret provider record/page locator
+};
+
+type ObservationProvenance = CsvObservationProvenance | ApiObservationProvenance;
 
 type AdvertisingObservation = {
   domain: "advertising";
@@ -105,8 +116,8 @@ V1 Shopify support is intentionally limited to order-row exports: one row per or
 
 Provider-specific aliases are defined in [SOURCE_RULES.md](SOURCE_RULES.md). Mapping is deterministic and reports `mapped`, `unmapped`, `ambiguous`, or manually `ignored` columns. The only mapping origins are `exact_alias`, `normalized_alias`, and `manual`; Relay does not emit fake percentage confidence.
 
-Provenance retains the transient request ID, safe original filename, source-row reference, transport, and mapping origin. Data Health blocks downstream readiness if required provenance is absent or invalid. It intentionally excludes raw rows, unselected customer fields, and raw CSV content. Raw uploads and parsed rows are not persisted or logged.
+CSV provenance retains the transient request ID, safe original filename, source-row reference, and mapping origin. API provenance retains provider, validated account/store ID, fetch request ID, requested date range, and an optional safe provider record locator. API records never invent filenames, source rows, or mapping origins. Data Health validates the transport-specific lineage and blocks downstream readiness if required provenance is absent, invalid, inconsistent with canonical source/account identity, or places the observation date outside the declared fetch range. Record locators exclude control characters, URLs, and token/auth-like material. Provenance intentionally excludes raw rows/payloads, credentials, auth headers, and unselected customer fields. Raw uploads, parsed rows, and provider results are not persisted or logged.
 
 ## Connector equivalence preparation
 
-Future Meta, Google, and Shopify connectors must produce these same shapes and semantics for reporting-equivalent provider data. The synthetic files in `fixtures/normalized/` are independent golden outcomes for that future connector-contract work. Transport-specific provenance may differ only in the transport locator; analytics must not branch on CSV versus connector payload shape.
+Meta, Google, and Shopify connectors must produce these same shapes and semantics for reporting-equivalent provider data. The generic Sprint 09 mock fixture proves the contract without claiming compatibility with a real provider API. Semantic comparison ignores only provenance and input ordering; dates, source/account identity where supplied by both transports, dimensions, primitive measures, currency, null versus zero, and revenue semantics must match. Analytics does not branch on CSV versus API; only provenance-specific Data Health checks inspect transport.

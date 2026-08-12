@@ -3,13 +3,24 @@ import type { MappingOrigin, ProviderSource } from "../mapping/types";
 
 export type FixedDecimalString = string;
 
-export type ObservationProvenance = {
+export type CsvObservationProvenance = {
   transport: "csv";
   ingestionId: string;
   originalFileName: string;
   sourceRow: number;
   mappingOrigins: Partial<Record<CanonicalField, Exclude<MappingOrigin, null>>>;
 };
+
+export type ApiObservationProvenance = {
+  transport: "api";
+  provider: ProviderSource;
+  externalAccountId: string;
+  fetchRequestId: string;
+  dateRange: { start: string; end: string };
+  providerRecordLocator?: string;
+};
+
+export type ObservationProvenance = CsvObservationProvenance | ApiObservationProvenance;
 
 export type AdvertisingObservation = {
   domain: "advertising";
@@ -73,7 +84,7 @@ export function provenanceFor(
   input: NormalizerInput,
   sourceRow: number,
 ): ObservationProvenance {
-  const mappingOrigins: ObservationProvenance["mappingOrigins"] = {};
+  const mappingOrigins: CsvObservationProvenance["mappingOrigins"] = {};
   for (const [field, mapping] of Object.entries(input.mapping.fields)) {
     if (mapping?.origin) mappingOrigins[field as CanonicalField] = mapping.origin;
   }

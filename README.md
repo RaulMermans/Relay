@@ -4,9 +4,11 @@
 
 ## Current status
 
-Sprint 08 adds deterministic Change Intelligence after the fixture-backed KPI engine. Relay accepts one CSV through server-side Route Handlers, validates it, identifies representative Meta Ads, Google Ads, and Shopify export signatures, proposes deterministic provider-valid mappings, normalizes daily advertising or commerce observations, gates them with Data Health, and returns safe KPI and structured change facts. Unknown source or ambiguous mappings are never guessed. Vercel remains the frontend and backend deployment target. Durable persistence is deferred, so the application has no connected database. Production deployment remains independently blocked because this workspace has no Vercel CLI, authentication, or project linkage.
+Sprint 09 adds a provider-neutral, read-only connector framework alongside the implemented fixture-backed CSV pipeline. Relay now defines deterministic connection lifecycle/readiness, credential-free connection records, account discovery and server-validated selection, strict daily fetch intent, bounded pagination/retry, structured redacted errors, API provenance, and canonical CSV/API semantic-equivalence tests. A synthetic test-only mock proves the framework without network access. Meta Ads, Google Ads, and Shopify provider connectors remain not built and unconfigured.
 
-Relay computes deterministic fixture-backed marketing KPIs from normalized, Data-Health-gated data. It then deterministically identifies meaningful performance changes, efficiency movements, source-level shifts, additive spend contributions, explainable rule-based signals, and explicit target breaches from those validated KPI facts. The focused UI evaluates one CSV at a time and accepts optional current-period dates plus transient MER/CPA targets; multi-source contribution/MER and revenue semantics are covered at the integration boundary. Shopify gross revenue remains commerce truth for Revenue/MER/AOV, while Meta/Google attributed revenue remains provider advertising data for same-source ROAS. Relay does not provide causal attribution, statistical anomaly detection, recommendations, AI, persistence, connectors, dashboards, reports, or PDFs.
+Relay computes deterministic fixture-backed marketing KPIs and Change Intelligence from normalized, Data-Health-gated canonical data. The focused UI still evaluates one CSV at a time and accepts optional current-period dates plus transient MER/CPA targets. Shopify gross revenue remains commerce truth for Revenue/MER/AOV, while Meta/Google attributed revenue remains provider advertising data for same-source ROAS. Analytics has no CSV/API transport branch.
+
+Relay does not yet provide live OAuth, real provider account discovery/fetch, durable connections, a database, causal attribution, statistical anomaly detection, recommendations, AI, dashboards, reports, or PDFs. Connection abstractions and mock credentials are request/test scoped and do not survive serverless invocations or deployments.
 
 ## Requirements
 
@@ -40,7 +42,7 @@ npm run test:e2e
 
 ## Deployment and persistence
 
-Relay deploys as one Next.js project on Vercel. Its server-side Next.js boundaries deploy with the same project. No database, Prisma schema, migration, or production environment variable is currently configured; the application is database-ready, not database-dependent.
+Relay deploys as one Next.js project on Vercel. Its server-side Next.js boundaries deploy with the same project. No database, Prisma schema, migration, provider SDK, OAuth framework, credential store, or production provider configuration is present. Live persisted connectors remain blocked until a secure durable server-side persistence and ownership boundary is selected.
 
 ## Repository navigation
 

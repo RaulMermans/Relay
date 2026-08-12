@@ -28,6 +28,12 @@
 - Additive source-spend contribution, bounded transient target validation/evaluation, stable observation deduplication/priority, and raw-data-free KPI evidence lineage.
 - Compact Change Intelligence facts on the normalization API plus a minimal What Changed UI with optional current-period and MER/CPA target inputs.
 - Ten manually maintained Change Intelligence goldens, raw comparison fixtures, unit/integration/E2E coverage, and a scoped Change Intelligence review skill.
+- Provider-neutral read-only connector types for lifecycle, connection/account selection, daily fetch requests/results, capabilities, and explicit readiness.
+- Bounded generic pagination and injected-delay retry helpers, stable structured connector errors, and focused provider-error redaction.
+- Discriminated CSV/API canonical provenance with transport-specific Data Health lineage validation and no analytics transport branch.
+- A truthful not-built provider registry plus a test-only two-page mock connector/normalizer and synthetic API fixture.
+- CSV/API canonical semantic-equivalence support that ignores only provenance/order and rejects measure, revenue, null/zero, and currency drift.
+- A scoped connector implementation skill and strengthened connector transport/security/testing documentation.
 
 ### Changed
 
@@ -35,7 +41,7 @@
 - Added documentation-only validation-experiment design; no application functionality was implemented.
 - Defined V1 architecture, canonical data semantics, revenue rules, ingestion/persistence boundaries, report/AI boundaries, deployment, security, testing, and Sprint 03 handoff.
 - Superseded ADR-005's Railway/PostgreSQL/Prisma deployment assumptions with Vercel and no currently connected database.
-- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, and structured deterministic Change Intelligence. Connectors, AI, recommendations, reports, dashboards, and persistence remain unimplemented.
+- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, and a generic connector framework proven by mock integration. Live provider connectors, OAuth, durable connections, AI, recommendations, reports, dashboards, and persistence remain unimplemented.
 
 ### Deployment
 
