@@ -1,28 +1,22 @@
 # Current status
 
-- Sprint 08 is complete at baseline `cd9b385`.
-- Sprint 09 generic connector framework is complete pending commit; no live provider, OAuth, network request, durable state, or production connector UI was added.
+- Sprint 09 is complete at baseline `638ddd6`.
+- Sprint 10 activation decision: B - Shopify transport/normalization implemented; durable live activation deferred.
+- Official Shopify GraphQL Admin API/auth/version/scope docs verified 2026-08-12; pinned adapter version is `2026-07`.
+- Dependency decision: native server `fetch` plus existing Zod; no Shopify SDK or new dependency.
+- Persistence blocker: no authenticated durable store for installations, rotating access/refresh tokens, expiries, scopes, ownership, revocation, or disconnect.
 
-# Sprint 09 decisions
+# Execution
 
-- Transport: connectors own status, discovered/server-validated account selection, bounded read-only daily fetch, pagination, retry classification, and structured provider-bound results. Analytics begins only after canonical normalization.
-- Lifecycle/readiness: fetch requires a framework implementation, server configuration, `ready` state, selected account, opaque credential reference, and `reporting_fetch`. Transient fetch errors do not mutate credential state.
-- Connection/security: analytical connection records exclude raw credentials. Errors expose stable safe fields only; provider causes/payloads stay out. API record locators reject control, URL, and token/auth-like patterns.
-- Provenance: CSV retains request/file/row/mapping lineage; API retains provider/account/fetch/date/optional safe record locator. Data Health validates provider/account identity and observation date within fetch range.
-- Equivalence: connector test support ignores only provenance/order. Dates, source/account fields, dimensions, primitive measures, currency, null/zero, and revenue domain remain strict. Advertising API revenue stays `attributedRevenue`.
-- Registry/UI: Shopify, Meta Ads, and Google Ads are framework-known but `not_built` and unconfigured. No decorative cards, fake connected state, or inert OAuth controls were added.
+- Main files: `lib/connectors/shopify/`, Shopify connector fixtures/tests, registry/UI, `docs/integrations/SHOPIFY_CONNECTOR.md`, focused connector/data/architecture/QA docs.
+- Targeted baseline: 5 connector files / 28 tests passed.
+- TDD red: Shopify suites failed because provider modules did not exist; registry test failed on `not_built`.
+- Targeted green: Shopify unit/integration 2 files / 26 tests. Review findings fixed with red/green coverage: required capability enforcement, full `requestedQueryCost` throttle delay, and transport-to-normalizer integration.
+- Final verification: `npm ci` exit 0 (Node 24.14.0/npm 11.9.0); lint exit 0; typecheck exit 0; unit 20 files / 131 tests; integration 9 files / 54 tests; combined 29 files / 185 tests; production build exit 0; Playwright 8/8.
+- Reviews: security, data contract, and PR review have no unresolved P0/P1/P2 findings. No new dependency, route, environment key, database, credential store, mutation, PII query, or advertising-revenue field.
+- Environment note: `npm` was absent from PATH, so verification used the exact npm 11.9.0 CLI with the bundled Node 24.14.0 runtime. No package metadata changed.
 
-# Review and verification
+# Sprint 11 handoff
 
-- Data-contract, security-sanity, and PR reviews found no P0/P1 issue. Two P2 API-lineage gaps (observation outside fetch range; secret-bearing locator) were resolved with failing-then-passing regression coverage.
-- `npm ci` via pinned npm 11.9.0 and bundled Node 24 added 388/audited 389 with 0 vulnerabilities. The initial attempt failed because child scripts could not resolve `node`; rerun with the bundled Node directory on `PATH` passed.
-- `npm run lint` passed with no warnings after two test-support cleanup edits; `npm run typecheck` passed.
-- `npm run test` passed 27 files/158 tests; unit passed 19/111; integration passed 8/47.
-- `npm run build` passed; Playwright passed 8/8; `git diff --check` passed.
-- Dependency diff is empty. Scope checks found no provider/OAuth/database dependency, analytics transport branch, runtime connector network call, raw credential domain field, secret-like connector fixture value, or production mock exposure.
-- Connector skill has valid frontmatter/no placeholders and matching UI metadata. The provided `quick_validate.py` could not start because the bundled Python lacks `yaml`; no repository dependency was added for the external validator.
-
-# Blockers and next action
-
-- Live persisted connections remain blocked until Sprint 10 evaluates a secure durable server-side credential/ownership path. Vercel CLI/auth/project linkage remains independently deferred.
-- Exact next task: Sprint 10 T-222 — verify current official Shopify authorization, read-only scopes, account/store selection semantics, reporting endpoints, pagination, limits, and secure-persistence options; produce an executable Shopify connector contract and activation decision before implementing OAuth or network code.
+- Exact recommended Sprint 11 task: T-256 - verify current official Meta Marketing API app/auth/token/ad-account/reporting requirements and produce the Meta Ads activation decision plus executable read-only connector contract before implementation.
+- Carry forward the Sprint 10 lessons: keep activation separate from adapter existence, do not invent credential persistence, use stable provider IDs, preserve canonical revenue polarity, inject transport/delay, fail closed on pagination, and prove CSV/API equivalence with negative controls.

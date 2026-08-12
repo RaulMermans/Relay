@@ -55,6 +55,24 @@ The static registry marks Shopify, Meta Ads, and Google Ads as framework-known b
 
 CSV and API provenance are different discriminated shapes. Data Health validates the relevant locator fields; the KPI Engine and Change Intelligence continue consuming canonical observations without transport branches. Connections and opaque mock credential references are request/test scoped. No OAuth, provider SDK, database, durable token persistence, provider network call, or new service exists.
 
+## Sprint 10 Shopify adapter boundary
+
+Sprint 10 implements the first provider-specific transport without activating a live connection:
+
+```text
+request-scoped server Shopify credential
+  -> GraphQL Admin API 2026-07 shop identity
+  -> validated single installed store
+  -> store-local inclusive date range translated to UTC query bounds
+  -> bounded cursor-paginated order fetch
+  -> validated one-node-per-order records
+  -> Shopify API normalizer
+  -> existing canonical commerce observations
+  -> unchanged Data Health -> KPI -> Change Intelligence
+```
+
+Only the provider module can see GraphQL response shapes. It requests no customer PII or line items, exposes no mutations, and uses Shopify original order total as the existing gross-commerce semantic. Synthetic tests inject `fetch`; production runtime wiring remains absent. The static registry says `implemented` but unconfigured, and the UI shows live connection unavailable. Shopify CSV remains fully supported. Live authorization, routes, environment configuration, callbacks, webhooks, and durable tokens are deferred until secure ownership-aware persistence exists.
+
 ## Sprint 05 implemented CSV boundary
 
 The current CSV flow is deliberately staged and transient:

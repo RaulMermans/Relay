@@ -32,6 +32,8 @@ Provider responses are untrusted. Validate fetch intent and provider output befo
 
 Relay has no durable server database or authenticated ownership store. Sprint 09 connections and mock credentials are request/test scoped. Never use localStorage, browser-visible JavaScript, ordinary cookies, Markdown, source code, per-user environment variables, or server memory as fake durable credential storage. A live connector that must survive serverless invocation boundaries remains blocked until secure durable persistence and ownership controls are selected.
 
+Sprint 10 applies that gate to Shopify. The provider adapter accepts a request-scoped server credential only through its constructor and never exposes it through a registry entry, route, domain record, fixture, error, or log. Live Shopify authorization is deferred because current public-app offline access tokens rotate and require durable access/refresh token, expiry, installation, scope, revocation, and owner state. Public activation must also add validated authorization state/HMAC handling and mandatory compliance webhooks; none is simulated by the adapter tests.
+
 ## Uploaded files and analytics
 
 CSV uploads and provider payloads remain untrusted and transient. Provider raw records stop at the connector/provider-normalizer boundary. Canonical observations exclude credentials and raw payloads. Data Health, KPIs, Change Intelligence, reports, and future AI never receive secrets or authorization material.

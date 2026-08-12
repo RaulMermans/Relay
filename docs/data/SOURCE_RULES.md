@@ -77,6 +77,8 @@ Field mapping uses the same normalized header comparison. An exact original-stri
 
 `source_store_id`, `source_store_name`, `net_revenue`, `refunds`, `customers`, and `new_customers` are valid manual commerce targets but have no automatic V1 alias because the representative exports do not supply an evidenced semantic equivalent.
 
+The Shopify API adapter uses one GraphQL `Order` node per canonical observation. `Order.name` maps to `orderId`, the store-local calendar date derived from `createdAt` maps to `date`, and `totalPriceSet.shopMoney` maps to `grossRevenue` plus `currencyCode`. The discovered GraphQL shop ID/name populate store identity. API `netRevenue`, `refunds`, `customers`, and `newCustomers` stay unavailable so the supported CSV/API fixture retains identical business semantics; Shopify customer PII is not requested.
+
 ## Mapping outcomes and manual rules
 
 Each provider column is one of:

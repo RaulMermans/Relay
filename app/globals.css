@@ -96,6 +96,33 @@ h1 {
   gap: 1.2rem;
 }
 
+.connector-status {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.7fr) minmax(16rem, 1.3fr);
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid #bed0d5;
+  background: #e9f0f1;
+}
+
+.connector-status h2,
+.connector-status p {
+  margin: 0;
+}
+
+.connector-status h2 {
+  margin-top: 0.3rem;
+  color: #10272e;
+  font-size: 1.35rem;
+}
+
+.connector-status > p {
+  color: #45616a;
+  line-height: 1.5;
+}
+
 .intake-form,
 .intake-result {
   border: 1px solid #bed0d5;
@@ -711,7 +738,8 @@ summary {
   }
 
   .drop-zone,
-  .submit-row {
+  .submit-row,
+  .connector-status {
     grid-template-columns: 1fr;
     display: grid;
   }

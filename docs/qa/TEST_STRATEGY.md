@@ -8,9 +8,13 @@ Core ingestion, health, and analytical logic must be independently testable from
 
 Existing suites cover CSV parsing/mapping/normalization, Data Health, KPIs, and Change Intelligence. Sprint 09 adds lifecycle transitions/state metadata, strict daily fetch intent, server-validated account selection, read-only capabilities, readiness, stable error classification, focused redaction, page/record/repeated-token/no-progress guards, injected-delay bounded retry, API provenance, a truthful not-built registry, and a test-only semantic comparator.
 
+Sprint 10 adds Shopify shop/order GraphQL validation, safe domain/store identity, store-local date boundaries, cursor translation, throttling/error classification, one-order grain, fixed-decimal gross revenue, currency, null optional fields, safe API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
+
 ## Integration tests
 
 Existing integration tests exercise synthetic raw CSV through Change Intelligence. Sprint 09 runs a labelled provider-neutral mock through account discovery, validated selection, two-page fetch, mock provider normalization, and API canonical provenance. The result is compared with the existing Meta CSV raw fixture after removing only provenance and sorting. Terminal authorization prevents provider page fetch, retryable/terminal errors remain structured, and runaway pagination fails closed.
+
+Sprint 10 runs labelled synthetic Shopify GraphQL pages through the provider validator/normalizer and compares them with the existing representative Shopify CSV. Comparison ignores transport provenance and identity only where one transport cannot supply it; identity remains strict when both supply it. Focused negative cases change gross revenue, currency, order count, null/zero, and date. API observations then pass through existing Data Health, KPI, and Change Intelligence functions without transport branches.
 
 ## Connector contract tests
 
@@ -19,6 +23,8 @@ Connector tests are deterministic and perform no network request or real sleep. 
 ## E2E tests
 
 Playwright continues to verify the implemented single-CSV intake, mapping, Data Health, KPI, target, and What Changed flow. Sprint 09 adds no provider UI because no provider connector or OAuth action exists; E2E therefore verifies no decorative or fake connected behavior.
+
+Sprint 10 additionally verifies the truthful Shopify API adapter/live-unavailable text, absence of a connect control, and continued CSV file input. No live credential is required.
 
 ## Regression fixtures
 

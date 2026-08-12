@@ -4,7 +4,7 @@ export type ConnectorRegistryEntry = {
   provider: Provider;
   displayName: string;
   frameworkStatus: "ready";
-  implementationStatus: "not_built";
+  implementationStatus: "implemented" | "not_built";
   configured: false;
   connector: Connector | null;
 };
@@ -14,7 +14,7 @@ export const CONNECTOR_REGISTRY: readonly ConnectorRegistryEntry[] = [
     provider: "shopify",
     displayName: "Shopify",
     frameworkStatus: "ready",
-    implementationStatus: "not_built",
+    implementationStatus: "implemented",
     configured: false,
     connector: null,
   },

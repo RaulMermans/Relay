@@ -1,0 +1,66 @@
+{
+  "synthetic": true,
+  "shop": {
+    "data": {
+      "shop": {
+        "id": "gid://shopify/Shop/100000001",
+        "name": "Synthetic Relay Store",
+        "currencyCode": "USD",
+        "ianaTimezone": "America/New_York",
+        "myshopifyDomain": "synthetic-relay-store.myshopify.com"
+      }
+    }
+  },
+  "pages": [
+    {
+      "data": {
+        "orders": {
+          "edges": [
+            {
+              "cursor": "synthetic-cursor-1",
+              "node": {
+                "id": "gid://shopify/Order/1001",
+                "name": "#1001",
+                "createdAt": "2026-07-01T14:00:00Z",
+                "totalPriceSet": {
+                  "shopMoney": { "amount": "126.00", "currencyCode": "USD" }
+                }
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true, "endCursor": "synthetic-cursor-1" }
+        }
+      },
+      "extensions": {
+        "cost": {
+          "throttleStatus": { "currentlyAvailable": 90, "restoreRate": 50 }
+        }
+      }
+    },
+    {
+      "data": {
+        "orders": {
+          "edges": [
+            {
+              "cursor": "synthetic-cursor-2",
+              "node": {
+                "id": "gid://shopify/Order/1002",
+                "name": "#1002",
+                "createdAt": "2026-07-02T15:30:00Z",
+                "totalPriceSet": {
+                  "shopMoney": { "amount": "60.50", "currencyCode": "USD" }
+                }
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false, "endCursor": "synthetic-cursor-2" }
+        }
+      },
+      "extensions": {
+        "cost": {
+          "throttleStatus": { "currentlyAvailable": 88, "restoreRate": 50 }
+        }
+      }
+    }
+  ]
+}

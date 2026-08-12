@@ -80,4 +80,11 @@ describe("CSV/API canonical semantic equivalence", () => {
   ])("detects a real %s semantic mismatch", (_label, change) => {
     expect(compareCanonicalSemantics([csvObservation], [{ ...apiObservation, ...change }]).equivalent).toBe(false);
   });
+
+  it("compares provider identity when both transports supply it", () => {
+    expect(compareCanonicalSemantics(
+      [csvObservation],
+      [{ ...apiObservation, sourceAccountId: "act_other" }],
+    ).equivalent).toBe(false);
+  });
 });
