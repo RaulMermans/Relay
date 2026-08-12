@@ -1,0 +1,4 @@
+interface:
+  display_name: "Change Intelligence Review"
+  short_description: "Review deterministic change semantics safely"
+  default_prompt: "Use $change-intelligence-review to review this Change Intelligence rule change for semantic regressions."

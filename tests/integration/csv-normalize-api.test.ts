@@ -89,6 +89,32 @@ describe("POST /api/normalize/csv", () => {
     expect(payload).not.toHaveProperty("observations");
   });
 
+  it("runs Change Intelligence server-side and rejects malformed transient targets", async () => {
+    const content = await readFile(
+      new URL("../../fixtures/raw/change-intelligence/meta-deterioration.csv", import.meta.url),
+      "utf8",
+    );
+    const formData = new FormData();
+    formData.set("file", new File([content], "synthetic-change.csv", { type: "text/csv" }));
+    formData.set("mappingOverrides", "[]");
+    formData.set("changeTargets", "[]");
+
+    const response = await POST(new Request("http://relay.test/api/normalize/csv", { method: "POST", body: formData }));
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.changeIntelligence).toMatchObject({ status: "ready", observations: expect.any(Array) });
+    expect(JSON.stringify(payload.changeIntelligence)).not.toContain("Synthetic current");
+    expect(JSON.stringify(payload.changeIntelligence)).not.toContain("synthetic-change.csv");
+
+    formData.set("changeTargets", '[{"id":"unsafe","metric":"cpa","scope":"report","operator":"eval","value":"10","unit":"currency","currencyCode":"EUR"}]');
+    const rejected = await POST(new Request("http://relay.test/api/normalize/csv", { method: "POST", body: formData }));
+    expect(rejected.status).toBe(400);
+    await expect(rejected.json()).resolves.toEqual({
+      status: "rejected",
+      error: { code: "INVALID_CHANGE_INTELLIGENCE_TARGETS", message: "The Change Intelligence target request is invalid." },
+    });
+  });
+
   it("rejects malformed reporting context before Data Health runs", async () => {
     const content = await readFile(
       new URL("../../fixtures/raw/meta_ads/representative-export.csv", import.meta.url),

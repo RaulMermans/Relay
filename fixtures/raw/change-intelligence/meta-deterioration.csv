@@ -1,0 +1,5 @@
+Date start,Account ID,Campaign ID,Campaign name,Amount spent,Impressions,Link clicks,Purchases,Purchase conversion value,Currency
+2026-07-30,act-1,campaign-1,Synthetic previous A,50,1000,100,10,100,EUR
+2026-07-31,act-1,campaign-2,Synthetic previous B,50,1000,100,10,100,EUR
+2026-08-01,act-1,campaign-1,Synthetic current A,60,1100,110,9,90,EUR
+2026-08-02,act-1,campaign-2,Synthetic current B,60,1100,110,9,90,EUR

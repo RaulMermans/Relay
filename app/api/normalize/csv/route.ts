@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 
+import { runChangeIntelligence } from "../../../../lib/change-intelligence/engine";
+import { ChangeIntelligenceInputError, parseChangeTargets } from "../../../../lib/change-intelligence/targets";
 import { type MappingOverride, MappingError } from "../../../../lib/mapping/field-mapping";
 import { createDataHealthInput } from "../../../../lib/data-health/request-context";
 import { runDataHealth } from "../../../../lib/data-health/run-data-health";
@@ -22,7 +24,8 @@ type NormalizeErrorCode =
   | "UNSUPPORTED_SHOPIFY_EXPORT_GRAIN"
   | "ROW_REQUIRED_VALUE_MISSING"
   | "SOURCE_UNSUPPORTED"
-  | "INVALID_DATA_HEALTH_CONTEXT";
+  | "INVALID_DATA_HEALTH_CONTEXT"
+  | "INVALID_CHANGE_INTELLIGENCE_TARGETS";
 
 const NORMALIZE_ERROR_CODES = new Set<NormalizeErrorCode>([
   "FILE_MISSING",
@@ -45,6 +48,7 @@ const NORMALIZE_ERROR_CODES = new Set<NormalizeErrorCode>([
   "ROW_REQUIRED_VALUE_MISSING",
   "SOURCE_UNSUPPORTED",
   "INVALID_DATA_HEALTH_CONTEXT",
+  "INVALID_CHANGE_INTELLIGENCE_TARGETS",
 ]);
 const MAX_MAPPING_OVERRIDE_CHARACTERS = 65_536;
 
@@ -110,6 +114,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
     const upload = formData.get("file");
+    const targets = parseChangeTargets(formData.get("changeTargets"));
     const result = await normalizeCsvFile(isUploadedFile(upload) ? upload : null, {
       ingestionId: randomUUID(),
       mappingOverrides: parseMappingOverrides(formData.get("mappingOverrides")),
@@ -129,12 +134,19 @@ export async function POST(request: Request): Promise<Response> {
       dataHealthStatus: dataHealth.status,
       reportingPeriod: dataHealth.reportingPeriod,
     });
+    const changeIntelligence = runChangeIntelligence({
+      kpiResult: kpis,
+      dataHealthStatus: dataHealth.status,
+      reportingPeriod: dataHealth.reportingPeriod,
+      targets,
+    });
 
     console.info("csv_normalization_processed", {
       provider: result.provider,
       normalizedRowCount: result.summary.normalizedRowCount,
       dataHealthStatus: dataHealth.status,
       kpiStatus: kpis.status,
+      changeIntelligenceStatus: changeIntelligence.status,
       findingCodes: dataHealth.findings.map((finding) => finding.code),
     });
     return Response.json(
@@ -144,17 +156,22 @@ export async function POST(request: Request): Promise<Response> {
         summary: result.summary,
         dataHealth,
         kpis,
+        changeIntelligence,
       },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
     const code = error instanceof DataHealthInputError
       ? "INVALID_DATA_HEALTH_CONTEXT"
+      : error instanceof ChangeIntelligenceInputError
+        ? "INVALID_CHANGE_INTELLIGENCE_TARGETS"
       : isNormalizeError(error)
         ? error.code
         : "CSV_PARSE_ERROR";
     const message = error instanceof DataHealthInputError
       ? "The Data Health context is invalid."
+      : error instanceof ChangeIntelligenceInputError
+        ? "The Change Intelligence target request is invalid."
       : isNormalizeError(error)
       ? error.message
       : "The CSV could not be normalized safely.";

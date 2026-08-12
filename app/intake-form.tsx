@@ -3,6 +3,7 @@
 import type { ChangeEvent, DragEvent, FormEvent } from "react";
 import { useRef, useState } from "react";
 
+import type { ChangeIntelligenceExecutionResult, ChangeObservation } from "../lib/change-intelligence/types";
 import type { CsvIntakeResult } from "../lib/intake/csv/intake";
 import { MAX_CSV_FILE_SIZE_BYTES } from "../lib/intake/csv/limits";
 import type { CanonicalField, MappingProposal } from "../lib/mapping/field-mapping";
@@ -54,6 +55,7 @@ type NormalizeResponse =
       };
       dataHealth: DataHealthResult;
       kpis: KpiExecutionResult;
+      changeIntelligence: ChangeIntelligenceExecutionResult;
     }
   | {
       status: "mapping_required";
@@ -179,6 +181,74 @@ function KpiSummary({ kpis }: { kpis: Extract<KpiExecutionResult, { status: "rea
   );
 }
 
+function changeAssessmentLabel(value: ChangeObservation["assessment"]): string {
+  return value === "context_required"
+    ? "Context required"
+    : `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
+}
+
+function changeSignificanceLabel(value: ChangeObservation["significance"]): string {
+  return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
+}
+
+function changeSignalLabel(observation: ChangeObservation): string | null {
+  switch (observation.signalCode) {
+    case "SPEND_OUTPACED_COMMERCE_REVENUE": return "Spend grew faster than commerce revenue.";
+    case "COMMERCE_REVENUE_OUTPACED_SPEND": return "Commerce revenue grew faster than spend.";
+    case "SPEND_UP_CONVERSIONS_DOWN": return "Spend increased while conversions decreased.";
+    case "SPEND_UP_ATTRIBUTED_REVENUE_DOWN": return "Spend increased while attributed revenue decreased.";
+    case "COMMERCE_REVENUE_UP_ORDERS_DOWN": return "Commerce revenue increased while orders decreased.";
+    case "CLICKS_UP_CONVERSIONS_DOWN": return "Clicks increased while conversions decreased.";
+    default: return null;
+  }
+}
+
+function changeTitle(observation: ChangeObservation): string {
+  if (observation.type === "SPEND_REVENUE_DIVERGENCE") return "Spend vs Revenue";
+  if (observation.type === "SOURCE_EFFICIENCY_IMPROVEMENT" || observation.type === "SOURCE_EFFICIENCY_DETERIORATION") {
+    return `${observation.source ? sourceLabel(observation.source) : "Source"} efficiency`;
+  }
+  const prefix = observation.source ? `${sourceLabel(observation.source)} ` : "";
+  return `${prefix}${kpiMetricLabel(observation.metric)}${observation.type === "TARGET_BREACH" ? " target" : ""}`;
+}
+
+function changeMovementLabel(observation: ChangeObservation): string {
+  if (observation.type === "TARGET_BREACH") return "Target breached";
+  const signal = changeSignalLabel(observation);
+  if (signal) return signal;
+  const arrow = observation.direction === "increased" ? "↑" : observation.direction === "decreased" ? "↓" : "→";
+  if (observation.percentageChange === null || observation.percentageChange === undefined) {
+    return `${arrow} percentage unavailable`;
+  }
+  const percentage = Number(observation.percentageChange) * 100;
+  return `${arrow} ${new Intl.NumberFormat("en", { maximumFractionDigits: 1 }).format(Math.abs(percentage))}%`;
+}
+
+function WhatChanged({ result }: { result: Extract<ChangeIntelligenceExecutionResult, { status: "ready" }> }) {
+  return (
+    <section className="what-changed" aria-labelledby="what-changed-heading">
+      <p className="section-label">Deterministic interpretation</p>
+      <h3 id="what-changed-heading">What Changed</h3>
+      <p>Rule-based observations from validated KPI facts. No causal or AI commentary.</p>
+      {result.observations.length === 0 ? (
+        <p>No comparable change observation is available for this upload.</p>
+      ) : (
+        <div className="change-list">
+          {result.observations.map((observation) => (
+            <article className={`change-card assessment-${observation.assessment}`} key={observation.id}>
+              <h4>{changeTitle(observation)}</h4>
+              <p className="change-movement">{changeMovementLabel(observation)}</p>
+              <p className="change-assessment">
+                {changeAssessmentLabel(observation.assessment)} · {changeSignificanceLabel(observation.significance)}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function requiredSemanticLabel(semantic: MappingProposal["requiredMissing"][number]): string {
   switch (semantic) {
     case "date":
@@ -206,6 +276,11 @@ export function IntakeForm() {
     null,
   );
   const [warningsAcknowledged, setWarningsAcknowledged] = useState(false);
+  const [reportingStart, setReportingStart] = useState("");
+  const [reportingEnd, setReportingEnd] = useState("");
+  const [merTarget, setMerTarget] = useState("");
+  const [cpaTarget, setCpaTarget] = useState("");
+  const [cpaTargetCurrency, setCpaTargetCurrency] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isNormalizing, setIsNormalizing] = useState(false);
@@ -215,6 +290,11 @@ export function IntakeForm() {
     setNormalization(null);
     setWarningsAcknowledged(false);
     setMappingOverrides(new Map());
+    setReportingStart("");
+    setReportingEnd("");
+    setMerTarget("");
+    setCpaTarget("");
+    setCpaTargetCurrency("");
 
     if (!nextFile) {
       setFile(null);
@@ -285,6 +365,14 @@ export function IntakeForm() {
 
   async function handleNormalize() {
     if (!file || !result?.mapping) return;
+    if (Boolean(reportingStart) !== Boolean(reportingEnd)) {
+      setError("Enter both current-period dates or leave both blank.");
+      return;
+    }
+    if (cpaTarget.trim() && !/^[A-Za-z]{3}$/.test(cpaTargetCurrency.trim())) {
+      setError("Enter a three-letter currency code for the CPA target.");
+      return;
+    }
 
     setIsNormalizing(true);
     setError(null);
@@ -299,6 +387,24 @@ export function IntakeForm() {
           Array.from(mappingOverrides, ([columnIndex, canonicalField]) => ({ columnIndex, canonicalField })),
         ),
       );
+      const targets = [
+        ...(merTarget.trim() ? [{ id: "mer-ui", metric: "mer", scope: "report", operator: ">", value: merTarget.trim(), unit: "ratio" }] : []),
+        ...(cpaTarget.trim() ? [{
+          id: "cpa-ui",
+          metric: "cpa",
+          scope: "report",
+          operator: "<",
+          value: cpaTarget.trim(),
+          unit: "currency",
+          currencyCode: cpaTargetCurrency.trim().toUpperCase(),
+        }] : []),
+      ];
+      formData.set("changeTargets", JSON.stringify(targets));
+      if (reportingStart && reportingEnd) {
+        formData.set("dataHealthContext", JSON.stringify({
+          currentPeriod: { start: reportingStart, end: reportingEnd },
+        }));
+      }
       const response = await fetch("/api/normalize/csv", { method: "POST", body: formData });
       const payload = (await response.json()) as NormalizeResponse;
 
@@ -326,6 +432,11 @@ export function IntakeForm() {
     setNormalization(null);
     setWarningsAcknowledged(false);
     setMappingOverrides(new Map());
+    setReportingStart("");
+    setReportingEnd("");
+    setMerTarget("");
+    setCpaTarget("");
+    setCpaTargetCurrency("");
     inputRef.current?.form?.reset();
   }
 
@@ -495,6 +606,47 @@ export function IntakeForm() {
                     </tbody>
                   </table>
                 </div>
+                <fieldset className="target-entry">
+                  <legend>Optional reporting context and targets</legend>
+                  <label htmlFor="reporting-start">Current period start</label>
+                  <input
+                    id="reporting-start"
+                    type="date"
+                    value={reportingStart}
+                    onChange={(event) => setReportingStart(event.target.value)}
+                  />
+                  <label htmlFor="reporting-end">Current period end</label>
+                  <input
+                    id="reporting-end"
+                    type="date"
+                    value={reportingEnd}
+                    onChange={(event) => setReportingEnd(event.target.value)}
+                  />
+                  <label htmlFor="mer-target">MER target above</label>
+                  <input
+                    id="mer-target"
+                    inputMode="decimal"
+                    value={merTarget}
+                    onChange={(event) => setMerTarget(event.target.value)}
+                    placeholder="3.5"
+                  />
+                  <label htmlFor="cpa-target">CPA target below</label>
+                  <input
+                    id="cpa-target"
+                    inputMode="decimal"
+                    value={cpaTarget}
+                    onChange={(event) => setCpaTarget(event.target.value)}
+                    placeholder="38"
+                  />
+                  <label htmlFor="cpa-target-currency">CPA target currency</label>
+                  <input
+                    id="cpa-target-currency"
+                    value={cpaTargetCurrency}
+                    onChange={(event) => setCpaTargetCurrency(event.target.value)}
+                    placeholder="EUR"
+                    maxLength={3}
+                  />
+                </fieldset>
                 <button type="button" className="normalize-button" onClick={handleNormalize} disabled={isNormalizing}>
                   {isNormalizing ? "Normalizing CSV…" : "Normalize CSV"}
                 </button>
@@ -581,6 +733,9 @@ export function IntakeForm() {
                   ) : null}
                 </section>
                 {normalization.kpis.status === "ready" ? <KpiSummary kpis={normalization.kpis} /> : null}
+                {normalization.changeIntelligence.status === "ready" ? (
+                  <WhatChanged result={normalization.changeIntelligence} />
+                ) : null}
               </section>
             ) : null}
 

@@ -1,0 +1,1 @@
+{"label":"Synthetic MER target met","facts":[{"scope":"report","key":"mer","unit":"ratio","current":"4.1","previous":"4","percentageChange":"0.025"}],"targets":[{"id":"mer-floor","metric":"mer","scope":"report","operator":">","value":"3.5","unit":"ratio"}],"expectedObservations":[],"absentTypes":["TARGET_BREACH"],"expectedTargetStatuses":[["mer-floor","met"]]}

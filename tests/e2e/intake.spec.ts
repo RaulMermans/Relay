@@ -6,6 +6,7 @@ const metaFixture = resolve("fixtures/raw/meta_ads/representative-export.csv");
 const unknownFixture = resolve("fixtures/raw/unknown/newsletter-export.csv");
 const missingDateFixture = resolve("fixtures/raw/failures/meta-missing-date.csv");
 const ambiguousMappingFixture = resolve("fixtures/raw/failures/meta-ambiguous-mapping.csv");
+const changeFixture = resolve("fixtures/raw/change-intelligence/meta-deterioration.csv");
 
 test("uploads a synthetic Meta Ads CSV and shows its source evidence", async ({ page }) => {
   await page.goto("/");
@@ -74,4 +75,21 @@ test("allows a user to resolve an ambiguous mapping before normalizing", async (
 
   await expect(page.getByRole("heading", { name: "Normalization complete" })).toBeVisible();
   await expect(page.getByText("1 canonical advertising observation")).toBeVisible();
+});
+
+test("shows deterministic What Changed observations and a transient target breach", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByLabel("CSV file").setInputFiles(changeFixture);
+  await page.getByRole("button", { name: "Inspect CSV" }).click();
+  await page.getByLabel("Current period start").fill("2026-08-01");
+  await page.getByLabel("Current period end").fill("2026-08-02");
+  await page.getByLabel("CPA target below").fill("6");
+  await page.getByLabel("CPA target currency").fill("EUR");
+  await page.getByRole("button", { name: "Normalize CSV" }).click();
+
+  await expect(page.getByRole("heading", { name: "What Changed" })).toBeVisible();
+  await expect(page.getByText("Target breached", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "What Changed" }).getByRole("heading", { name: "Meta Ads ROAS" })).toBeVisible();
+  await expect(page.getByText("Unfavorable · Major", { exact: true }).first()).toBeVisible();
 });

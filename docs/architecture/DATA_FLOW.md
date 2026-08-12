@@ -84,6 +84,18 @@ Canonical observations stay request-local. The browser receives auditable metric
 
 V1 report-level commerce revenue, MER, and AOV use Shopify gross revenue. Meta/Google attributed revenue is exposed only inside the corresponding provider breakdown for ROAS. Fixed-decimal calculations use bounded `BigInt` arithmetic and 12-place half-up division. Missing inputs and zero denominators produce unavailable/null facts. Sprint 07 adds no interpretation, anomaly detection, recommendation, AI, persistence, connector, dashboard, report, or PDF behavior.
 
+## Sprint 08 implemented Change Intelligence boundary
+
+The authoritative normalization Route Handler now continues through a pure deterministic interpretation layer:
+
+```text
+CSV -> normalization -> Data Health -> KPI Engine -> Change Intelligence
+```
+
+`blocked` Data Health produces blocked KPI and Change Intelligence results with no rule execution. `healthy` and `review_required` may produce structured metric movement, mover, efficiency, source-spend contribution, explicit-target, and rule-based signal facts. The engine receives only KPI results, resolved period/status, and validated transient targets. Canonical/raw rows never enter the engine or browser response.
+
+Direction remains mathematical and separate from assessment. Shopify gross revenue remains the commerce-revenue/MER basis; provider attributed revenue remains source-specific evidence. Contribution is limited to additive spend. Targets use explicit bounded operators and are never persisted. The browser supplies optional current-period dates and MER/CPA targets, then renders server-owned observation fields as compact deterministic labels. Sprint 08 adds no causation, recommendations, AI, statistics, database, connector, report, or PDF behavior.
+
 ## Persistence posture
 
 Sprint 03 keeps request processing transient and does not connect a database. When a real feature needs state, the boundary is `UI / Server Logic -> Persistence Boundary -> Demo/local implementation OR future durable database`. Server memory is not durable persistence, and no generic repository abstraction is created before that feature exists.

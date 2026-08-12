@@ -1,36 +1,36 @@
-# Sprint 07 - Deterministic KPI Engine
+# Sprint 08 - Deterministic Change Intelligence
 
 | Task | Outcome | Relevant files/docs | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
-| T-124 KPI Execution Contract | Gate KPI execution with Data Health. | `docs/data/KPI_DEFINITIONS.md`, `lib/kpi/types.ts`, `lib/kpi/engine.ts` | Blocked returns stable refusal; healthy/review-required execute. | Complete |
-| T-125 KPI Result Model | Expose auditable deterministic facts. | `docs/data/KPI_DEFINITIONS.md`, `lib/kpi/types.ts` | Period, metrics, source breakdown, status, inputs, formula, and comparison are explicit. | Complete |
-| T-126 KPI Definitions | Lock primitive, derived, and comparison definitions. | `docs/data/KPI_DEFINITIONS.md` | Every KPI documents source, unit, null/zero/currency behavior, and caveats. | Complete |
-| T-127 Revenue Semantics | Preserve commerce truth and provider attribution. | `docs/data/KPI_DEFINITIONS.md`, ADR-001, `lib/kpi/engine.ts` | Shopify gross feeds commerce KPIs; same-provider attribution feeds ROAS only. | Complete |
-| T-128 Fixed Precision | Calculate without binary floating point. | `lib/kpi/arithmetic.ts`, KPI definitions | Bounded BigInt decimal arithmetic, 12-place half-up division, canonical serialization. | Complete |
-| T-129 Primitive Aggregation | Aggregate canonical period facts. | `lib/kpi/engine.ts` | Advertising and commerce primitives aggregate deterministically before ratios. | Complete |
-| T-130 Spend | Calculate compatible advertising spend. | `lib/kpi/engine.ts`, unit tests | Period-scoped compatible sum; zero differs from unavailable. | Complete |
-| T-131 Commerce Revenue | Calculate authoritative commerce revenue. | KPI definitions, `lib/kpi/engine.ts` | V1 uses documented Shopify gross revenue only. | Complete |
-| T-132 Primitive Counts | Calculate orders, impressions, clicks, conversions. | `lib/kpi/engine.ts`, unit tests | Counts are precision-safe and missing never becomes zero. | Complete |
-| T-133 CTR | Calculate click-through ratio. | KPI definitions, `lib/kpi/engine.ts` | Clicks/impressions; missing or zero denominator is unavailable. | Complete |
-| T-134 CPC | Calculate cost per click. | KPI definitions, `lib/kpi/engine.ts` | Spend/clicks; currency preserved; zero clicks unavailable. | Complete |
-| T-135 CPA | Calculate cost per provider conversion. | KPI definitions, `lib/kpi/engine.ts` | Spend/conversions; V1 semantic caveat explicit. | Complete |
-| T-136 ROAS | Calculate same-provider attributed ROAS. | KPI definitions, `lib/kpi/engine.ts` | Meta/Google separate; no combined ROAS; zero spend unavailable. | Complete |
-| T-137 MER | Calculate commerce efficiency. | KPI definitions, `lib/kpi/engine.ts` | Shopify gross revenue / compatible total advertising spend. | Complete |
-| T-138 AOV | Calculate average order value. | KPI definitions, `lib/kpi/engine.ts` | Shopify gross revenue/orders; zero orders unavailable. | Complete |
-| T-139 Conversion Rate | Lock advertising click-to-conversion rate. | KPI definitions, `lib/kpi/engine.ts` | Conversions/clicks; never implies site/session rate. | Complete |
-| T-140 Source Breakdowns | Expose Meta, Google, and Shopify KPI views. | `lib/kpi/engine.ts`, `lib/kpi/types.ts` | Required provider/source metrics are deterministic. | Complete |
-| T-141 Period Filtering | Enforce authoritative date selection. | `lib/kpi/engine.ts`, tests | Inclusive boundaries; no outside observation contributes. | Complete |
-| T-142 Comparison Period | Use resolved previous equivalent period. | Data Health period contract, `lib/kpi/engine.ts` | Current/comparison scopes use Data Health resolution. | Complete |
-| T-143 Deltas | Calculate mathematical changes. | `lib/kpi/engine.ts`, unit tests | Absolute/percentage deltas; previous zero percentage is null. | Complete |
-| T-144 Direction Semantics | Keep interpretation outside KPI Engine. | KPI definitions | Results contain mathematical facts without favorable/unfavorable judgment. | Complete |
-| T-145 Server Boundary | Run KPI Engine after Data Health. | `app/api/normalize/csv/route.ts` | Existing route returns compact facts and no canonical/raw rows. | Complete |
-| T-146 KPI UI | Show a minimal scorecard. | `app/intake-form.tsx`, `app/globals.css` | Available summary/provider metrics show current, previous, and delta. | Complete |
-| T-147 KPI Goldens | Add independent expected KPI cases. | `fixtures/expected/kpi/` | Complete, domain-only, zero, null, previous-zero, and precision cases exist. | Complete |
-| T-148 Formula Verification | Make formulas manually inspectable. | `fixtures/expected/kpi/FORMULA_VERIFICATION.md` | Inputs and expected outputs include all formulas. | Complete |
-| T-149 Unit Tests | Verify arithmetic, formulas, boundaries, and gate. | `tests/unit/kpi-*.test.ts` | Focused deterministic and edge-case suite passes. | Complete |
-| T-150 Integration Tests | Verify raw pipeline through KPI goldens. | `tests/integration/kpi-pipeline.test.ts` | Healthy, review, blocked, and revenue-semantic cases pass. | Complete |
-| T-151 E2E | Verify the single-source KPI UI flow. | `tests/e2e/intake.spec.ts` | Supported CSV reaches visible KPI summary. | Complete |
-| T-152 Security/Data Integrity | Review trust and semantic boundaries. | `SECURITY.md`, KPI/API files, review skills | No P0/P1 precision, gate, exposure, or revenue issue remains. | Complete |
-| T-153 Documentation | Align contracts and product claims. | KPI/data/data-flow/QA docs, README, changelog | Documentation states implemented capability and deferrals only. | Complete |
-| T-154 Full Verification | Run the required verification ladder. | `package.json`, repository | Install, lint, typecheck, tests, build, E2E, and diff check pass. | Complete |
-| T-155 Sprint 08 Handoff | Expose facts without interpretation. | KPI definitions, `SCRATCHPAD.md` | Exact next boundary is deterministic Change Intelligence. | Complete |
+| T-156 Execution Contract | Gate structured KPI interpretation with Data Health. | `docs/data/CHANGE_INTELLIGENCE.md`, `lib/change-intelligence/types.ts` | Blocked returns stable refusal; healthy/review-required may execute; no raw rows enter the engine. | Complete |
+| T-157 Observation Model | Expose structured, auditable observations. | Change Intelligence contract and types | Direction, assessment, significance, evidence, scope, source, and optional target are explicit. | Complete |
+| T-158 Metric Polarity | Define one explicit interpretation source. | Change Intelligence contract and rules | Higher/lower/context-dependent metrics and caveats are documented and tested. | Complete |
+| T-159 Significance Rules | Define transparent V1 change-magnitude thresholds. | Change Intelligence contract and rules | Minor/notable/major behavior covers unavailable percentage, zero baseline, and null values. | Complete |
+| T-160 Change Classification | Classify every comparable KPI fact. | `lib/change-intelligence/`, unit tests | Increase/decrease/unchanged/unavailable remain separate from business assessment. | Complete |
+| T-161 Movers | Rank meaningful positive and negative movers. | Engine and unit tests | Top three use comparable percentage magnitude; undefined percentages are not falsely ranked. | Complete |
+| T-162 Spend/Revenue Divergence | Detect deterministic commerce-efficiency divergence. | Efficiency rules and tests | Spend/revenue change and MER evidence produce non-causal improvement/deterioration observations. | Complete |
+| T-163 CPA Rules | Detect CPA improvement and deterioration. | Metric/efficiency rules and tests | Available report/source CPA movements respect polarity and comparison availability. | Complete |
+| T-164 ROAS Rules | Detect provider-specific ROAS movement. | Metric/source rules and tests | Meta and Google remain separate; no combined attributed ROAS exists. | Complete |
+| T-165 MER Rules | Detect MER improvement, deterioration, and stability. | Metric/efficiency rules and tests | MER retains commerce-revenue/compatible-spend semantics. | Complete |
+| T-166 Revenue/Order Rules | Detect meaningful commerce movement. | Metric rules and tests | Commerce revenue and orders produce structured non-causal observations. | Complete |
+| T-167 Source Performance | Detect source-level efficiency facts. | Source rules and tests | Meta/Google observations cite exact spend/ROAS/CPA facts without campaign causes. | Complete |
+| T-168 Contribution | Attribute additive spend movement by source. | Contribution rules and tests | Contribution uses fixed-decimal source deltas only; ratios are excluded; zero total is safe. | Complete |
+| T-169 Target Model | Accept transient explicit targets. | Types, target parser/evaluator, UI | Only supported metrics/scopes/operators/units are accepted; Relay invents no targets. | Complete |
+| T-170 Target Breaches | Evaluate explicit target facts. | Target rules and tests | Breaches are emitted; met/unavailable/incompatible targets do not create false breaches. | Complete |
+| T-171 Rule-Based Signals | Surface small explainable cross-metric signals. | Signal rules and tests | Supported conjunctions are deterministic, structured, and make no statistical or causal claim. | Complete |
+| T-172 Deduplication | Prevent overlapping rule floods. | Engine prioritization and tests | Stable IDs and precedence remove exact/semantically redundant observations. | Complete |
+| T-173 Prioritization | Order observations deterministically. | Engine and contract | Target breaches and major movements precede lower-value context; output limit is documented. | Complete |
+| T-174 Evidence Lineage | Preserve KPI and target evidence. | Types, rules, fixtures | Every observation explains itself from structured facts without raw CSV rereads. | Complete |
+| T-175 Intelligence Engine | Deliver a focused pure engine. | `lib/change-intelligence/` | Provider-independent orchestration has no browser, database, AI, or new dependency. | Complete |
+| T-176 Server Integration | Extend the authoritative normalization pipeline. | `app/api/normalize/csv/route.ts`, integration tests | Data Health -> KPI -> Change Intelligence gate runs server-side and returns only structured facts. | Complete |
+| T-177 What Changed UI | Present compact deterministic observations. | `app/intake-form.tsx`, `app/globals.css`, E2E | A minimal What Changed section follows KPIs and does not manufacture interpretation. | Complete |
+| T-178 Target UI | Supply minimal transient MER/CPA targets. | Intake UI and Route Handler | Current-request targets are optional, bounded, validated, and never persisted. | Complete |
+| T-179 Goldens | Add manually reviewable intelligence fixtures. | `fixtures/expected/change-intelligence/` | Required growth, efficiency, source, target, zero/null, and revenue-semantic cases exist. | Complete |
+| T-180 Unit Tests | Cover deterministic rules and boundaries. | `tests/unit/change-intelligence*.test.ts` | Classification, movers, rules, contribution, targets, dedupe, priority, evidence, and gate pass. | Complete |
+| T-181 Integration Tests | Cover raw pipeline through observations. | `tests/integration/change-intelligence-pipeline.test.ts` | Healthy, deterioration, target, review, blocked, and revenue-semantic cases pass. | Complete |
+| T-182 E2E | Verify the What Changed upload flow. | `tests/e2e/intake.spec.ts` | Supported CSV reaches at least one deterministic observation in the UI. | Complete |
+| T-183 Review Skill | Add a scoped semantic review workflow. | `.agents/skills/change-intelligence-review/SKILL.md` | Review scope covers polarity, causation, significance, revenue, targets, duplicates, and lineage. | Complete |
+| T-184 Security/Data Integrity | Review trust and semantic boundaries. | Security/data contracts, implementation, focused reviews | No P0/P1 target, division, leakage, gate, authority, or revenue issue remains. | Complete |
+| T-185 Documentation | Align implemented capability and deferrals. | Change contract, data flow, QA docs, README, changelog | Documentation claims only deterministic structured behavior that exists. | Complete |
+| T-186 Verification | Run the full required ladder. | Repository commands and focused semantic checks | Install, lint, typecheck, tests, build, E2E, diff, gates, semantics, and exclusions are observed. | Complete |
+| T-187 Sprint 09 Handoff | Prepare only the connector-framework boundary. | `SCRATCHPAD.md`, roadmap context | Exact next task states transport/account/lifecycle/error/equivalence contracts without connector implementation. | Complete |

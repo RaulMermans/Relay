@@ -542,10 +542,94 @@ summary {
   background: #dff0ed;
 }
 
-.kpi-summary {
+.kpi-summary,
+.what-changed {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
   border-top: 1px solid #bed0d5;
+}
+
+.target-entry {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(8rem, 1fr);
+  gap: 0.55rem 0.8rem;
+  margin: 1rem 0 0;
+  padding: 0.85rem;
+  border: 1px solid #bed0d5;
+}
+
+.target-entry legend {
+  padding: 0 0.35rem;
+  color: #2e525b;
+  font-weight: 700;
+}
+
+.target-entry label {
+  align-self: center;
+  color: #45616a;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.target-entry input {
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #70919a;
+  border-radius: 0.2rem;
+  color: #10272e;
+}
+
+.what-changed > p:not(.section-label) {
+  color: #45616a;
+}
+
+.change-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.change-card {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 1.4fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.8rem;
+  border-left: 0.3rem solid #70919a;
+  background: #f8fbfb;
+}
+
+.change-card.assessment-favorable {
+  border-left-color: #17616c;
+}
+
+.change-card.assessment-unfavorable {
+  border-left-color: #b43f32;
+}
+
+.change-card.assessment-context_required {
+  border-left-color: #e97047;
+}
+
+.change-card h4,
+.change-card p {
+  margin: 0;
+}
+
+.change-card h4 {
+  color: #2e525b;
+  font-size: 0.9rem;
+}
+
+.change-movement {
+  color: #10272e;
+  font-weight: 700;
+}
+
+.change-assessment {
+  color: #45616a;
+  font-family: "Courier New", monospace;
+  font-size: 0.76rem;
+  white-space: nowrap;
 }
 
 .kpi-summary > p:not(.section-label) {
@@ -650,6 +734,11 @@ summary {
   }
 
   .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .target-entry,
+  .change-card {
     grid-template-columns: 1fr;
   }
 }

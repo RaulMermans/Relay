@@ -1,0 +1,1 @@
+{"label":"Synthetic missing KPI","facts":[{"scope":"report","key":"cpa","unit":"currency","current":null,"previous":"5","percentageChange":null,"currencyCode":"EUR"}],"expectedObservations":[],"absentTypes":["CPA_MOVEMENT","TARGET_BREACH"]}
