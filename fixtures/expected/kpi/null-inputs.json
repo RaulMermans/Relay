@@ -1,0 +1,9 @@
+{
+  "label": "Missing canonical measures remain unavailable rather than becoming zero",
+  "metrics": {
+    "spend": { "value": null, "status": "unavailable", "unavailableReason": "INPUT_UNAVAILABLE" },
+    "impressions": { "value": null, "status": "unavailable", "unavailableReason": "INPUT_UNAVAILABLE" },
+    "clicks": { "value": null, "status": "unavailable", "unavailableReason": "INPUT_UNAVAILABLE" },
+    "conversions": { "value": null, "status": "unavailable", "unavailableReason": "INPUT_UNAVAILABLE" }
+  }
+}

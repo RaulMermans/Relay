@@ -1,0 +1,13 @@
+{
+  "label": "Synthetic Shopify commerce only",
+  "metrics": {
+    "commerce_revenue": { "value": "225", "status": "available" },
+    "orders": { "value": "2", "status": "available" },
+    "aov": { "value": "112.5", "status": "available" },
+    "spend": { "value": null, "status": "unavailable" },
+    "mer": { "value": null, "status": "unavailable" }
+  },
+  "sourceBreakdown": {
+    "shopify": { "commerce_revenue": "225", "orders": "2", "aov": "112.5" }
+  }
+}

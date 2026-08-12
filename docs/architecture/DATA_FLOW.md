@@ -67,6 +67,23 @@ Canonical observations remain request-local and never appear in the response. Th
 
 Data Health detects date coverage and alignment, expected source completeness, currency incompatibility, mapping/provenance gaps, duplicate evidence, and revenue semantic compatibility. It never fills missing days with zeroes, deletes duplicates, performs FX conversion, aggregates revenue, calculates KPIs, persists state, connects providers, or invokes AI. `blocked` prevents future KPI use; `review_required` needs local acknowledgement in the current UI before it displays readiness.
 
+## Sprint 07 implemented KPI boundary
+
+The existing normalization Route Handler now continues server-side through the deterministic KPI engine:
+
+```text
+CSV upload
+  -> validation + parsing + source detection + mapping + normalization
+  -> Data Health + reconciliation
+  -> blocked: stable KPI refusal
+  -> healthy/review_required: period-filtered deterministic KPI facts
+  -> compact Data Health + KPI response
+```
+
+Canonical observations stay request-local. The browser receives auditable metric facts, input metadata, formulas, periods, source breakdowns, and deltas, but never canonical rows or raw CSV content. The server is authoritative for period filtering and calculation; the UI only presents the result.
+
+V1 report-level commerce revenue, MER, and AOV use Shopify gross revenue. Meta/Google attributed revenue is exposed only inside the corresponding provider breakdown for ROAS. Fixed-decimal calculations use bounded `BigInt` arithmetic and 12-place half-up division. Missing inputs and zero denominators produce unavailable/null facts. Sprint 07 adds no interpretation, anomaly detection, recommendation, AI, persistence, connector, dashboard, report, or PDF behavior.
+
 ## Persistence posture
 
 Sprint 03 keeps request processing transient and does not connect a database. When a real feature needs state, the boundary is `UI / Server Logic -> Persistence Boundary -> Demo/local implementation OR future durable database`. Server memory is not durable persistence, and no generic repository abstraction is created before that feature exists.

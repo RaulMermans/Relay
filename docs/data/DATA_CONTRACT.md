@@ -73,7 +73,7 @@ There is no generic canonical `revenue` field.
 - `attributedRevenue` belongs only to `AdvertisingObservation`. Meta purchase value and Google conversion value remain provider-attributed advertising measures.
 - `grossRevenue` and `netRevenue` belong only to `CommerceObservation`. Shopify/store revenue remains commerce truth.
 
-The allowed future KPI use of these measures is defined in [ADR-001](../decisions/ADR-001-revenue-semantics.md). Sprint 05 calculates no KPIs, ratios, or revenue aggregates.
+Sprint 07 uses Shopify `grossRevenue` as V1 report-level `commerce_revenue` and as the MER/AOV numerator because it is required at the supported order-row boundary; optional `netRevenue` remains separate and unavailable where the source omits it. Provider-specific ROAS uses only same-provider `attributedRevenue` and spend. Relay never creates a generic canonical revenue field or a combined Meta-plus-Google attributed total. Exact formulas are defined in [KPI_DEFINITIONS.md](KPI_DEFINITIONS.md) and [ADR-001](../decisions/ADR-001-revenue-semantics.md).
 
 ## Numeric and currency representation
 
@@ -87,6 +87,8 @@ Money and counts use normalized fixed decimal strings rather than JavaScript num
 - Currency codes are uppercased only after validating three ASCII letters. If a row has a monetary value but no currency, normalization fails.
 
 Mixed currencies are preserved per record. Data Health treats within-source mixed currency and cross-source monetary currency mismatch as blocking; it never combines or converts them.
+
+KPI arithmetic consumes this canonical text with bounded `BigInt` fixed-decimal operations. Division rounds half up to at most 12 fractional digits; serialized KPI values remain canonical decimal strings. Binary floating-point is not authoritative.
 
 ## Availability, required semantics, and Shopify grain
 

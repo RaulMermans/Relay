@@ -542,6 +542,72 @@ summary {
   background: #dff0ed;
 }
 
+.kpi-summary {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #bed0d5;
+}
+
+.kpi-summary > p:not(.section-label) {
+  color: #45616a;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+}
+
+.kpi-card {
+  padding: 0.8rem;
+  border: 1px solid #bed0d5;
+  background: #f8fbfb;
+}
+
+.kpi-card h4 {
+  margin: 0;
+  color: #2e525b;
+  font-family: "Courier New", monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kpi-current {
+  margin: 0.55rem 0;
+  color: #10272e;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.kpi-card dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.kpi-card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.kpi-card dt,
+.kpi-card dd {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.kpi-card dt {
+  color: #45616a;
+}
+
+.kpi-card dd {
+  color: #10272e;
+  font-family: "Courier New", monospace;
+  text-align: right;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -581,6 +647,10 @@ summary {
   .data-health-coverage dl > div {
     grid-template-columns: 1fr;
     gap: 0.25rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
   }
 }
 

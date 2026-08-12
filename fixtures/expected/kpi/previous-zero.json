@@ -1,0 +1,9 @@
+{
+  "label": "Previous-zero comparison avoids an infinite percentage",
+  "metrics": {
+    "spend": {
+      "value": "10",
+      "comparison": { "current": "10", "previous": "0", "absoluteChange": "10", "percentageChange": null }
+    }
+  }
+}

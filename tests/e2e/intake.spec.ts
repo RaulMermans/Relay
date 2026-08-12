@@ -44,6 +44,10 @@ test("reviews the detected mapping and normalizes a supported CSV", async ({ pag
   await expect(page.getByRole("heading", { name: "Data Health" })).toBeVisible();
   await expect(page.getByText("Review required", { exact: true })).toBeVisible();
   await expect(page.getByText("Paid-platform attribution is present without a commerce source for store-side context.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "KPI summary" })).toBeVisible();
+  await expect(page.getByText("Spend", { exact: true })).toBeVisible();
+  await expect(page.getByText("Meta Ads ROAS", { exact: true })).toBeVisible();
+  await expect(page.getByText("Commerce Revenue", { exact: true })).not.toBeVisible();
   await page.getByRole("button", { name: "Acknowledge warnings" }).click();
   await expect(page.getByText("Ready for analytics", { exact: true })).toBeVisible();
 });

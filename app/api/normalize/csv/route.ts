@@ -4,6 +4,7 @@ import { type MappingOverride, MappingError } from "../../../../lib/mapping/fiel
 import { createDataHealthInput } from "../../../../lib/data-health/request-context";
 import { runDataHealth } from "../../../../lib/data-health/run-data-health";
 import { DataHealthInputError } from "../../../../lib/data-health/types";
+import { runKpiEngine } from "../../../../lib/kpi/engine";
 import { normalizeCsvFile } from "../../../../lib/normalization/normalize-csv";
 import { type CsvIntakeErrorCode } from "../../../../lib/intake/csv/validate";
 
@@ -123,11 +124,17 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     const dataHealth = runDataHealth(createDataHealthInput(formData.get("dataHealthContext"), result));
+    const kpis = runKpiEngine({
+      observations: result.observations,
+      dataHealthStatus: dataHealth.status,
+      reportingPeriod: dataHealth.reportingPeriod,
+    });
 
     console.info("csv_normalization_processed", {
       provider: result.provider,
       normalizedRowCount: result.summary.normalizedRowCount,
       dataHealthStatus: dataHealth.status,
+      kpiStatus: kpis.status,
       findingCodes: dataHealth.findings.map((finding) => finding.code),
     });
     return Response.json(
@@ -136,6 +143,7 @@ export async function POST(request: Request): Promise<Response> {
         provider: result.provider,
         summary: result.summary,
         dataHealth,
+        kpis,
       },
       { headers: { "Cache-Control": "no-store" } },
     );

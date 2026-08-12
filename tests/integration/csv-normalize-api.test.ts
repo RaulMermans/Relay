@@ -59,6 +59,36 @@ describe("POST /api/normalize/csv", () => {
     expect(JSON.stringify(payload.dataHealth)).not.toContain("meta.csv");
   });
 
+  it("runs the gated KPI engine server-side and returns compact KPI facts without observations", async () => {
+    const content = await readFile(
+      new URL("../../fixtures/raw/meta_ads/representative-export.csv", import.meta.url),
+      "utf8",
+    );
+    const formData = new FormData();
+    formData.set("file", new File([content], "meta.csv", { type: "text/csv" }));
+    formData.set("mappingOverrides", "[]");
+
+    const response = await POST(
+      new Request("http://relay.test/api/normalize/csv", { method: "POST", body: formData }),
+    );
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.kpis).toMatchObject({
+      status: "ready",
+      metrics: expect.arrayContaining([
+        expect.objectContaining({ key: "spend", status: "available", unit: "currency" }),
+        expect.objectContaining({ key: "commerce_revenue", status: "unavailable" }),
+      ]),
+      sourceBreakdown: expect.arrayContaining([
+        expect.objectContaining({ source: "meta_ads" }),
+      ]),
+    });
+    expect(JSON.stringify(payload.kpis)).not.toContain("Summer");
+    expect(JSON.stringify(payload.kpis)).not.toContain("meta.csv");
+    expect(payload).not.toHaveProperty("observations");
+  });
+
   it("rejects malformed reporting context before Data Health runs", async () => {
     const content = await readFile(
       new URL("../../fixtures/raw/meta_ads/representative-export.csv", import.meta.url),

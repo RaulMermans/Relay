@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import type { CsvIntakeResult } from "../lib/intake/csv/intake";
 import { MAX_CSV_FILE_SIZE_BYTES } from "../lib/intake/csv/limits";
 import type { CanonicalField, MappingProposal } from "../lib/mapping/field-mapping";
+import type { KpiExecutionResult, KpiMetricKey, KpiMetricResult } from "../lib/kpi/types";
 
 type RejectedIntakeResponse = {
   status: "rejected";
@@ -52,6 +53,7 @@ type NormalizeResponse =
         warnings: string[];
       };
       dataHealth: DataHealthResult;
+      kpis: KpiExecutionResult;
     }
   | {
       status: "mapping_required";
@@ -110,6 +112,71 @@ function dataHealthStatusLabel(status: DataHealthResult["status"]): string {
 
 function sourceHealthLabel(source: DataHealthResult["sourceCoverage"][number]["source"]): string {
   return sourceLabel(source);
+}
+
+function kpiMetricLabel(key: KpiMetricKey): string {
+  switch (key) {
+    case "spend": return "Spend";
+    case "commerce_revenue": return "Commerce Revenue";
+    case "orders": return "Orders";
+    case "impressions": return "Impressions";
+    case "clicks": return "Clicks";
+    case "conversions": return "Conversions";
+    case "attributed_revenue": return "Attributed Revenue";
+    case "ctr": return "CTR";
+    case "cpc": return "CPC";
+    case "cpa": return "CPA";
+    case "roas": return "ROAS";
+    case "mer": return "MER";
+    case "aov": return "AOV";
+    case "conversion_rate": return "Conversion Rate";
+  }
+}
+
+function formatKpiValue(metric: KpiMetricResult, value: string | null): string {
+  if (value === null) return "Unavailable";
+  if (metric.unit !== "currency") return value;
+  const currency = metric.inputs.find((input) => input.period === "current" && input.currencyCode)?.currencyCode;
+  return currency ? `${currency} ${value}` : value;
+}
+
+function KpiCard({ metric, label }: { metric: KpiMetricResult; label?: string }) {
+  const { comparison } = metric;
+  return (
+    <article className="kpi-card">
+      <h4>{label ?? kpiMetricLabel(metric.key)}</h4>
+      <p className="kpi-current">{formatKpiValue(metric, metric.value)}</p>
+      <dl>
+        <div><dt>Previous</dt><dd>{formatKpiValue(metric, comparison.previous)}</dd></div>
+        <div><dt>Delta</dt><dd>{comparison.absoluteChange === null ? "Unavailable" : formatKpiValue(metric, comparison.absoluteChange)}</dd></div>
+        <div><dt>Delta ratio</dt><dd>{comparison.percentageChange ?? "Unavailable"}</dd></div>
+      </dl>
+    </article>
+  );
+}
+
+function KpiSummary({ kpis }: { kpis: Extract<KpiExecutionResult, { status: "ready" }> }) {
+  const summaryKeys: KpiMetricKey[] = ["spend", "commerce_revenue", "orders", "mer", "aov"];
+  const summaryMetrics = summaryKeys.flatMap((key) => kpis.metrics.filter((metric) => metric.key === key && metric.status === "available"));
+  const sourceRoas = kpis.sourceBreakdown
+    .filter((breakdown) => breakdown.source === "meta_ads" || breakdown.source === "google_ads")
+    .flatMap((breakdown) => breakdown.metrics
+      .filter((metric) => metric.key === "roas" && metric.status === "available")
+      .map((metric) => ({ source: breakdown.source, metric })));
+
+  return (
+    <section className="kpi-summary" aria-labelledby="kpi-heading">
+      <p className="section-label">Deterministic facts</p>
+      <h3 id="kpi-heading">KPI summary</h3>
+      <p>Current, previous equivalent-period, and mathematical change. Ratios are stored as raw ratios.</p>
+      <div className="kpi-grid">
+        {summaryMetrics.map((metric) => <KpiCard key={metric.key} metric={metric} />)}
+        {sourceRoas.map(({ source, metric }) => (
+          <KpiCard key={`${source}-${metric.key}`} metric={metric} label={`${sourceLabel(source)} ROAS`} />
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function requiredSemanticLabel(semantic: MappingProposal["requiredMissing"][number]): string {
@@ -513,6 +580,7 @@ export function IntakeForm() {
                     </button>
                   ) : null}
                 </section>
+                {normalization.kpis.status === "ready" ? <KpiSummary kpis={normalization.kpis} /> : null}
               </section>
             ) : null}
 
