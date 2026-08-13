@@ -7,6 +7,12 @@ const CONDITIONAL_IDENTITY_FIELDS = [
   "sourceAccountName",
   "sourceStoreId",
   "sourceStoreName",
+  "campaignId",
+  "campaignName",
+  "groupId",
+  "groupName",
+  "adId",
+  "adName",
 ] as const;
 
 function unavailableInEitherTransport(

@@ -51,7 +51,7 @@ request/test-scoped connection
   -> existing canonical observation union
 ```
 
-The static registry marks Shopify, Meta Ads, and Google Ads as framework-known but `not_built` and unconfigured. A synthetic test-only advertising connector proves discovery, selection, pagination, safe failure, API provenance, provider normalization, and canonical equivalence against the existing Meta CSV fixture without network access or a production UI surface.
+At the Sprint 09 baseline, the static registry marked Shopify, Meta Ads, and Google Ads as framework-known but `not_built` and unconfigured. A synthetic test-only advertising connector proved discovery, selection, pagination, safe failure, API provenance, provider normalization, and canonical equivalence against the existing Meta CSV fixture without network access or a production UI surface.
 
 CSV and API provenance are different discriminated shapes. Data Health validates the relevant locator fields; the KPI Engine and Change Intelligence continue consuming canonical observations without transport branches. Connections and opaque mock credential references are request/test scoped. No OAuth, provider SDK, database, durable token persistence, provider network call, or new service exists.
 
@@ -72,6 +72,24 @@ request-scoped server Shopify credential
 ```
 
 Only the provider module can see GraphQL response shapes. It requests no customer PII or line items, exposes no mutations, and uses Shopify original order total as the existing gross-commerce semantic. Synthetic tests inject `fetch`; production runtime wiring remains absent. The static registry says `implemented` but unconfigured, and the UI shows live connection unavailable. Shopify CSV remains fully supported. Live authorization, routes, environment configuration, callbacks, webhooks, and durable tokens are deferred until secure ownership-aware persistence exists.
+
+## Sprint 11 Meta Ads adapter boundary
+
+Sprint 11 adds the read-only paid-media provider transport without activating a live connection:
+
+```text
+request-scoped server Meta credential
+  -> Marketing API v26.0 /me/adaccounts discovery
+  -> validated act_{account_id} selection with currency/timezone metadata
+  -> synchronous ad-level Insights with inclusive range + daily increment
+  -> bounded Graph-cursor pages and request-scoped retry
+  -> exact purchase actions/action_values extraction
+  -> Meta API normalizer
+  -> existing canonical advertising observations
+  -> unchanged Data Health -> KPI -> Change Intelligence
+```
+
+Only the provider module sees Meta response/action structures. It requests no demographic, placement, device, audience, creative, or derived-KPI fields and exposes no mutations. Synthetic tests inject `fetch` and delay; production runtime wiring remains absent. The registry says `implemented` but unconfigured, the UI shows live connection unavailable, and Meta CSV remains fully supported. Live OAuth, routes, environment configuration, reviewed access, and durable tokens remain deferred until secure ownership-aware persistence exists.
 
 ## Sprint 05 implemented CSV boundary
 

@@ -1,0 +1,70 @@
+{
+  "synthetic": true,
+  "description": "Synthetic Meta Marketing API-shaped zero, unavailable, boundary, malformed, auth, throttle, inaccessible-account, and pagination cases.",
+  "zeroAndMissing": [
+    {
+      "date_start": "2026-07-01",
+      "date_stop": "2026-07-01",
+      "account_id": "100000001",
+      "account_name": "Synthetic Relay Ad Account",
+      "account_currency": "USD",
+      "campaign_id": "200000001",
+      "campaign_name": "Zero campaign",
+      "adset_id": "300000003",
+      "adset_name": "Zero set",
+      "ad_id": "400000003",
+      "ad_name": "Zero ad",
+      "spend": "0",
+      "impressions": "0",
+      "inline_link_clicks": "0",
+      "actions": [{ "action_type": "purchase", "value": "0" }],
+      "action_values": [{ "action_type": "purchase", "value": "0" }]
+    },
+    {
+      "date_start": "2026-07-02",
+      "date_stop": "2026-07-02",
+      "account_id": "100000001",
+      "account_name": "Synthetic Relay Ad Account",
+      "account_currency": "USD",
+      "campaign_id": "200000002",
+      "campaign_name": "Missing purchase campaign",
+      "adset_id": "300000004",
+      "adset_name": "Missing purchase set",
+      "ad_id": "400000004",
+      "ad_name": "Missing purchase ad",
+      "spend": "1",
+      "impressions": "10",
+      "inline_link_clicks": "2",
+      "actions": [{ "action_type": "lead", "value": "4" }],
+      "action_values": [{ "action_type": "lead", "value": "80" }]
+    }
+  ],
+  "timezoneBoundary": {
+    "date_start": "2026-07-01",
+    "date_stop": "2026-07-01",
+    "account_id": "100000001",
+    "account_name": "Synthetic Relay Ad Account",
+    "account_currency": "USD",
+    "campaign_id": "200000003",
+    "campaign_name": "Boundary campaign",
+    "adset_id": "300000005",
+    "adset_name": "Boundary set",
+    "ad_id": "400000005",
+    "ad_name": "Boundary ad",
+    "spend": "2",
+    "impressions": "20",
+    "inline_link_clicks": "3"
+  },
+  "malformed": { "data": [{ "date_start": "not-a-date", "spend": "secret-not-a-number" }] },
+  "authError": { "error": { "message": "Synthetic invalid token detail", "type": "OAuthException", "code": 190, "error_subcode": 463, "fbtrace_id": "synthetic-trace" } },
+  "rateLimitError": { "error": { "message": "Synthetic rate limit detail", "type": "OAuthException", "code": 4, "error_subcode": 1504022, "is_transient": true } },
+  "inaccessibleAccount": { "error": { "message": "Synthetic inaccessible account detail", "type": "GraphMethodException", "code": 100, "error_subcode": 33 } },
+  "paginationFailure": {
+    "data": [{
+      "date_start": "2026-07-01", "date_stop": "2026-07-01", "account_id": "100000001", "account_name": "Synthetic Relay Ad Account", "account_currency": "USD",
+      "campaign_id": "200000004", "campaign_name": "Paging campaign", "adset_id": "300000006", "adset_name": "Paging set", "ad_id": "400000006", "ad_name": "Paging ad",
+      "spend": "3", "impressions": "30", "inline_link_clicks": "4"
+    }],
+    "paging": { "cursors": { "after": "repeat" }, "next": "https://graph.facebook.com/v26.0/redacted" }
+  }
+}

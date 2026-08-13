@@ -44,6 +44,8 @@ Field mapping uses the same normalized header comparison. An exact original-stri
 | `conversions` | `Purchases`, `Website purchases` |
 | `attributed_revenue` | `Purchase conversion value`, `Website purchase conversion value` |
 
+The Meta API adapter requests daily ad-level Ads Insights without optional breakdowns. It maps `inline_link_clicks` to canonical `clicks` so the API matches the CSV `Link clicks` semantic. It maps `actions` only when `action_type` is exactly `purchase` to `conversions`, and maps the exact matching `action_values` entry to `attributedRevenue`. Missing entries remain `null`; explicit `"0"` remains zero; unrelated or duplicate purchase actions are never summed. Account currency is explicit and dates retain Meta's ad-account-timezone calendar boundary. Provider attribution remains advertising attribution only.
+
 ### Google Ads → advertising
 
 | Canonical field | Exact aliases |

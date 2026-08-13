@@ -22,7 +22,7 @@ export const CONNECTOR_REGISTRY: readonly ConnectorRegistryEntry[] = [
     provider: "meta_ads",
     displayName: "Meta Ads",
     frameworkStatus: "ready",
-    implementationStatus: "not_built",
+    implementationStatus: "implemented",
     configured: false,
     connector: null,
   },

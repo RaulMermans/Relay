@@ -37,6 +37,8 @@
 - A native-fetch Shopify GraphQL Admin API 2026-07 adapter with validated installed-store discovery, store-local date bounds, read-only order query, bounded cursor pagination/retry, and safe error mapping.
 - A Shopify API commerce normalizer with one-order grain, fixed-decimal gross revenue, safe API provenance, and no customer PII or advertising-revenue field.
 - Labelled synthetic Shopify GraphQL fixtures, positive/negative CSV/API equivalence regressions, unchanged Data Health/KPI/Change Intelligence convergence, and a truthful live-unavailable UI state.
+- A native-fetch Meta Marketing API v26.0 read-only adapter with validated ad-account discovery/selection, minimal synchronous daily Ads Insights, bounded cursor pagination/retry, and redacted error mapping.
+- A Meta API advertising normalizer with exact purchase action/value semantics, fixed-decimal null/zero preservation, safe API provenance, labelled synthetic fixtures, positive/negative CSV/API equivalence, unchanged downstream convergence, and a truthful live-unavailable UI state.
 
 ### Changed
 
@@ -44,7 +46,7 @@
 - Added documentation-only validation-experiment design; no application functionality was implemented.
 - Defined V1 architecture, canonical data semantics, revenue rules, ingestion/persistence boundaries, report/AI boundaries, deployment, security, testing, and Sprint 03 handoff.
 - Superseded ADR-005's Railway/PostgreSQL/Prisma deployment assumptions with Vercel and no currently connected database.
-- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, the generic connector framework, and an implemented Shopify API adapter proven through synthetic provider-shaped integration. Shopify live auth, Meta/Google connectors, durable connections, AI, recommendations, reports, dashboards, and persistence remain unimplemented.
+- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, the generic connector framework, and implemented Shopify and Meta Ads API adapters proven through synthetic provider-shaped integration. Live provider auth, Google Ads, durable connections, AI, recommendations, reports, dashboards, and persistence remain unimplemented.
 
 ### Deployment
 

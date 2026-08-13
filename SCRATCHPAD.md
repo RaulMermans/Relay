@@ -1,22 +1,22 @@
 # Current status
 
-- Sprint 09 is complete at baseline `638ddd6`.
-- Sprint 10 activation decision: B - Shopify transport/normalization implemented; durable live activation deferred.
-- Official Shopify GraphQL Admin API/auth/version/scope docs verified 2026-08-12; pinned adapter version is `2026-07`.
-- Dependency decision: native server `fetch` plus existing Zod; no Shopify SDK or new dependency.
-- Persistence blocker: no authenticated durable store for installations, rotating access/refresh tokens, expiries, scopes, ownership, revocation, or disconnect.
+- Sprint 10 is complete at baseline `afaa914`.
+- Sprint 11 activation decision: B - Meta Ads transport/normalization implemented; durable live activation deferred.
+- Official Meta Marketing API app/auth/access/token/account/Insights/rate/version guidance verified 2026-08-12; the adapter is pinned to `v26.0`.
+- Dependency decision: native server `fetch` plus existing Zod; no Meta SDK, OAuth framework, or new dependency.
+- Persistence blocker: Relay has no authenticated durable store for encrypted access tokens, owner/account relationships, scopes, expiry, revocation, reauthorization, or disconnect.
 
 # Execution
 
-- Main files: `lib/connectors/shopify/`, Shopify connector fixtures/tests, registry/UI, `docs/integrations/SHOPIFY_CONNECTOR.md`, focused connector/data/architecture/QA docs.
-- Targeted baseline: 5 connector files / 28 tests passed.
-- TDD red: Shopify suites failed because provider modules did not exist; registry test failed on `not_built`.
-- Targeted green: Shopify unit/integration 2 files / 26 tests. Review findings fixed with red/green coverage: required capability enforcement, full `requestedQueryCost` throttle delay, and transport-to-normalizer integration.
-- Final verification: `npm ci` exit 0 (Node 24.14.0/npm 11.9.0); lint exit 0; typecheck exit 0; unit 20 files / 131 tests; integration 9 files / 54 tests; combined 29 files / 185 tests; production build exit 0; Playwright 8/8.
-- Reviews: security, data contract, and PR review have no unresolved P0/P1/P2 findings. No new dependency, route, environment key, database, credential store, mutation, PII query, or advertising-revenue field.
-- Environment note: `npm` was absent from PATH, so verification used the exact npm 11.9.0 CLI with the bundled Node 24.14.0 runtime. No package metadata changed.
+- Main files: `lib/connectors/meta-ads/`, labelled synthetic Meta fixtures/tests, registry/UI, `docs/integrations/META_ADS_CONNECTOR.md`, and focused connector/data/architecture/QA docs.
+- TDD red/green covered strict provider validation, bearer-only read transport, accessible `act_` account selection, 31-day synchronous fetch bounds, primitive daily ad Insights, fail-closed cursor paging, safe rate/error mapping, API provenance, exact purchase semantics, null/zero, and account-timezone dates.
+- Representative Meta CSV/API facts compare semantically equal; negative spend/count/attribution/currency/null/date/joint-identity changes fail. API observations converge through unchanged Data Health, KPI, and Change Intelligence paths.
+- Independent review findings fixed: `inline_link_clicks` replaces broader clicks, Graph `next` without `after` fails closed, synchronous ranges are capped at 31 inclusive days, usage-header claims match implementation, and Sprint 09 registry text is explicitly historical.
+- Security/data review: no unresolved P0/P1/P2 finding; no real credential, dependency, route, environment key, database, mutation, PII field, commerce-revenue conflation, or raw provider diagnostic is added.
+- Final verification: pinned npm 11.9.0 clean install exit 0 with 0 vulnerabilities; lint exit 0; typecheck exit 0; unit 21 files / 160 tests; integration 10 files / 65 tests; combined 31 files / 225 tests; production build exit 0; Playwright 8/8; diff/scope checks exit 0.
+- Environment note: npm is absent from PATH and the bundled runtime, so the clean install used an ephemeral npm 11.9.0 CLI through the bundled pnpm runner with Node 24.14.0 on PATH. Package metadata remained unchanged.
 
-# Sprint 11 handoff
+# Sprint 12 handoff
 
-- Exact recommended Sprint 11 task: T-256 - verify current official Meta Marketing API app/auth/token/ad-account/reporting requirements and produce the Meta Ads activation decision plus executable read-only connector contract before implementation.
-- Carry forward the Sprint 10 lessons: keep activation separate from adapter existence, do not invent credential persistence, use stable provider IDs, preserve canonical revenue polarity, inject transport/delay, fail closed on pagination, and prove CSV/API equivalence with negative controls.
+- Exact recommended Sprint 12 task: T-296 - verify current official Google Ads API developer-token, OAuth, customer-account hierarchy, access-level, reporting, quota, and version requirements, then produce the Google Ads activation decision plus executable read-only connector contract before implementation.
+- Carry forward: separate adapter existence from activation; do not invent credential persistence; use authoritative provider IDs; bound synchronous requests before network access; use primitive metrics; preserve null/zero, currency, timezone, attribution-versus-commerce revenue, and provenance; fail closed on malformed/repeated/max pagination; prove CSV/API equivalence with negative controls.
