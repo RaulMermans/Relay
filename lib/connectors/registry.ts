@@ -30,7 +30,7 @@ export const CONNECTOR_REGISTRY: readonly ConnectorRegistryEntry[] = [
     provider: "google_ads",
     displayName: "Google Ads",
     frameworkStatus: "ready",
-    implementationStatus: "not_built",
+    implementationStatus: "implemented",
     configured: false,
     connector: null,
   },

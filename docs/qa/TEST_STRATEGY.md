@@ -12,6 +12,8 @@ Sprint 10 adds Shopify shop/order GraphQL validation, safe domain/store identity
 
 Sprint 11 adds Meta Graph account/Insights validation, authoritative `act_` identity, account currency/timezone metadata, exact daily ad-grain query parameters, purchase-only action/value extraction, null/zero behavior, safe cursor handling, documented throttle/error classification, API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
 
+Sprint 12 adds Google Ads v25 REST validation, direct and manager-access customer discovery, nested serving-client selection, provider-owned login context, minimal daily ad-group GAQL, fixed 10,000-row page-token handling, exact cost-micros conversion, primary conversions/value semantics, null/zero, customer currency/timezone dates, safe error classification, API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
+
 ## Integration tests
 
 Existing integration tests exercise synthetic raw CSV through Change Intelligence. Sprint 09 runs a labelled provider-neutral mock through account discovery, validated selection, two-page fetch, mock provider normalization, and API canonical provenance. The result is compared with the existing Meta CSV raw fixture after removing only provenance and sorting. Terminal authorization prevents provider page fetch, retryable/terminal errors remain structured, and runaway pagination fails closed.
@@ -19,6 +21,8 @@ Existing integration tests exercise synthetic raw CSV through Change Intelligenc
 Sprint 10 runs labelled synthetic Shopify GraphQL pages through the provider validator/normalizer and compares them with the existing representative Shopify CSV. Comparison ignores transport provenance and identity only where one transport cannot supply it; identity remains strict when both supply it. Focused negative cases change gross revenue, currency, order count, null/zero, and date. API observations then pass through existing Data Health, KPI, and Change Intelligence functions without transport branches.
 
 Sprint 11 runs labelled synthetic Meta v26.0 account/Insights pages through discovery, selection, pagination, validation, and normalization, then compares them with the existing representative Meta CSV. Comparison ignores transport provenance and identity only where either transport lacks it; jointly supplied campaign names remain strict. Negative cases change spend, impressions, clicks, purchase conversions/value, currency, null/zero, date, and joint campaign identity. API observations then pass through existing Data Health, KPI, and Change Intelligence functions without transport branches.
+
+Sprint 12 runs labelled synthetic Google Ads v25 accessible-customer, manager-hierarchy, and paged Search responses through discovery, server selection, manager-context validation, normalization, and comparison with the existing representative Google CSV. Negative cases change every primitive measure, currency, null/zero, date, and jointly available campaign/ad-group identity. API observations pass unchanged through existing Data Health, KPI, and Change Intelligence and never expose advertising value as commerce revenue.
 
 ## Connector contract tests
 
@@ -31,6 +35,8 @@ Playwright continues to verify the implemented single-CSV intake, mapping, Data 
 Sprint 10 additionally verifies the truthful Shopify API adapter/live-unavailable text, absence of a connect control, and continued CSV file input. No live credential is required.
 
 Sprint 11 adds the same truthful implemented/live-unavailable state for Meta Ads and verifies there is no inert Meta connect control. Existing Meta CSV browser coverage remains credential-free.
+
+Sprint 12 adds the truthful Google Ads implemented/live-unavailable state, verifies no inert Google connect control, and exercises the permanent Google CSV intake/normalization/KPI path without credentials.
 
 ## Regression fixtures
 

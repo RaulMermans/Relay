@@ -91,6 +91,24 @@ request-scoped server Meta credential
 
 Only the provider module sees Meta response/action structures. It requests no demographic, placement, device, audience, creative, or derived-KPI fields and exposes no mutations. Synthetic tests inject `fetch` and delay; production runtime wiring remains absent. The registry says `implemented` but unconfigured, the UI shows live connection unavailable, and Meta CSV remains fully supported. Live OAuth, routes, environment configuration, reviewed access, and durable tokens remain deferred until secure ownership-aware persistence exists.
 
+## Sprint 12 Google Ads adapter boundary
+
+Sprint 12 adds the second paid-media provider transport without activating a live connection:
+
+```text
+request-scoped server OAuth + developer credentials
+  -> v25 ListAccessibleCustomers direct roots
+  -> customer/customer_client manager hierarchy
+  -> validated serving reporting customer + provider-owned login context
+  -> daily ad-group GAQL Search with inclusive range
+  -> bounded fixed 10,000-row page-token collection and retry
+  -> cost-micros + conversions/conversions-value normalization
+  -> existing canonical advertising observations
+  -> unchanged Data Health -> KPI -> Change Intelligence
+```
+
+Only the provider module sees Google customer, hierarchy, error, page-token, and report shapes. It requests no keyword, search-term, audience, user, device, placement, creative, or derived-KPI fields and exposes no mutation. Manager context is derived server-side and never accepted from browser input. Synthetic tests inject `fetch` and delay; production runtime wiring remains absent. The registry says `implemented` but unconfigured, the UI shows live connection unavailable, and Google CSV remains fully supported. Live OAuth, routes, environment configuration, approved developer-token access, and durable refresh-token/ownership state remain deferred.
+
 ## Sprint 05 implemented CSV boundary
 
 The current CSV flow is deliberately staged and transient:

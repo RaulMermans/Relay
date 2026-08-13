@@ -68,6 +68,8 @@ The Meta API adapter requests daily ad-level Ads Insights without optional break
 
 `Cost (micros)` is the only unit-specific alias: it converts from millionths by decimal-string placement. All other V1 money aliases use source major-unit decimal text.
 
+The Google Ads API adapter queries daily `ad_group` rows. It maps `metrics.cost_micros` through the same fixed-decimal micros conversion, `metrics.clicks` to clicks, `metrics.conversions` to the configured primary Conversions-column semantic, and `metrics.conversions_value` to advertising-only `attributedRevenue`. Explicit zero remains zero and an omitted selected metric remains unavailable; all-zero segmented rows that Google omits are not fabricated. Customer ID, currency, timezone, campaign, and ad-group identity are validated inside the provider boundary. No provider-derived CTR, CPC, CPA, ROAS, keyword, search-term, or mutation field is requested.
+
 ### Shopify → commerce
 
 | Canonical field | Exact aliases |

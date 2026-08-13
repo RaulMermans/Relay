@@ -1,0 +1,90 @@
+{
+  "synthetic": true,
+  "description": "Synthetic Google Ads API v25 boundary and failure responses. No identifiers or credentials are real.",
+  "directAccessibleCustomers": { "resourceNames": ["customers/2222222222"] },
+  "directCustomer": {
+    "results": [
+      {
+        "customer": {
+          "resourceName": "customers/2222222222",
+          "id": "2222222222",
+          "descriptiveName": "Synthetic Direct Ads",
+          "currencyCode": "USD",
+          "timeZone": "America/Los_Angeles",
+          "status": "ENABLED",
+          "manager": false,
+          "testAccount": true
+        }
+      }
+    ]
+  },
+  "zeroAndMissing": [
+    {
+      "customer": { "id": "2222222222", "descriptiveName": "Synthetic Relay Ads", "currencyCode": "USD", "timeZone": "America/New_York" },
+      "campaign": { "id": "5000000010", "name": "Explicit zero" },
+      "adGroup": { "id": "6000000010", "name": "Explicit zero group" },
+      "segments": { "date": "2026-07-01" },
+      "metrics": { "costMicros": "0", "impressions": "0", "clicks": "0", "conversions": 0, "conversionsValue": 0 }
+    },
+    {
+      "customer": { "id": "2222222222", "descriptiveName": "Synthetic Relay Ads", "currencyCode": "USD", "timeZone": "America/New_York" },
+      "campaign": { "id": "5000000011", "name": "Missing optional metrics" },
+      "adGroup": { "id": "6000000011", "name": "Missing optional metrics group" },
+      "segments": { "date": "2026-07-01" },
+      "metrics": { "impressions": "1" }
+    }
+  ],
+  "timezoneBoundary": {
+    "customer": { "id": "2222222222", "descriptiveName": "Synthetic Relay Ads", "currencyCode": "USD", "timeZone": "America/New_York" },
+    "campaign": { "id": "5000000012", "name": "Calendar boundary" },
+    "adGroup": { "id": "6000000012", "name": "Calendar boundary group" },
+    "segments": { "date": "2026-07-01" },
+    "metrics": { "costMicros": "1", "impressions": "1", "clicks": "0", "conversions": 0, "conversionsValue": 0 }
+  },
+  "oauthError": { "error": { "code": 401, "message": "Synthetic OAuth credential rejected", "status": "UNAUTHENTICATED", "details": [] } },
+  "developerTokenError": {
+    "error": {
+      "code": 403,
+      "message": "Synthetic developer token rejected",
+      "status": "PERMISSION_DENIED",
+      "details": [
+        {
+          "@type": "type.googleapis.com/google.ads.googleads.v25.errors.GoogleAdsFailure",
+          "errors": [{ "errorCode": { "headerError": "DEVELOPER_TOKEN_NOT_APPROVED" }, "message": "Synthetic detail" }],
+          "requestId": "synthetic-error-request"
+        }
+      ]
+    }
+  },
+  "quotaError": {
+    "error": {
+      "code": 429,
+      "message": "Synthetic quota exhausted",
+      "status": "RESOURCE_EXHAUSTED",
+      "details": [
+        {
+          "@type": "type.googleapis.com/google.ads.googleads.v25.errors.GoogleAdsFailure",
+          "errors": [{ "errorCode": { "quotaError": "RESOURCE_EXHAUSTED" }, "message": "Synthetic detail" }],
+          "requestId": "synthetic-quota-request"
+        }
+      ]
+    }
+  },
+  "providerUnavailableError": { "error": { "code": 503, "message": "Synthetic provider unavailable", "status": "UNAVAILABLE", "details": [] } },
+  "inaccessibleCustomerError": {
+    "error": {
+      "code": 403,
+      "message": "Synthetic customer inaccessible",
+      "status": "PERMISSION_DENIED",
+      "details": [
+        {
+          "@type": "type.googleapis.com/google.ads.googleads.v25.errors.GoogleAdsFailure",
+          "errors": [{ "errorCode": { "authorizationError": "CUSTOMER_NOT_ENABLED" }, "message": "Synthetic detail" }],
+          "requestId": "synthetic-account-request"
+        }
+      ]
+    }
+  },
+  "malformedResponse": { "results": [{ "metrics": { "costMicros": "not-micros" } }] },
+  "repeatedPage": { "results": [{ "customer": { "id": "2222222222", "descriptiveName": "Synthetic Relay Ads", "currencyCode": "USD", "timeZone": "America/New_York" }, "campaign": { "id": "5000000099", "name": "Repeated" }, "adGroup": { "id": "6000000099", "name": "Repeated" }, "segments": { "date": "2026-07-01" }, "metrics": { "costMicros": "1", "impressions": "1" } }], "nextPageToken": "repeated-token" }
+}

@@ -136,11 +136,11 @@ describe("connector contract", () => {
     expect(readyConnection.credentialReference).toBe("credential-ref-1");
   });
 
-  it("registers implemented Shopify and Meta adapters without pretending live configuration exists", () => {
+  it("registers implemented Shopify, Meta, and Google adapters without pretending live configuration exists", () => {
     expect(CONNECTOR_REGISTRY).toEqual([
       expect.objectContaining({ provider: "shopify", frameworkStatus: "ready", implementationStatus: "implemented", configured: false, connector: null }),
       expect.objectContaining({ provider: "meta_ads", frameworkStatus: "ready", implementationStatus: "implemented", configured: false, connector: null }),
-      expect.objectContaining({ provider: "google_ads", frameworkStatus: "ready", implementationStatus: "not_built", configured: false }),
+      expect.objectContaining({ provider: "google_ads", frameworkStatus: "ready", implementationStatus: "implemented", configured: false, connector: null }),
     ]);
     expect(CONNECTOR_REGISTRY.every((entry) => entry.connector === null)).toBe(true);
   });

@@ -27,6 +27,13 @@ export default function Home() {
           </div>
           <p><strong>Not connected.</strong> API adapter implemented. Live connection is not available yet.</p>
         </section>
+        <section className="connector-status" aria-labelledby="google-api-heading">
+          <div>
+            <p className="section-label">Connected source</p>
+            <h2 id="google-api-heading">Google Ads API</h2>
+          </div>
+          <p><strong>Not connected.</strong> API adapter implemented. Live connection is not available yet.</p>
+        </section>
       </div>
       <IntakeForm />
     </main>

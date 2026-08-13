@@ -39,6 +39,8 @@
 - Labelled synthetic Shopify GraphQL fixtures, positive/negative CSV/API equivalence regressions, unchanged Data Health/KPI/Change Intelligence convergence, and a truthful live-unavailable UI state.
 - A native-fetch Meta Marketing API v26.0 read-only adapter with validated ad-account discovery/selection, minimal synchronous daily Ads Insights, bounded cursor pagination/retry, and redacted error mapping.
 - A Meta API advertising normalizer with exact purchase action/value semantics, fixed-decimal null/zero preservation, safe API provenance, labelled synthetic fixtures, positive/negative CSV/API equivalence, unchanged downstream convergence, and a truthful live-unavailable UI state.
+- A native-fetch Google Ads API v25 read-only adapter with direct/manager customer discovery, nested hierarchy context, server-validated reporting selection, minimal daily ad-group GAQL Search, bounded fixed-page pagination/retry, and redacted error mapping.
+- A Google API advertising normalizer with exact cost-micros conversion, primary conversions/conversions-value semantics, fixed-decimal null/zero preservation, safe API provenance, labelled synthetic fixtures, positive/negative CSV/API equivalence, unchanged downstream convergence, permanent Google CSV regression coverage, and a truthful live-unavailable UI state.
 
 ### Changed
 
@@ -46,7 +48,7 @@
 - Added documentation-only validation-experiment design; no application functionality was implemented.
 - Defined V1 architecture, canonical data semantics, revenue rules, ingestion/persistence boundaries, report/AI boundaries, deployment, security, testing, and Sprint 03 handoff.
 - Superseded ADR-005's Railway/PostgreSQL/Prisma deployment assumptions with Vercel and no currently connected database.
-- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, the generic connector framework, and implemented Shopify and Meta Ads API adapters proven through synthetic provider-shaped integration. Live provider auth, Google Ads, durable connections, AI, recommendations, reports, dashboards, and persistence remain unimplemented.
+- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, the generic connector framework, and implemented Shopify, Meta Ads, and Google Ads API adapters proven through synthetic provider-shaped integration. Live provider auth, durable connections, AI, recommendations, reports, dashboards, and persistence remain unimplemented.
 
 ### Deployment
 

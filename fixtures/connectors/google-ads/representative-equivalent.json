@@ -1,0 +1,130 @@
+{
+  "synthetic": true,
+  "description": "Synthetic Google Ads API v25 REST responses equivalent to the representative Google Ads CSV fixture.",
+  "accessibleCustomers": {
+    "resourceNames": ["customers/1111111111"]
+  },
+  "rootCustomer": {
+    "results": [
+      {
+        "customer": {
+          "resourceName": "customers/1111111111",
+          "id": "1111111111",
+          "descriptiveName": "Synthetic Relay Manager",
+          "currencyCode": "USD",
+          "timeZone": "America/New_York",
+          "status": "ENABLED",
+          "manager": true,
+          "testAccount": true
+        }
+      }
+    ]
+  },
+  "hierarchyPages": [
+    {
+      "results": [
+        {
+          "customerClient": {
+            "clientCustomer": "customers/1111111111",
+            "id": "1111111111",
+            "descriptiveName": "Synthetic Relay Manager",
+            "currencyCode": "USD",
+            "timeZone": "America/New_York",
+            "status": "ENABLED",
+            "manager": true,
+            "level": "0",
+            "testAccount": true
+          }
+        },
+        {
+          "customerClient": {
+            "clientCustomer": "customers/2222222222",
+            "id": "2222222222",
+            "descriptiveName": "Synthetic Relay Ads",
+            "currencyCode": "USD",
+            "timeZone": "America/New_York",
+            "status": "ENABLED",
+            "manager": false,
+            "level": "1",
+            "testAccount": true
+          }
+        },
+        {
+          "customerClient": {
+            "clientCustomer": "customers/3333333333",
+            "id": "3333333333",
+            "descriptiveName": "Synthetic Nested Manager",
+            "currencyCode": "USD",
+            "timeZone": "America/Chicago",
+            "status": "ENABLED",
+            "manager": true,
+            "level": "1",
+            "testAccount": true
+          }
+        },
+        {
+          "customerClient": {
+            "clientCustomer": "customers/4444444444",
+            "id": "4444444444",
+            "descriptiveName": "Synthetic Nested Client",
+            "currencyCode": "USD",
+            "timeZone": "America/Chicago",
+            "status": "ENABLED",
+            "manager": false,
+            "level": "2",
+            "testAccount": true
+          }
+        }
+      ]
+    }
+  ],
+  "reportPages": [
+    {
+      "results": [
+        {
+          "customer": {
+            "id": "2222222222",
+            "descriptiveName": "Synthetic Relay Ads",
+            "currencyCode": "USD",
+            "timeZone": "America/New_York"
+          },
+          "campaign": { "id": "5000000001", "name": "Brand search" },
+          "adGroup": { "id": "6000000001", "name": "Brand terms" },
+          "segments": { "date": "2026-07-01" },
+          "metrics": {
+            "costMicros": "89300000",
+            "impressions": "7000",
+            "clicks": "412",
+            "conversions": 23,
+            "conversionsValue": 690
+          }
+        }
+      ],
+      "nextPageToken": "synthetic-report-page-2",
+      "totalResultsCount": "2"
+    },
+    {
+      "results": [
+        {
+          "customer": {
+            "id": "2222222222",
+            "descriptiveName": "Synthetic Relay Ads",
+            "currencyCode": "USD",
+            "timeZone": "America/New_York"
+          },
+          "campaign": { "id": "5000000002", "name": "Non-brand search" },
+          "adGroup": { "id": "6000000002", "name": "Core terms" },
+          "segments": { "date": "2026-07-02" },
+          "metrics": {
+            "costMicros": "154200000",
+            "impressions": "12400",
+            "clicks": "633",
+            "conversions": 19,
+            "conversionsValue": 532
+          }
+        }
+      ],
+      "totalResultsCount": "2"
+    }
+  ]
+}
