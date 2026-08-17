@@ -5,7 +5,8 @@
 Relay is a daily performance dashboard with reporting automation underneath it. The primary loop is:
 
 ```text
-Workspace
+Client
+-> Restored dashboard or configured empty workspace
 -> Reporting period
 -> Data sources
 -> Automatic preparation
@@ -64,13 +65,21 @@ Presentation may format, rank, group, and explain structured results. It must no
 
 Data Health codes, evidence, mapping origins, formulas, and previous-period facts remain accessible when useful for trust or correction. Presentation copy is deterministic and does not replace the underlying result.
 
-### No false live-data claims
+### No false live-data or cloud claims
 
-CSV is the usable production transport in Sprint 13. API adapters are implemented but live authorization and automatic synchronization remain unavailable. Workspace state is session-scoped and does not imply saved clients, durable files, or credentials.
+CSV is the usable production transport. API adapters are implemented but live authorization and automatic synchronization remain unavailable. Client configuration, safe mapping decisions, targets, reporting preferences, the latest compact dashboard snapshot, and bounded cycle summaries are saved only in the current browser. This does not imply cloud sync, multi-device access, durable files, or credential storage.
 
 ## Workspace state boundary
 
-The active browser session may hold a workspace name, reporting period, expected sources, source presentation summaries, targets, analysis status, and compact analysis result. Raw CSV content, canonical observations, credentials, and API tokens are never written to browser storage. Sprint 14 owns durable client and report memory.
+One versioned, validated browser-local document holds explicitly created clients, source expectations, provider/header mapping memory, existing-contract targets, fixed source-of-truth rules, bounded notes, reporting preferences, a compact authoritative analysis snapshot, and up to 52 cycle summaries per client. Product code reaches it through the persistence boundary rather than direct storage calls.
+
+Raw CSV content, filenames, parsed rows, canonical observations, provider payloads, credentials, authorization headers, and API tokens are never written to browser storage. Clearing site data removes Relay memory; another browser or device cannot see it. A corrupt or unsupported document fails to a reset path instead of being used.
+
+## Return and repeat experience
+
+An existing client opens on its last saved dashboard rather than upload onboarding. The header exposes the active client and lightweight create/rename/delete controls; the dashboard retains its performance-first hierarchy and offers **Update data**. Data-source setup reuses expected sources and compatible exact-header mappings, while targets, rules, notes, and later-report preferences remain in compact disclosure. Incompatible saved mappings return to focused review.
+
+Freshness always describes manually supplied data: each source shows its data-through date and the dashboard uses the oldest included source for its conservative aggregate date/status, plus last analysis time. Deterministic labels are **Current** (0-1 days), **Needs refresh** (2-7 days), or **Old** (8+ days). No label implies background refresh.
 
 ## Product language
 

@@ -2,7 +2,7 @@
 
 ## 1. System overview
 
-Relay is a single Next.js application deployed on Vercel. It will accept CSV uploads and future provider connections, normalize both into daily canonical observations, compute deterministic facts, support optional grounded commentary with human review, and render a structured report model to PDF. [ADR-005](../decisions/ADR-005-v1-application-stack.md) selects the application stack; [ADR-006](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md) selects Vercel and defers durable persistence. Sprint 03 has no connected database.
+Relay is a single Next.js application intended for Vercel. It accepts CSV uploads and has future provider-connection adapters, normalizes both into daily canonical observations, and computes deterministic facts. [ADR-005](../decisions/ADR-005-v1-application-stack.md) selects the application stack; [ADR-006](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md) selects Vercel and defers production database persistence; [ADR-007](../decisions/ADR-007-demo-persistence-and-future-database-boundary.md) adds bounded browser-local product memory. No database is connected.
 
 ## 2. Architecture diagram
 
@@ -40,7 +40,7 @@ Relay is a single Next.js application deployed on Vercel. It will accept CSV upl
                   PDF
 ```
 
-Durable persistence is deferred. When a feature requires it, server/UI logic will use a persistence boundary that targets a demo/local implementation or a future Postgres-compatible durable database; Sprint 03 does not implement either one.
+The browser UI uses `RelayMemoryStore -> LocalBrowserMemory` for versioned non-sensitive configuration and compact dashboard/cycle summaries. CSV files and server-side canonical analysis remain request-scoped. A future authenticated server/API boundary may replace product memory with Postgres, but browser state is never automatically promoted to authenticated ownership.
 
 ## 3. Components
 
@@ -51,7 +51,7 @@ Durable persistence is deferred. When a feature requires it, server/UI logic wil
 - **Data Health and reconciliation:** validates coverage, dates, currency, duplicates, mappings, and commerce-versus-attribution caveats.
 - **Analytics and change intelligence:** computes deterministic KPIs, comparisons, movers, and risks from validated canonical data.
 - **Report composer/renderer:** assembles the structured report model and renders PDF without recalculating facts.
-- **Persistence boundary:** deferred until a real feature needs durable state. It will separate UI/server logic from a demo/local implementation or a future Postgres-compatible durable database; it is not an unused TypeScript abstraction in Sprint 03.
+- **Persistence boundary:** a small product-memory interface with a versioned, validated, bounded `localStorage` implementation. It excludes uploads, canonical observations, provider payloads, credentials, report/PDF artifacts, and cloud behavior; a future server-owned implementation can replace it.
 - **LLM provider:** optional draft-commentary dependency after structured facts; it is not an analytical authority.
 
 ## 4. Domain model
@@ -75,7 +75,7 @@ Campaign/ad entities are dimensions of normalized advertising observations, not 
 
 ## 5. Data architecture
 
-The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). It uses daily observations, source/entity identity, currency-compatible money, fixed-scale analytics, explicit unavailable values, and ingestion provenance. [ADR-001](../decisions/ADR-001-revenue-semantics.md) prevents commerce revenue from becoming paid-attribution revenue. [ADR-003](../decisions/ADR-003-data-retention-and-persistence.md) sets future retention principles. Sprint 03 has no durable canonical or report store; request processing is transient and must not be presented as persistence.
+The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). It uses daily observations, source/entity identity, currency-compatible money, fixed-scale analytics, explicit unavailable values, and ingestion provenance. [ADR-001](../decisions/ADR-001-revenue-semantics.md) prevents commerce revenue from becoming paid-attribution revenue. [ADR-003](../decisions/ADR-003-data-retention-and-persistence.md) sets future retention principles. Canonical observations and raw/provider data remain transient. Browser memory stores only compact derived dashboard facts and configuration and must not be presented as cloud or database persistence.
 
 ## 6. Interfaces and boundaries
 
@@ -101,9 +101,9 @@ CSV upload -> file/source validation -> mapping confirmation where needed -> raw
 
 Authorized connection/account selection -> bounded provider fetch -> raw result/provenance -> provider normalization -> same canonical, Data Health, analytics, report, and review path as CSV.
 
-### Flow C: Repeat report using saved configuration
+### Flow C: Repeat analysis using saved local configuration
 
-This future flow begins only after a feature requires durable client/report state. Client/source configuration, mappings, rules, and targets will be reused for a new reporting period. New ingestion must produce a new canonical snapshot; comparison/report generation must never mutate a prior report snapshot.
+The active client restores its latest compact dashboard snapshot, source expectations, compatible provider/header mappings, rules, targets, and reporting preferences from validated browser memory. A new CSV ingestion produces new request-local canonical observations and replaces the latest snapshot while appending a bounded cycle summary. It never mutates a prior server-side canonical dataset because none is retained.
 
 ### Flow D: AI commentary to human review
 
@@ -136,6 +136,7 @@ Record structured, redacted ingestion status, source/provider, mapping/validatio
 - [ADR-004: AI after deterministic analysis](../decisions/ADR-004-ai-after-deterministic-analysis.md)
 - [ADR-005: V1 application stack](../decisions/ADR-005-v1-application-stack.md)
 - [ADR-006: Vercel-native deployment and deferred persistence](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md)
+- [ADR-007: Demo persistence and future database boundary](../decisions/ADR-007-demo-persistence-and-future-database-boundary.md)
 
 ## 12. Sprint 03 implementation implications
 

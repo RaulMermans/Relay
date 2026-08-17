@@ -5,6 +5,7 @@ Every V1 capability must either make validated performance understandable or mov
 ## V1 Product Scope
 
 - Client records and reporting periods
+- Browser-local client configuration, safe mapping memory, latest-dashboard restoration, and bounded analysis-cycle history
 - Focused daily performance overview with source freshness and data-quality status
 - Exception-driven source preparation and correction
 - Meta Ads CSV, Google Ads CSV, and Shopify CSV
@@ -21,6 +22,8 @@ Every V1 capability must either make validated performance understandable or mov
 - Structured report model, PDF export, and report history
 
 The dashboard is a monitoring surface over supplied data, not a real-time BI warehouse. Automatic refresh depends on future live connector activation.
+
+Current browser-local memory is deliberately narrower than future production persistence: it stores compact non-sensitive configuration and derived summaries only. It does not store uploads, canonical observation datasets, provider payloads, credentials, final reports, or PDFs, and it does not synchronize across devices.
 
 ## Required for Validation, May Initially Be Manual
 

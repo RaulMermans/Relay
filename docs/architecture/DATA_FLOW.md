@@ -186,8 +186,24 @@ browser session workspace
 
 The server revalidates every file and validates that its detected provider matches the selected source slot. A mapping exception stops partial analytics and returns only headers/candidates required for correction. Ready files combine only in request memory. Raw rows and canonical observations never cross the response boundary.
 
-The trend sums only canonical advertising `spend` across Meta/Google and Shopify `grossRevenue` by day inside the resolved current period. It never includes provider `attributedRevenue` in commerce revenue. Source summaries reflect Data Health blocking state, date coverage, currency, and observation count. The browser retains files, workspace name, dates, mappings, targets, and compact analysis only in React session state; no browser or server durability is claimed.
+The trend sums only canonical advertising `spend` across Meta/Google and Shopify `grossRevenue` by day inside the resolved current period. It never includes provider `attributedRevenue` in commerce revenue. Source summaries reflect Data Health blocking state, date coverage, currency, and observation count.
+
+## Sprint 14 browser-local product-memory boundary
+
+```text
+explicitly created client
+  -> versioned RelayMemoryStore
+  -> validated LocalBrowserMemory document
+  -> restore configuration + latest compact dashboard snapshot
+  -> new transient CSV analysis
+  -> safely reuse compatible exact-header mappings
+  -> replace latest snapshot + append bounded cycle summary
+```
+
+The document stores client identity, source expectations, provider/header mapping decisions, existing-contract targets, fixed source-of-truth rules, bounded notes, report preferences, one authoritative structured dashboard snapshot, up to 52 cycle summaries, and safe local workflow counters. It is capped and validated on load/save; corrupt or unsupported data returns to explicit recovery.
+
+Selected `File` objects remain React-session-only. Raw CSV text, filenames, parsed rows, canonical observation arrays, provider payloads, credentials, authorization headers, tokens, final reports, and PDFs never enter product memory. Exact-header saved mappings are rechecked against current provider candidates and occupied targets; incompatibility returns to mapping review. The server still owns normalization and analytics and receives saved mappings only as untrusted bounded request input.
 
 ## Persistence posture
 
-Sprint 03 keeps request processing transient and does not connect a database. When a real feature needs state, the boundary is `UI / Server Logic -> Persistence Boundary -> Demo/local implementation OR future durable database`. Server memory is not durable persistence, and no generic repository abstraction is created before that feature exists.
+Relay has no database. Sprint 14 implements `Product UI -> RelayMemoryStore -> LocalBrowserMemory` for small non-sensitive return-workflow state only. Analysis processing remains transient on the server. Future authenticated cloud ownership requires a separate server/API boundary and Postgres-compatible implementation; browser IDs/state are not automatically trusted or uploaded.

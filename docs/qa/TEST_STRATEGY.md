@@ -8,6 +8,8 @@ Core ingestion, health, and analytical logic must be independently testable from
 
 Existing suites cover CSV parsing/mapping/normalization, Data Health, KPIs, and Change Intelligence. Sprint 09 adds lifecycle transitions/state metadata, strict daily fetch intent, server-validated account selection, read-only capabilities, readiness, stable error classification, focused redaction, page/record/repeated-token/no-progress guards, injected-delay bounded retry, API provenance, a truthful not-built registry, and a test-only semantic comparator.
 
+Sprint 14 adds controlled-storage unit coverage for client lifecycle/isolation, V1 validation, corrupt/unsupported/prototype-key recovery, save/load/reset, bounds, snapshot integrity, history caps, and freshness. Persisted targets are validated by the existing Change Intelligence contract rather than a second target system.
+
 Sprint 10 adds Shopify shop/order GraphQL validation, safe domain/store identity, store-local date boundaries, cursor translation, throttling/error classification, one-order grain, fixed-decimal gross revenue, currency, null optional fields, safe API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
 
 Sprint 11 adds Meta Graph account/Insights validation, authoritative `act_` identity, account currency/timezone metadata, exact daily ad-grain query parameters, purchase-only action/value extraction, null/zero behavior, safe cursor handling, documented throttle/error classification, API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
@@ -17,6 +19,8 @@ Sprint 12 adds Google Ads v25 REST validation, direct and manager-access custome
 ## Integration tests
 
 Existing integration tests exercise synthetic raw CSV through Change Intelligence. Sprint 09 runs a labelled provider-neutral mock through account discovery, validated selection, two-page fetch, mock provider normalization, and API canonical provenance. The result is compared with the existing Meta CSV raw fixture after removing only provenance and sorting. Terminal authorization prevents provider page fetch, retryable/terminal errors remain structured, and runaway pagination fails closed.
+
+Sprint 14's repeat-cycle integration creates a client, analyzes period one with a manual mapping, round-trips browser memory, safely reuses that mapping and targets in period two, and preserves bounded history without raw CSV/canonical rows. Separate coverage proves incompatible saved mappings return to review and client configuration/snapshots do not leak.
 
 Sprint 10 runs labelled synthetic Shopify GraphQL pages through the provider validator/normalizer and compares them with the existing representative Shopify CSV. Comparison ignores transport provenance and identity only where one transport cannot supply it; identity remains strict when both supply it. Focused negative cases change gross revenue, currency, order count, null/zero, and date. API observations then pass through existing Data Health, KPI, and Change Intelligence functions without transport branches.
 
@@ -39,6 +43,8 @@ Sprint 11 adds the same truthful implemented/live-unavailable state for Meta Ads
 Sprint 12 adds the truthful Google Ads implemented/live-unavailable state, verifies no inert Google connect control, and exercises the permanent Google CSV intake/normalization/KPI path without credentials.
 
 Sprint 13 replaces the single-file browser workflow with complete-workspace and exception flows. E2E covers the minimal shell, three-source automatic preparation, mapping correction/re-analysis, safe unsupported-source recovery, transient target Attention, and mobile overflow. Tests require no database, provider credential, or network service.
+
+Sprint 14 E2E adds explicit client creation, latest-dashboard restoration after reload, freshness disclosure, repeat compatible-mapping reuse, expected-source reuse, cycle history, and two-client switching/isolation. Browser storage is reset per test and no upload is restored automatically.
 
 ## Regression fixtures
 

@@ -4,6 +4,10 @@
 
 ### Added
 
+- Versioned, Zod-validated, bounded browser-local client memory behind `RelayMemoryStore`, with explicit recovery, client deletion, and Relay-only reset.
+- Lightweight create/select/rename/delete client UX, persisted source expectations, compatible provider/header mapping reuse, existing-contract targets, fixed revenue rules, bounded attribution context, and reporting preferences.
+- Compact authoritative dashboard snapshots with per-source data-through metadata, deterministic Current/Needs refresh/Old labels, active-client restoration, and up to 52 local analysis-cycle summaries per client.
+- Persistence unit tests, repeat-cycle and isolation integration coverage, and Playwright reload/reuse/switching flows; incompatible saved mappings return to focused review.
 - A transient dashboard-first workspace with human-readable naming, reporting period control, and truthful Meta Ads, Google Ads, and Shopify CSV source slots.
 - `POST /api/workspace/analyze` for server-authoritative multi-file normalization and one combined Data Health, KPI, and Change Intelligence pass without returning canonical rows.
 - Deterministic presentation formatting, Data Health/observation humanization, What Changed curation, Attention prioritization, channel summaries, and an accessible native SVG daily trend.
@@ -51,11 +55,13 @@
 
 ### Changed
 
+- Relay's repeat workflow now restores browser-local configuration and the latest dashboard while keeping CSV files, filenames, canonical observations, provider payloads, credentials, generated reports, and PDFs transient or unimplemented.
+- The existing Change Intelligence target parser is now reusable by persistence validation, avoiding a second target contract without changing target evaluation semantics.
 - Defined Relay's product contract, V1 boundaries, validation metrics, research protocols, assumption register, and Sprint 02 decision inputs.
 - Added documentation-only validation-experiment design; no application functionality was implemented.
 - Defined V1 architecture, canonical data semantics, revenue rules, ingestion/persistence boundaries, report/AI boundaries, deployment, security, testing, and Sprint 03 handoff.
 - Superseded ADR-005's Railway/PostgreSQL/Prisma deployment assumptions with Vercel and no currently connected database.
-- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, a multi-source daily dashboard, the generic connector framework, and implemented Shopify, Meta Ads, and Google Ads API adapters proven through synthetic provider-shaped integration. Live provider auth, automatic sync, durable workspaces, AI, recommendations, reports, PDFs, and persistence remain unimplemented.
+- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, a multi-source daily dashboard, browser-local return memory, the generic connector framework, and implemented Shopify, Meta Ads, and Google Ads API adapters proven through synthetic provider-shaped integration. Live provider auth, automatic sync, cloud persistence, authentication, AI, recommendations, generated reports, and PDFs remain unimplemented.
 
 ### Deployment
 

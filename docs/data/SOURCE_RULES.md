@@ -94,4 +94,4 @@ Each provider column is one of:
 
 A proposal is `ready` only when no ambiguity remains and the required provider semantics in [DATA_CONTRACT.md](DATA_CONTRACT.md) are mapped. Otherwise it is `needs_review` with explicit `requiredMissing` semantics. The UI sends manual overrides by column index, not untrusted header keys. It exposes only canonical targets valid for the detected provider domain; an advertising file cannot target `gross_revenue`, and a commerce file cannot target `attributed_revenue`. Duplicate canonical targets and malformed override payloads fail with structured errors.
 
-Mappings exist for this processing request only. Relay stores neither raw CSV data nor mapping reuse rules in Sprint 05.
+Sprint 14 may remember a bounded mapping decision by client, provider, exact provider header, and canonical target. Catalog and manual-current-session decisions may be retained; raw CSV content and rows are not. Reuse still runs through the current provider proposal: an incompatible candidate, occupied canonical target, provider mismatch, or unresolved required field returns to focused review instead of being forced.

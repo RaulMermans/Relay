@@ -18,7 +18,7 @@ Each sprint is expanded only when it becomes current.
 | 11 - Meta Ads Connector | Add paid-media connection | Meta adapter | Meta data normalizes correctly |
 | 12 - Google Ads Connector | Add paid-media connection | Google Ads adapter | Google data normalizes correctly |
 | 13 - Daily Dashboard + Multi-Source Workspace | Productize validated performance for daily use | Transient workspace, combined analysis, exception UX, responsive dashboard | Complete and exception workspace flows are usable and truthful |
-| 14 - Client + Report Memory | Persist recurring context | Client/report rules and history | Repeat setup is reduced |
+| 14 - Client + Report Memory | Persist recurring context | Browser-local clients, configuration, dashboard snapshot, freshness, and bounded cycle history | Reload/repeat/isolation flows are verified without sensitive or cloud persistence |
 | 15 - Grounded AI + Human Review | Draft safe commentary | Grounded narrative and review flow | AI stays bounded by facts |
 | 16 - Report Composer + PDF | Produce client output | Structured report and PDF export | Report numbers/rendering verified |
 | 17 - Security, QA + Private Beta | Prepare real-world validation | Hardening, tests, beta process | Private beta readiness reviewed |
