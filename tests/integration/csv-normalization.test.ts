@@ -16,6 +16,23 @@ async function normalizedFixture(relativePath: string): Promise<unknown> {
 }
 
 describe("raw CSV to canonical normalization", () => {
+  it("auto-maps the supported Meta Day header without mapping review", async () => {
+    const result = await normalizeCsvFile(await fixtureFile("meta_ads/day-header-export.csv"), {
+      ingestionId: "fixture-meta-day",
+    });
+
+    expect(result).toMatchObject({
+      status: "normalized",
+      provider: "meta_ads",
+      mapping: {
+        status: "ready",
+        fields: expect.arrayContaining([
+          expect.objectContaining({ header: "Day", canonicalField: "date", origin: "exact_alias" }),
+        ]),
+      },
+    });
+  });
+
   it.each([
     ["meta_ads/representative-export.csv", "meta_ads/representative-export.json", "fixture-meta"],
     ["meta_ads/alternate-headers.csv", "meta_ads/alternate-headers.json", "fixture-meta-alt"],

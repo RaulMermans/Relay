@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Relay",
-  description: "Marketing reporting workflow automation.",
+  title: "Relay — Performance workspace",
+  description: "A focused performance dashboard with recurring reporting automation.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

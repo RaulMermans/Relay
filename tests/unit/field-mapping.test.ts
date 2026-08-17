@@ -7,6 +7,17 @@ import {
 } from "../../lib/mapping/field-mapping";
 
 describe("proposeFieldMapping", () => {
+  it.each(["Day", "Date"])("maps the supported Meta %s date alias", (header) => {
+    const proposal = proposeFieldMapping("meta_ads", [header, "Campaign name", "Amount spent"]);
+
+    expect(proposal.fields[0]).toMatchObject({
+      header,
+      canonicalField: "date",
+      status: "mapped",
+      origin: "exact_alias",
+    });
+  });
+
   it("maps a Meta Ads exact header alias to its canonical field", () => {
     const proposal = proposeFieldMapping("meta_ads", [
       "Date start",

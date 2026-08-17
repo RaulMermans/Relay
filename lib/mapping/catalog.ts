@@ -10,7 +10,7 @@ type ProviderFieldCatalog =
   | { domain: Extract<ObservationDomain, "commerce">; fields: Record<CommerceCanonicalField, string[]> };
 
 const META_ADS_FIELDS: Record<AdvertisingCanonicalField, string[]> = {
-  date: ["Date start"],
+  date: ["Date start", "Day", "Date"],
   source_account_id: ["Account ID"],
   source_account_name: ["Account name"],
   campaign_id: ["Campaign ID"],

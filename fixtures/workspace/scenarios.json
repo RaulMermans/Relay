@@ -1,0 +1,29 @@
+{
+  "complete_workspace": {
+    "meta_ads": "data-health/meta-aligned.csv",
+    "google_ads": "data-health/google-aligned.csv",
+    "shopify": "data-health/shopify-aligned.csv"
+  },
+  "paid_media_only": {
+    "meta_ads": "data-health/meta-aligned.csv",
+    "google_ads": "data-health/google-aligned.csv"
+  },
+  "meta_and_shopify": {
+    "meta_ads": "data-health/meta-aligned.csv",
+    "shopify": "data-health/shopify-aligned.csv"
+  },
+  "missing_day_warning": {
+    "meta_ads": "data-health/meta-aligned.csv",
+    "shopify": "data-health/shopify-partial-period.csv"
+  },
+  "currency_mismatch": {
+    "meta_ads": "data-health/meta-aligned.csv",
+    "shopify": "data-health/shopify-usd.csv"
+  },
+  "mapping_exception": {
+    "meta_ads": "failures/meta-ambiguous-mapping.csv"
+  },
+  "target_breach": {
+    "meta_ads": "change-intelligence/meta-deterioration.csv"
+  }
+}
