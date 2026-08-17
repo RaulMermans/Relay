@@ -16,11 +16,11 @@ When a marketer needs to prepare a recurring client performance report, they wan
 
 ## Product promise
 
-Relay should reduce reporting work without creating false analytical certainty.
+Relay combines a focused performance dashboard with recurring reporting automation. It should shorten the path from validated source data to daily situational awareness and, later, a client-ready report without creating false analytical certainty.
 
 ## Product boundaries
 
-Relay is not primarily a live dashboard, attribution platform, ad-management platform, campaign-optimization agent, or BI replacement. It owns the workflow between source data and the client-facing reporting artifact.
+Relay is not a real-time BI platform, attribution platform, ad-management platform, or campaign-optimization agent. Its dashboard monitors the freshest validated data supplied to a workspace; its reporting workflow turns the same deterministic facts into a future client-facing artifact.
 
 ## Ingestion model
 
@@ -28,11 +28,11 @@ Meta Ads, Google Ads, and Shopify are the initial platforms. CSV uploads and con
 
 ## Core workflow
 
-Data ingestion -> mapping -> normalization -> validation/reconciliation -> deterministic KPI computation -> change and driver detection -> grounded AI commentary -> human review -> client-ready PDF.
+Workspace -> reporting period -> data sources -> automatic preparation -> exceptions when needed -> performance dashboard -> deterministic change detection -> later grounded commentary, human review, and client-ready PDF.
 
 ## Cadence, output, and review
 
-The initial recurring cadence assumption is weekly and monthly reporting. The initial output is a client-ready PDF. AI-generated commentary must be reviewable by a human before inclusion in the final report.
+The dashboard supports repeat monitoring whenever fresh data is supplied. The initial reporting cadence assumption remains weekly and monthly, and the planned reporting output remains a client-ready PDF. AI-generated commentary, when implemented in a later sprint, must be reviewable by a human before inclusion.
 
 ## Assumption status
 

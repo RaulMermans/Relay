@@ -108,3 +108,9 @@ Meta Ads and Google Ads each expose spend, impressions, clicks, conversions, att
 ## Sprint 08 boundary
 
 The KPI engine exposes metric identity, current/previous values, absolute and percentage change, source, input scope, and period. Sprint 08 Change Intelligence may interpret those facts. The KPI Engine describes what changed mathematically. Change Intelligence interprets whether the change is favorable, unfavorable, significant, or actionable.
+
+## Sprint 13 presentation boundary
+
+The dashboard formats serialized fixed-decimal facts only after calculation: currency uses the metric's explicit currency, count values use readable grouping, ROAS/MER use concise `x` notation, CTR/conversion rate use percentage notation, and change ratios use signed percentages. Unavailable stays explicit as `—`; it is never converted to zero. Presentation rounding never re-enters KPI, target, trend, or Change Intelligence calculations.
+
+Hero selection is source-aware. Commerce Revenue, Spend, MER, and Orders lead when Shopify and paid-media facts are available; provider ROAS remains inside the matching Meta or Google source context. The dashboard never creates report-level attributed revenue or combined cross-provider ROAS.

@@ -69,3 +69,7 @@ Reconciliation implements [RECONCILIATION_RULES.md](RECONCILIATION_RULES.md) and
 ## Sprint 07 boundary
 
 The next deterministic KPI layer may use: canonical observations, a non-blocked Data Health result, and this resolved reporting period. Expected KPI scope is spend, revenue, orders, impressions, clicks, CTR, CPC, CPA, ROAS, MER, AOV, conversion rate, and current-versus-previous deltas. Sprint 06 implements none of them.
+
+## Sprint 13 presentation boundary
+
+The dashboard maps structured findings to deterministic human copy without changing `code`, `category`, `severity`, `blocking`, evidence, or status. Healthy state remains a compact trust signal. Warnings and blocking findings enter Attention only when actionable, while complete technical findings remain available under **View details**. A blocking finding cannot be dismissed into readiness, and presentation grouping never changes the Data Health result.

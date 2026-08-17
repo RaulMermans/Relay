@@ -170,6 +170,24 @@ CSV -> normalization -> Data Health -> KPI Engine -> Change Intelligence
 
 Direction remains mathematical and separate from assessment. Shopify gross revenue remains the commerce-revenue/MER basis; provider attributed revenue remains source-specific evidence. Contribution is limited to additive spend. Targets use explicit bounded operators and are never persisted. The browser supplies optional current-period dates and MER/CPA targets, then renders server-owned observation fields as compact deterministic labels. Sprint 08 adds no causation, recommendations, AI, statistics, database, connector, report, or PDF behavior.
 
+## Sprint 13 multi-source workspace boundary
+
+```text
+browser session workspace
+  -> reporting period + expected sources + transient targets
+  -> at most one CSV per Meta Ads / Google Ads / Shopify slot
+  -> POST /api/workspace/analyze
+  -> per-file validation + parsing + detection + mapping + normalization
+  -> mapping exception response, or combined request-local canonical observations
+  -> one Data Health -> KPI -> Change Intelligence execution
+  -> compact source summaries + structured results + daily trend facts
+  -> dashboard presentation
+```
+
+The server revalidates every file and validates that its detected provider matches the selected source slot. A mapping exception stops partial analytics and returns only headers/candidates required for correction. Ready files combine only in request memory. Raw rows and canonical observations never cross the response boundary.
+
+The trend sums only canonical advertising `spend` across Meta/Google and Shopify `grossRevenue` by day inside the resolved current period. It never includes provider `attributedRevenue` in commerce revenue. Source summaries reflect Data Health blocking state, date coverage, currency, and observation count. The browser retains files, workspace name, dates, mappings, targets, and compact analysis only in React session state; no browser or server durability is claimed.
+
 ## Persistence posture
 
 Sprint 03 keeps request processing transient and does not connect a database. When a real feature needs state, the boundary is `UI / Server Logic -> Persistence Boundary -> Demo/local implementation OR future durable database`. Server memory is not durable persistence, and no generic repository abstraction is created before that feature exists.

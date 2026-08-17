@@ -114,3 +114,9 @@ Ties use deterministic type, scope, source, metric, and ID ordering. Movers are 
 Evidence copies the exact structured KPI identity, scope/source, unit, current/previous values, absolute change, and percentage change. It contains no raw row, filename, provider payload, customer identity, recommendation, or generated narrative. Downstream layers can determine why a finding exists without re-reading CSV data.
 
 Sprint 08 adds no database, persistence, connector, AI/LLM call, recommendation engine, report/PDF generation, charting dependency, statistical model, seasonality model, or campaign analysis.
+
+## Sprint 13 dashboard curation
+
+The engine's structured result and deterministic priority remain authoritative. The dashboard selects at most four distinct default stories and offers **View all** for the remaining observations. Presentation-level story keys suppress prominent repetition between the same source's CPA/ROAS movement and aggregate source-efficiency signal; target breaches remain distinct. This does not remove, rewrite, or reprioritize engine observations.
+
+Human copy states metric polarity directly—for example, “Efficiency declined” and “Meta Ads CPA increased 6.2%.” It preserves the observation's assessment and evidence and never introduces causality, statistical significance, recommendations, or AI narrative.

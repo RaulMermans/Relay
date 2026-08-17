@@ -23,4 +23,13 @@ Each metric is either a hypothesis, a target, or an observed result. Sprint 01 c
 | Connector Fetch Success Rate | Connector fetch attempts that complete successfully | `successful fetches / fetch attempts` | Successful connector fetches | Connector fetch attempts | Percentage | Per fetch and reporting period | Structured connector attempt log | Hypothesis; not observed |
 | Report Generation Failure Rate | Report-generation attempts that fail | `failed generation attempts / total generation attempts` | Failed report-generation attempts | Total report-generation attempts | Percentage | Per generation attempt and reporting period | Structured report-generation attempt log | Hypothesis; not observed |
 
+## Daily-use validation hypotheses
+
+| Name | Definition | Formula | Numerator | Denominator | Unit | Measurement moment | Evidence required | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Time to Situational Awareness | Time for a user to answer what needs attention from a prepared workspace | `answer recorded time - dashboard available time` | N/A | N/A | Seconds | During moderated or instrumented dashboard use | Timestamped task start, dashboard-ready event, and user answer | Hypothesis; not observed |
+| Repeat Dashboard Use | Users returning to the dashboard workflow across reporting cycles | `users with dashboard use in successive cycles / eligible users` | Users with use in successive cycles | Eligible users | Percentage | After each reporting cycle | Authenticated usage or explicit beta research log once persistence exists | Hypothesis; not observed |
+
+No measured value or target is claimed for either daily-use hypothesis in Sprint 13.
+
 The initial AI target applies to accepted observations without major factual or analytical correction. It does not establish that an LLM is accurate until observations and reviews are recorded.

@@ -2,11 +2,11 @@
 
 ## Product
 
-Relay is a reporting workflow platform for freelance performance marketers and small agencies. It accepts connected marketing sources or CSV exports, brings both through one canonical data layer, verifies the resulting facts, and turns them into a decision-ready client report.
+Relay combines a focused performance dashboard with recurring reporting automation for freelance performance marketers and small agencies. It accepts supported CSV exports or future connected sources, brings both through one canonical data layer, verifies the resulting facts, and presents them for daily decisions before a later client-report workflow.
 
 ## Current status
 
-Sprint 03: a minimal Next.js application foundation, health Route Handler, environment boundary, tests, and CI are present. No product workflow, connector, database, credential, CSV ingestion, analytics, AI, or PDF feature exists. Vercel deployment remains blocked until local authentication and project linking are available.
+Sprint 13: a transient multi-source workspace, server-authoritative CSV analysis, deterministic dashboard, exception-driven mapping/Data Health UX, and responsive application shell are present. Shopify, Meta Ads, and Google Ads CSVs are usable together; API adapters are implemented but live authorization remains deferred. No database, durable workspace, automatic sync, AI, report composer, or PDF feature exists. Vercel deployment remains blocked until local authentication and project linking are available.
 
 ## Working protocol
 

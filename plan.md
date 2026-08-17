@@ -1,47 +1,50 @@
-# Sprint 12 - Google Ads Connector
+# Sprint 13 - Daily Dashboard + Multi-Source Workspace
 
 | Task | Outcome | Relevant files/docs | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
-| T-296 Official Google Verification | Lock current official Google Ads requirements. | `docs/integrations/GOOGLE_ADS_CONNECTOR.md` | Current API, developer-token, OAuth, hierarchy, reporting, quota, and version guidance is dated and sourced. | Complete |
-| T-297 Activation Decision | Choose one truthful Google activation status. | Google connector doc | Exactly one status states requirements, Relay capabilities, gap, consequence, and revisit trigger. | Complete |
-| T-298 Credential/Persistence Gate | Separate application developer credentials from user OAuth credentials. | Google connector/security docs, ADR-006 | Durable ownership/token limits and activation consequence are explicit; no database is added. | Complete |
-| T-299 Capabilities | Define Google V1 read-only capabilities and exclusions. | Google connector doc, connector types | Discovery, reporting, date range, and pagination are bounded; all mutations are excluded. | Complete |
-| T-300 Customer Model | Map authoritative Google customer identity into `ExternalAccount`. | Google types/client/docs | Hyphen-free customer ID is authoritative; names, currency, timezone, status, and manager context remain metadata. | Complete |
-| T-301 Account Discovery | Discover and server-validate accessible reporting customers. | Google client/types/tests | Direct OAuth roots and serving descendants are discovered; submitted customer IDs alone grant no authority. | Complete |
-| T-302 Manager Context | Resolve manager/login-customer context deliberately. | Google client/docs/tests | Direct, manager, nested-manager, invalid, and mismatched cases are bounded and tested. | Complete |
-| T-303 Authorization Boundary | Define the future server-side Google OAuth sequence. | Google connector/security docs | State, redirect, offline access, token storage, expiry, revocation, discovery, and deferral are explicit. | Complete |
-| T-304 SDK/API Decision | Select and justify REST fetch versus client libraries. | Google connector doc, `package.json` | The smallest secure/testable choice is documented and dependencies stay unchanged. | Complete |
-| T-305 Provider Module | Implement the focused Google provider boundary. | `lib/connectors/google-ads/` | Google networking, validation, hierarchy, errors, and normalization remain isolated and read-only. | Complete |
-| T-306 Reporting Field Contract | Define minimal primitive reporting fields. | Google client/types/docs | Only canonical dimensions and primitive measures are requested; derived KPIs are absent. | Complete |
-| T-307 Cost Micros | Normalize provider micros safely. | Google normalizer, fixtures/tests | Micros convert through fixed-decimal text without floating-point arithmetic. | Complete |
-| T-308 Conversion Semantics | Select the Google primary conversion metric. | Google normalizer/docs/tests | `metrics.conversions` maps to canonical conversions with configuration/attribution caveats. | Complete |
-| T-309 Attributed Revenue | Map conversion value only to advertising attribution. | Google normalizer/docs/tests | `metrics.conversions_value` maps to `attributedRevenue`, never commerce revenue. | Complete |
-| T-310 Reporting Query | Implement the minimal read-only GAQL query. | Google client/tests | Daily customer/campaign/ad-group primitives are requested without unnecessary breakdowns. | Complete |
-| T-311 Reporting Grain | Preserve provider daily ad-group rows. | Google client/types/normalizer/tests | Each provider daily ad-group row becomes one canonical observation without invented allocation. | Complete |
-| T-312 Date Semantics | Preserve inclusive customer-calendar dates. | Google client/normalizer/docs/tests | Dates remain within the requested range without UTC shifting; V1 range is bounded. | Complete |
-| T-313 Currency | Preserve selected-customer currency. | Google client/normalizer/tests | Currency is required, matched, and never converted or inferred. | Complete |
-| T-314 Pagination/Streaming | Choose bounded Search pagination. | Google client, generic pagination, docs/tests | Fixed pages, repeated/no-progress, record, and maximum guards fail closed. | Complete |
-| T-315 Quota/Retry | Map Google quota/transient behavior into bounded retry. | Google errors/client/tests | Retry categories and delay are bounded; tests inject delay and never sleep. | Complete |
-| T-316 Error Mapping | Map provider failures into safe connector errors. | Google errors/types/tests | OAuth, token, permission, customer, manager, quota, query, outage, malformed, and pagination failures are redacted and stable. | Complete |
-| T-317 API Provenance | Attach safe Google API lineage. | Google normalizer/tests | Account, fetch, date range, and bounded record locator are present; CSV lineage is not fabricated. | Complete |
-| T-318 Normalization | Normalize Google Search rows into advertising observations. | Google normalizer/types/tests | Existing canonical shape, dimensions, fixed decimals, currency, and revenue polarity are preserved. | Complete |
-| T-319 Null/Zero | Preserve unavailable versus explicit zero metrics. | Google types/normalizer/docs/tests | Missing fields map to `null`; explicit zero maps to `"0"`; omitted all-zero rows are not fabricated. | Complete |
-| T-320 Fixtures | Add labelled synthetic Google API fixtures. | `fixtures/connectors/google-ads/` | Representative, hierarchy, page, zero, missing, boundary, auth, token, quota, malformed, and pagination cases contain no real data. | Complete |
-| T-321 CSV/API Equivalence | Prove representative Google CSV/API semantic equality. | Google fixtures, equivalence helper, integration test | Equivalent facts compare equal while only provenance/unavailable identity differ. | Complete |
-| T-322 Negative Equivalence | Prove semantic changes fail comparison. | Google integration test | Measures, attribution, currency, null/zero, date, campaign, and ad-group changes fail. | Complete |
-| T-323 Revenue Regression | Protect advertising versus commerce revenue. | Google integration/KPI tests | Google value participates in Google ROAS and never commerce revenue, MER, or AOV numerator. | Complete |
-| T-324 Downstream Convergence | Run Google API facts through existing analytics. | Google integration test | Data Health, KPI, and Change Intelligence run unchanged without transport branches. | Complete |
-| T-325 Registry/Readiness | Register the adapter truthfully. | Connector registry/readiness/tests | Implementation is `implemented`, configuration is false, and readiness remains `connector_not_configured`. | Complete |
-| T-326 Environment Contract | Keep server configuration minimal and used. | `.env.example`, Google client | Deferred live routes add no unused Google environment keys or secrets. | Complete |
-| T-327 Server Routes | Add only routes justified by activation. | `app/api/connectors/google/` if applicable | No dead authorize/callback/accounts/fetch routes are added while live activation is deferred. | Complete |
-| T-328 UI State | Show a concise truthful Google source state. | `app/page.tsx`, E2E tests | Adapter availability and deferred live connection are clear; no fake Connect control exists. | Complete |
-| T-329 CSV Regression | Preserve Google CSV as a permanent path. | Existing CSV fixtures/tests, E2E | Detection, mapping, normalization, Data Health, KPI, and Change Intelligence remain functional. | Complete |
-| T-330 Unit Tests | Cover Google validation, hierarchy, transport, semantics, errors, and readiness. | `tests/unit/` | Tests are deterministic, credential-free, and perform no real network or sleep. | Complete |
-| T-331 Integration Tests | Prove Google API canonical and downstream convergence. | Google integration test | Equivalence, mismatches, hierarchy, errors, readiness, Data Health, KPI, and Change Intelligence pass. | Complete |
-| T-332 E2E | Verify truthful Google UI and CSV fallback. | `tests/e2e/` | Browser sees deferred connector state and uses Google CSV without credentials. | Complete |
-| T-333 Security | Review connector trust and semantic boundaries. | Scoped diff, security/data contracts | No unresolved P0/P1 credential, authority, write, bound, provenance, or revenue finding remains. | Complete |
-| T-334 Official Docs | Record current official Google assumptions and decisions. | `docs/integrations/GOOGLE_ADS_CONNECTOR.md` | Each material assumption has topic, official URL, verification date, and Relay decision. | Complete |
-| T-335 Connector Matrix | Report Google CSV, adapter, and live auth accurately. | `docs/integrations/CONNECTOR_MATRIX.md` | Matrix distinguishes implemented adapter from deferred live activation. | Complete |
-| T-336 Documentation | Align focused connector/data/architecture/QA/product docs. | Focused docs, `README.md`, `CHANGELOG.md` | Claims match implementation without unjustified generic rewrites. | Complete |
-| T-337 Verification | Run the complete repository verification ladder and scope checks. | Repository commands | Install, lint, typecheck, tests, build, E2E, diff, semantic, security, and scope evidence is observed. | Complete |
-| T-338 Sprint 13 Handoff | Prepare the Product UX + Multi-Source Workspace handoff. | `SCRATCHPAD.md`, roadmap context | Client workspace, mixed intake, exception-driven UX, design direction, and exclusions are concise. | Complete |
+| T-339 Product UX Contract | Establish the dashboard-first UX source of truth. | `docs/product/PRODUCT_UX.md` | Daily questions, product loop, exception-driven disclosure, deterministic authority, and freshness limits are explicit. | Complete |
+| T-340 Product Positioning Update | Align daily monitoring with reporting automation. | Product docs, `README.md` | Relay is framed as a focused dashboard plus reporting automation, never real-time BI. | Complete |
+| T-341 Information Architecture | Limit V1 navigation to useful surfaces. | `docs/product/PRODUCT_UX.md`, app shell | Only Overview and Data Sources appear; dead future destinations are absent. | Complete |
+| T-342 Application Shell | Replace the engineering intake page with a product shell. | `app/` | Relay identity, workspace, period, source status, content, actions, and responsive navigation feel intentional. | Complete |
+| T-343 Transient Workspace | Model one session-scoped analytical workspace. | Workspace UI/types/docs | State is transient; browser storage contains no raw CSV, canonical data, credentials, or tokens. | Complete |
+| T-344 Workspace Naming | Let the active workspace use a human-readable name. | Workspace UI | Name editing works transiently without client CRUD or persistence claims. | Complete |
+| T-345 Reporting Period UX | Present an understandable current and previous period. | Workspace UI, period contract | Users select the current range; the previous equal-length range remains server-derived. | Complete |
+| T-346 Multi-Source Workspace | Provide truthful Meta, Google, and Shopify source slots. | Source management UI | Each provider has one CSV slot; live API remains clearly unavailable. | Complete |
+| T-347 Source Cards | Summarize compact source readiness. | Source presentation | Status, coverage, latest date, currency, and observation count are human-readable. | Complete |
+| T-348 Multi-File Orchestration | Combine one active CSV dataset per provider. | `lib/workspace/` | Existing normalization feeds one combined Data Health, KPI, and Change Intelligence execution. | Complete |
+| T-349 Workspace Server Boundary | Add one server-authoritative analysis endpoint. | `app/api/workspace/analyze/` | Inputs are revalidated; responses omit raw and canonical rows. | Complete |
+| T-350 Automatic Mapping | Skip mapping confirmation on the deterministic happy path. | Workspace orchestration/UI | Ready mappings proceed directly to analysis. | Complete |
+| T-351 Mapping Exceptions | Reveal only fields that require correction. | Workspace UI/API | Copy is actionable, focused, and allows corrected re-analysis. | Complete |
+| T-352 Meta Day Alias Regression | Recognize the supported Meta `Day` date header. | Mapping catalog, fixtures/tests | `Day` and existing `Date` behavior map deterministically with regression coverage. | Complete |
+| T-353 Preparation State | Show compact truthful preparation progress. | Workspace UI | Immediate processing has brief, non-fake recognized/mapped/checked states. | Complete |
+| T-354 Exception Center | Group user-facing issues by actionability. | Presentation/workspace UI | A compact count leads to blocking, target, source, and warning actions without dumping findings. | Complete |
+| T-355 Humanized Data Health | Translate structured findings into deterministic product copy. | `lib/presentation/` | Code, severity, blocking, and evidence remain unchanged underneath human wording. | Complete |
+| T-356 Progressive Data Health | Keep healthy trust state compact and details inspectable. | Dashboard UI | Status defaults to Good or item count; technical detail is behind View details. | Complete |
+| T-357 Presentation Formatting | Add a pure formatting boundary. | `lib/presentation/`, unit tests | Currency, ratios, percentages, integers, signs, and unavailable values render consistently without changing facts. | Complete |
+| T-358 Dashboard Hierarchy | Order the dashboard around daily questions. | Dashboard UI | Performance, What Changed, Channels, Attention, and Data quality appear in that order. | Complete |
+| T-359 Hero KPIs | Choose useful KPIs from available sources. | KPI presentation | Commerce Revenue, Spend, MER, Orders lead when available; provider ROAS stays separate and truthful. | Complete |
+| T-360 KPI Visual Treatment | Give KPI facts a premium readable hierarchy. | Dashboard styles/components | Human labels, formatted current values, deltas, and context replace raw engine presentation. | Complete |
+| T-361 Performance Trend | Add one truthful responsive daily trend. | Workspace response/presentation/UI | Shopify revenue and paid spend are distinct; advertising attribution is never presented as commerce revenue. | Complete |
+| T-362 What Changed Curation | Default to the most useful 3-4 observations. | Presentation/UI | Deterministic priority and deduplication avoid repeated prominent stories; View all remains available. | Complete |
+| T-363 Observation Presentation | Humanize movement and polarity safely. | Presentation/UI | Copy states the metric movement without unsupported causality or altered evidence. | Complete |
+| T-364 Channel Cards | Summarize Meta, Google, and Shopify performance. | Dashboard UI | Each source shows current facts, change, and readiness without becoming a mini-dashboard. | Complete |
+| T-365 Attention | Prioritize actionable issues. | Presentation/dashboard UI | Blocking health, target breaches, missing sources, and significant warnings appear in order; favorable insights do not. | Complete |
+| T-366 Source Management | Update source data without losing dashboard context. | Workspace UI | Update data opens source management and preserves compact analysis state until replacement succeeds. | Complete |
+| T-367 Empty State | Make first use directional and truthful. | Workspace UI | Users can name the workspace, set a period, and add CSV data without decorative demo metrics. | Complete |
+| T-368 Loading States | Provide stable preparation feedback. | Workspace UI | Controls prevent duplicate submission and status is announced without fake duration. | Complete |
+| T-369 Error States | Explain failures with a recovery action. | Workspace UI | Server-safe messages are human-readable; retry/update actions preserve valid context. | Complete |
+| T-370 Responsive Design | Preserve hierarchy across desktop, tablet, and mobile. | App styles, E2E/visual QA | Navigation, dashboard, cards, chart, and source management remain usable at required widths. | Complete |
+| T-371 Accessibility | Meet the Sprint 13 accessibility baseline. | Components/styles/E2E | Semantic structure, labels, keyboard flow, focus, contrast, status text, chart summary, and reduced motion pass. | Complete |
+| T-372 Visual System | Create a coherent editorial analytics system. | Global/app styles | Tokens, typography, spacing, states, and numerical rhythm are distinctive and restrained. | Complete |
+| T-373 Dependency Review | Keep the frontend dependency set minimal. | `package.json`/lockfile | No chart or UI dependency is added without necessity; native React/CSS/SVG is preferred. | Complete |
+| T-374 Fixtures | Add labelled multi-source synthetic fixtures. | `fixtures/workspace/` | Complete, paid-only, partial, warning, mismatch, mapping, and target scenarios contain no real data. | Complete |
+| T-375 Unit Tests | Cover workspace and presentation behavior. | `tests/unit/` | Formatting, curation, humanization, period/source summaries, and Meta alias behavior are deterministic. | Complete |
+| T-376 Integration Tests | Prove combined server-authoritative analysis. | `tests/integration/` | Multi-source combinations, mapping exceptions, health gates, targets, and revenue semantics pass. | Complete |
+| T-377 Complete Workspace E2E | Verify the complete three-source workflow. | `tests/e2e/` | CSV sources analyze automatically into the dashboard without credentials. | Complete |
+| T-378 Exception E2E | Verify correction and recovery. | `tests/e2e/` | Mapping or health exceptions are focused, actionable, and re-analyzable. | Complete |
+| T-379 Visual QA | Inspect dashboard states at required viewports. | Browser screenshots/notes | Empty, ready, warning, blocked, loading, and error states are visually reviewed and fixed. | Complete |
+| T-380 UX Smell Test | Remove technical and decorative product smells. | Product UI | No dead nav, raw enums, repeated cards, fake live claims, or backend architecture dominates. | Complete |
+| T-381 Security/Integrity | Review upload, state, response, and semantic boundaries. | Scoped code/docs/tests | No secrets/raw rows leak; bounds, revalidation, blocking behavior, and revenue semantics remain intact. | Complete |
+| T-382 Documentation | Align focused product, data-flow, QA, roadmap, and changelog docs. | Focused docs | Documentation matches actual Sprint 13 behavior and deferrals. | Complete |
+| T-383 Full Verification | Run the complete repository verification ladder. | Repository commands | Install, lint, typecheck, all tests, build, E2E, diff, semantics, scope, and UX evidence are observed. | Complete |
+| T-384 Sprint 14 Handoff | Define the exact durable client/report-memory follow-up. | `SCRATCHPAD.md`, roadmap context | Persistence evaluation and saved client/report configuration are bounded without implementing Sprint 14. | Complete |

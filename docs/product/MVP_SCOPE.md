@@ -1,10 +1,12 @@
 # MVP scope
 
-Every V1 capability must directly move source data to a decision-ready report.
+Every V1 capability must either make validated performance understandable or move the same trusted facts toward a decision-ready report.
 
 ## V1 Product Scope
 
 - Client records and reporting periods
+- Focused daily performance overview with source freshness and data-quality status
+- Exception-driven source preparation and correction
 - Meta Ads CSV, Google Ads CSV, and Shopify CSV
 - Meta Ads connector, Google Ads connector, and Shopify connector
 - Mixed connector plus CSV reporting
@@ -17,6 +19,8 @@ Every V1 capability must directly move source data to a decision-ready report.
 - KPI targets and client reporting rules
 - Grounded AI commentary and human review
 - Structured report model, PDF export, and report history
+
+The dashboard is a monitoring surface over supplied data, not a real-time BI warehouse. Automatic refresh depends on future live connector activation.
 
 ## Required for Validation, May Initially Be Manual
 

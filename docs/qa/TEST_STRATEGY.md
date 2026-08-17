@@ -38,9 +38,13 @@ Sprint 11 adds the same truthful implemented/live-unavailable state for Meta Ads
 
 Sprint 12 adds the truthful Google Ads implemented/live-unavailable state, verifies no inert Google connect control, and exercises the permanent Google CSV intake/normalization/KPI path without credentials.
 
+Sprint 13 replaces the single-file browser workflow with complete-workspace and exception flows. E2E covers the minimal shell, three-source automatic preparation, mapping correction/re-analysis, safe unsupported-source recovery, transient target Attention, and mobile overflow. Tests require no database, provider credential, or network service.
+
 ## Regression fixtures
 
 Store labelled synthetic/anonymized provider CSV input in `fixtures/raw/`, canonical expectations in `fixtures/normalized/`, analytical expectations in `fixtures/expected/`, and provider-neutral connector mock input in `fixtures/connectors/mock/`. Expected artifacts are maintained independently from implementation code and never contain production/client data or secrets.
+
+`fixtures/workspace/scenarios.json` composes existing labelled synthetic CSVs for complete, paid-only, Meta-plus-Shopify, partial-coverage, currency-mismatch, mapping-exception, and target-breach workspace regressions without duplicating provider facts.
 
 ## Tooling and CI expectation
 
