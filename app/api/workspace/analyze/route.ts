@@ -12,6 +12,7 @@ export const runtime = "nodejs";
 
 const sourceSchema = z.enum(["meta_ads", "google_ads", "shopify"]);
 const overrideSchema = z.object({ columnIndex: z.number().int().nonnegative(), canonicalField: z.string().nullable() }).strict();
+const savedMappingSchema = z.object({ header: z.string().trim().min(1).max(256), canonicalField: z.string().nullable() }).strict();
 const contextSchema = z.object({
   currentPeriod: z.object({ start: z.string(), end: z.string() }).strict(),
   expectedSources: z.array(sourceSchema).min(1).max(3).refine((items) => new Set(items).size === items.length),
@@ -19,6 +20,11 @@ const contextSchema = z.object({
     meta_ads: z.array(overrideSchema).optional(),
     google_ads: z.array(overrideSchema).optional(),
     shopify: z.array(overrideSchema).optional(),
+  }).strict().optional(),
+  savedMappings: z.object({
+    meta_ads: z.array(savedMappingSchema).max(128).optional(),
+    google_ads: z.array(savedMappingSchema).max(128).optional(),
+    shopify: z.array(savedMappingSchema).max(128).optional(),
   }).strict().optional(),
 }).strict();
 
@@ -66,6 +72,7 @@ export async function POST(request: Request): Promise<Response> {
       expectedSources: context.expectedSources,
       reportingPeriod: { currentPeriod: context.currentPeriod },
       mappingOverrides: context.mappingOverrides as Partial<Record<ProviderSource, MappingOverride[]>> | undefined,
+      savedMappings: context.savedMappings as Parameters<typeof analyzeWorkspace>[0]["savedMappings"],
       targets: parseChangeTargets(formData.get("changeTargets")),
       ingestionId: () => randomUUID(),
     });

@@ -1,12 +1,16 @@
 "use client";
 
 import type { ChangeEvent, FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { ChangeObservation } from "../lib/change-intelligence/types";
 import type { ProviderSource } from "../lib/data-health/types";
 import type { KpiMetricKey, KpiMetricResult, KpiSourceBreakdown } from "../lib/kpi/types";
 import type { CanonicalField } from "../lib/mapping/types";
+import { clientMappingRequest, freshnessStatus, recordWorkspaceAnalysis } from "../lib/persistence/analysis-memory";
+import { createClient, createEmptyMemory, deleteClient, renameClient, selectClient, updateClient } from "../lib/persistence/client-memory";
+import { createBrowserMemoryStore, type RelayMemoryStore } from "../lib/persistence/local-storage";
+import type { AnalysisSnapshot, ClientMemory, RelayMemoryV1, SnapshotChangeIntelligence } from "../lib/persistence/types";
 import {
   curateObservations,
   formatMetricValue,
@@ -19,8 +23,10 @@ import type {
   WorkspaceSourceSummary,
   WorkspaceTrendPoint,
 } from "../lib/workspace/analyze-workspace";
+import { ClientMemorySettings, ClientSelector, FirstClient, RecentReports } from "./client-memory-ui";
 
 type ReadyAnalysis = Extract<WorkspaceAnalysisResult, { status: "ready" }>;
+type DashboardAnalysis = Pick<ReadyAnalysis, "sources" | "dataHealth" | "kpis" | "trend"> & { changeIntelligence: SnapshotChangeIntelligence };
 type MappingException = Extract<WorkspaceAnalysisResult, { status: "mapping_required" }>["exceptions"][number];
 type View = "overview" | "sources";
 type MappingChoices = Partial<Record<ProviderSource, Record<number, CanonicalField | null>>>;
@@ -95,10 +101,12 @@ function currentCurrency(metric: KpiMetricResult): string | null {
 function SourceRail({
   files,
   analysis,
+  client,
   onManage,
 }: {
   files: Partial<Record<ProviderSource, File>>;
-  analysis: ReadyAnalysis | null;
+  analysis: DashboardAnalysis | null;
+  client: ClientMemory;
   onManage: () => void;
 }) {
   return (
@@ -111,7 +119,8 @@ function SourceRail({
         {SOURCES.map((source) => {
           const summary = analysis?.sources.find((item) => item.source === source.id);
           const hasFile = Boolean(files[source.id]);
-          const state = summary?.status === "ready" ? "Ready" : summary ? "Needs attention" : hasFile ? "Selected" : "No data";
+          const expected = client.sources[source.id].expected;
+          const state = summary?.status === "ready" ? "Ready" : summary ? "Needs attention" : hasFile ? "Selected" : expected ? "Expected" : "No data";
           return (
             <li key={source.id} className={`rail-source state-${summary?.status ?? (hasFile ? "selected" : "empty")}`}>
               <span className="status-dot" aria-hidden="true" />
@@ -147,11 +156,13 @@ function SourceInput({
   source,
   file,
   summary,
+  expected,
   onChange,
 }: {
   source: (typeof SOURCES)[number];
   file?: File;
   summary?: WorkspaceSourceSummary;
+  expected: boolean;
   onChange: (file: File | undefined) => void;
 }) {
   const inputId = `${source.id}-csv`;
@@ -164,12 +175,13 @@ function SourceInput({
           <p>CSV available · API connection unavailable</p>
         </div>
         <span className={`source-state ${summary?.status ?? (file ? "selected" : "empty")}`}>
-          {summary?.status === "ready" ? "Ready" : file ? "Selected" : "No data"}
+          {summary?.status === "ready" ? "Ready" : file ? "Selected" : expected ? "Expected" : "No data"}
         </span>
       </div>
       {summary ? (
         <p className="source-meta">{summary.normalizedRowCount.toLocaleString("en-US")} observations · Through {formatDate(summary.dateRange.end)} · {summary.currencies.join(", ") || "No currency"}</p>
-      ) : null}
+      ) : expected ? <p className="source-meta">Expected for this client</p> : null}
+      {summary && expected ? <small className="source-expected">Expected for this client</small> : null}
       <div className="source-file-row">
         <input
           id={inputId}
@@ -232,37 +244,35 @@ function MappingExceptions({
 function SourceManager({
   files,
   analysis,
+  client,
   start,
   end,
-  cpaTarget,
-  cpaCurrency,
   exceptions,
   choices,
   error,
   isPreparing,
   onFile,
+  onClientChange,
+  onReset,
   onStart,
   onEnd,
-  onCpaTarget,
-  onCpaCurrency,
   onChoice,
   onSubmit,
 }: {
   files: Partial<Record<ProviderSource, File>>;
-  analysis: ReadyAnalysis | null;
+  analysis: DashboardAnalysis | null;
+  client: ClientMemory;
   start: string;
   end: string;
-  cpaTarget: string;
-  cpaCurrency: string;
   exceptions: MappingException[];
   choices: MappingChoices;
   error: string | null;
   isPreparing: boolean;
   onFile: (source: ProviderSource, file: File | undefined) => void;
+  onClientChange: (client: ClientMemory) => void;
+  onReset: () => void;
   onStart: (value: string) => void;
   onEnd: (value: string) => void;
-  onCpaTarget: (value: string) => void;
-  onCpaCurrency: (value: string) => void;
   onChoice: (source: ProviderSource, columnIndex: number, value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
@@ -281,15 +291,9 @@ function SourceManager({
           </div>
         </section>
         <div className="source-input-list">
-          {SOURCES.map((source) => <SourceInput key={source.id} source={source} file={files[source.id]} summary={analysis?.sources.find((item) => item.source === source.id)} onChange={(file) => onFile(source.id, file)} />)}
+          {SOURCES.map((source) => <SourceInput key={source.id} source={source} file={files[source.id]} expected={client.sources[source.id].expected} summary={analysis?.sources.find((item) => item.source === source.id)} onChange={(file) => onFile(source.id, file)} />)}
         </div>
-        <details className="target-settings">
-          <summary>Performance targets <span>Optional and session-only</span></summary>
-          <div className="target-grid">
-            <label><span>CPA target below</span><input value={cpaTarget} inputMode="decimal" onChange={(event) => onCpaTarget(event.target.value)} placeholder="38" /></label>
-            <label><span>CPA target currency</span><input value={cpaCurrency} maxLength={3} onChange={(event) => onCpaCurrency(event.target.value.toUpperCase())} placeholder="EUR" /></label>
-          </div>
-        </details>
+        <ClientMemorySettings client={client} onChange={onClientChange} onReset={onReset} />
         {exceptions.length > 0 ? <MappingExceptions exceptions={exceptions} choices={choices} onChoice={onChoice} /> : null}
         {error ? <div className="workspace-error" role="alert"><strong>Data needs a second look</strong><p>{error}</p></div> : null}
         {isPreparing ? (
@@ -382,7 +386,17 @@ function ChannelCard({ source, breakdown, summary }: { source: ProviderSource; b
   );
 }
 
-function Dashboard({ analysis, onUpdate }: { analysis: ReadyAnalysis; onUpdate: () => void }) {
+function Dashboard({
+  analysis,
+  snapshot,
+  client,
+  onUpdate,
+}: {
+  analysis: DashboardAnalysis;
+  snapshot: AnalysisSnapshot;
+  client: ClientMemory;
+  onUpdate: () => void;
+}) {
   const readyKpis = analysis.kpis.status === "ready" ? analysis.kpis : null;
   const readyChanges = analysis.changeIntelligence.status === "ready" ? analysis.changeIntelligence : null;
   const heroKeys: KpiMetricKey[] = metricByKey(readyKpis?.metrics ?? [], "commerce_revenue")
@@ -393,10 +407,14 @@ function Dashboard({ analysis, onUpdate }: { analysis: ReadyAnalysis; onUpdate: 
   const targetBreaches = readyChanges?.observations.filter((item) => item.type === "TARGET_BREACH") ?? [];
   const healthAttention = analysis.dataHealth.findings.filter((finding) => finding.blocking || finding.severity === "warning").map(humanizeDataHealthFinding);
   const qualityLabel = analysis.dataHealth.status === "healthy" ? "Good" : analysis.dataHealth.status === "blocked" ? "Blocked" : `${healthAttention.length} item${healthAttention.length === 1 ? "" : "s"} to review`;
+  const dataThrough = snapshot.sourceFreshness.reduce<string | null>((earliest, source) => earliest === null || source.dataThrough < earliest ? source.dataThrough : earliest, null);
+  const freshness = freshnessStatus(snapshot);
+  const freshnessLabel = freshness === "current" ? "Current" : freshness === "needs_refresh" ? "Needs refresh" : "Old";
   return (
     <div className="dashboard">
       <section className="performance-section" aria-labelledby="performance-heading">
         <div className="performance-heading"><div><p className="eyebrow">Performance</p><h1 id="performance-heading">Performance</h1><p>{periodLabel(analysis.dataHealth.reportingPeriod.currentPeriod.start, analysis.dataHealth.reportingPeriod.currentPeriod.end)} <span>vs {periodLabel(analysis.dataHealth.reportingPeriod.comparisonPeriod.start, analysis.dataHealth.reportingPeriod.comparisonPeriod.end)}</span></p></div><button className="secondary-action" onClick={onUpdate}>Update data</button></div>
+        <div className={`freshness-banner freshness-${freshness}`}><strong>{dataThrough ? `Data through ${formatDate(dataThrough)}` : `Last analyzed ${new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric" }).format(new Date(snapshot.analyzedAt))}`}</strong><span>{freshnessLabel}</span><small>Last analyzed {new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(snapshot.analyzedAt))}. Manual CSV data; no automatic sync.</small></div>
         {readyKpis ? <div className="hero-kpis">{hero.map((metric, index) => <KpiBlock key={metric.key} metric={metric} className={index === 0 ? "primary-kpi" : ""} />)}</div> : <div className="blocked-panel"><strong>Performance is paused</strong><p>Resolve the blocking data issue before Relay calculates KPIs.</p></div>}
         <TrendChart trend={analysis.trend} currency={spendMetric ? currentCurrency(spendMetric) : null} />
       </section>
@@ -419,24 +437,43 @@ function Dashboard({ analysis, onUpdate }: { analysis: ReadyAnalysis; onUpdate: 
         <strong className={`quality-badge ${analysis.dataHealth.status}`}>Data quality {qualityLabel}</strong>
         <details><summary>View details</summary><div><p>{analysis.dataHealth.checksRun.length} deterministic checks ran across source coverage, dates, currency, mapping, provenance, duplicates, and reconciliation.</p>{analysis.dataHealth.findings.length > 0 ? <ul>{analysis.dataHealth.findings.map((finding) => <li key={finding.id}><strong>{finding.code}</strong><span>{finding.message}</span></li>)}</ul> : <p>No Data Health findings.</p>}</div></details>
       </section>
+      <RecentReports client={client} />
     </div>
   );
 }
 
-export function RelayWorkspace() {
+function WorkspaceSession({
+  memory,
+  client,
+  onSelectClient,
+  onCreateClient,
+  onRenameClient,
+  onDeleteClient,
+  onClientChange,
+  onReset,
+}: {
+  memory: RelayMemoryV1;
+  client: ClientMemory;
+  onSelectClient: (id: string) => void;
+  onCreateClient: (name: string) => void;
+  onRenameClient: (name: string) => void;
+  onDeleteClient: () => void;
+  onClientChange: (client: ClientMemory) => void;
+  onReset: () => void;
+}) {
   const [view, setView] = useState<View>("overview");
-  const [workspaceName, setWorkspaceName] = useState("Untitled workspace");
   const [files, setFiles] = useState<Partial<Record<ProviderSource, File>>>({});
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [cpaTarget, setCpaTarget] = useState("");
-  const [cpaCurrency, setCpaCurrency] = useState("");
-  const [analysis, setAnalysis] = useState<ReadyAnalysis | null>(null);
+  const [start, setStart] = useState(client.latestAnalysisSnapshot?.reportingPeriod.currentPeriod.start ?? "");
+  const [end, setEnd] = useState(client.latestAnalysisSnapshot?.reportingPeriod.currentPeriod.end ?? "");
+  const [dashboardState, setDashboardState] = useState<{ analysis: DashboardAnalysis; snapshot: AnalysisSnapshot } | null>(() => (
+    client.latestAnalysisSnapshot ? { analysis: client.latestAnalysisSnapshot, snapshot: client.latestAnalysisSnapshot } : null
+  ));
   const [exceptions, setExceptions] = useState<MappingException[]>([]);
   const [choices, setChoices] = useState<MappingChoices>({});
   const [error, setError] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(false);
   const fileSources = useMemo(() => selectedSources(files), [files]);
+  const expectedSources = useMemo(() => SOURCES.flatMap((source) => client.sources[source.id].expected || files[source.id] ? [source.id] : []), [client.sources, files]);
 
   function setFile(source: ProviderSource, file: File | undefined) {
     setFiles((current) => {
@@ -448,6 +485,14 @@ export function RelayWorkspace() {
     setChoices((current) => ({ ...current, [source]: {} }));
     setExceptions((current) => current.filter((item) => item.source !== source));
     setError(null);
+    if (file && !client.sources[source].expected) {
+      onClientChange({
+        ...client,
+        updatedAt: new Date().toISOString(),
+        sources: { ...client.sources, [source]: { ...client.sources[source], expected: true } },
+        workflow: { ...client.workflow, firstSetupStartedAt: client.workflow.firstSetupStartedAt ?? new Date().toISOString() },
+      });
+    }
   }
 
   function setMappingChoice(source: ProviderSource, columnIndex: number, value: string) {
@@ -467,18 +512,14 @@ export function RelayWorkspace() {
       setError("Choose a valid reporting period before preparing the dashboard.");
       return;
     }
-    if (cpaTarget && !/^[A-Z]{3}$/.test(cpaCurrency)) {
-      setError("Add a three-letter currency code for the CPA target.");
-      return;
-    }
     setIsPreparing(true);
     setError(null);
     try {
       const formData = new FormData();
       for (const source of fileSources) formData.set(source, files[source]!);
       const mappingOverrides = Object.fromEntries(fileSources.map((source) => [source, Object.entries(choices[source] ?? {}).map(([columnIndex, canonicalField]) => ({ columnIndex: Number(columnIndex), canonicalField }))]));
-      formData.set("workspaceContext", JSON.stringify({ currentPeriod: { start, end }, expectedSources: fileSources, mappingOverrides }));
-      formData.set("changeTargets", JSON.stringify(cpaTarget ? [{ id: "cpa-workspace", metric: "cpa", scope: "report", operator: "<", value: cpaTarget, unit: "currency", currencyCode: cpaCurrency }] : []));
+      formData.set("workspaceContext", JSON.stringify({ currentPeriod: { start, end }, expectedSources, mappingOverrides, savedMappings: clientMappingRequest(client) }));
+      formData.set("changeTargets", JSON.stringify(client.targets));
       const response = await fetch("/api/workspace/analyze", { method: "POST", body: formData });
       const payload = await response.json() as WorkspaceAnalysisResult | RejectedResponse;
       if (!response.ok || payload.status === "rejected") {
@@ -492,7 +533,10 @@ export function RelayWorkspace() {
         return;
       }
       setExceptions([]);
-      setAnalysis(payload);
+      const analyzedAt = new Date().toISOString();
+      const updatedClient = recordWorkspaceAnalysis(client, payload, { snapshotId: crypto.randomUUID(), analyzedAt, targets: client.targets });
+      onClientChange(updatedClient);
+      setDashboardState({ analysis: payload, snapshot: updatedClient.latestAnalysisSnapshot! });
       setView("overview");
     } catch {
       setError("Relay couldn’t reach the analysis service. Your selected files are still here; try again.");
@@ -505,22 +549,95 @@ export function RelayWorkspace() {
     <main className="app-shell">
       <header className="topbar">
         <a className="relay-mark" href="#main-content" aria-label="Relay home"><span aria-hidden="true">R</span><strong>Relay</strong></a>
-        <label className="workspace-name"><span className="visually-hidden">Workspace name</span><input aria-label="Workspace name" value={workspaceName} maxLength={80} onChange={(event) => setWorkspaceName(event.target.value)} /></label>
-        <div className="topbar-period"><span>{periodLabel(start, end)}</span><small>{analysis ? "Prepared from current session" : "Not prepared yet"}</small></div>
+        <ClientSelector clients={memory.clients} activeClient={client} onSelect={onSelectClient} onCreate={onCreateClient} onRename={onRenameClient} onDelete={onDeleteClient} />
+        <div className="topbar-period"><span>{periodLabel(start, end)}</span><small>{dashboardState ? "Saved in this browser" : "Not analyzed yet"}</small></div>
       </header>
       <nav className="primary-nav" aria-label="Primary navigation">
         <button className={view === "overview" ? "active" : ""} aria-current={view === "overview" ? "page" : undefined} onClick={() => setView("overview")}>Overview</button>
-        <button className={view === "sources" ? "active" : ""} aria-current={view === "sources" ? "page" : undefined} onClick={() => setView("sources")}>Data Sources <span>{fileSources.length}</span></button>
+        <button className={view === "sources" ? "active" : ""} aria-current={view === "sources" ? "page" : undefined} onClick={() => setView("sources")}>Data Sources <span>{expectedSources.length}</span></button>
       </nav>
       <div className="workspace-layout">
-        <SourceRail files={files} analysis={analysis} onManage={() => setView("sources")} />
+        <SourceRail files={files} analysis={dashboardState?.analysis ?? null} client={client} onManage={() => setView("sources")} />
         <div id="main-content" className="main-content">
           {view === "sources" ? (
-            <SourceManager files={files} analysis={analysis} start={start} end={end} cpaTarget={cpaTarget} cpaCurrency={cpaCurrency} exceptions={exceptions} choices={choices} error={error} isPreparing={isPreparing} onFile={setFile} onStart={setStart} onEnd={setEnd} onCpaTarget={setCpaTarget} onCpaCurrency={setCpaCurrency} onChoice={setMappingChoice} onSubmit={submit} />
-          ) : analysis ? <Dashboard analysis={analysis} onUpdate={() => setView("sources")} /> : <EmptyOverview onAdd={() => setView("sources")} />}
+            <SourceManager files={files} analysis={dashboardState?.analysis ?? null} client={client} start={start} end={end} exceptions={exceptions} choices={choices} error={error} isPreparing={isPreparing} onFile={setFile} onClientChange={onClientChange} onReset={onReset} onStart={setStart} onEnd={setEnd} onChoice={setMappingChoice} onSubmit={submit} />
+          ) : dashboardState ? <Dashboard analysis={dashboardState.analysis} snapshot={dashboardState.snapshot} client={client} onUpdate={() => setView("sources")} /> : <EmptyOverview onAdd={() => setView("sources")} />}
         </div>
       </div>
-      <footer className="app-footer"><span>Session-only workspace</span><span>CSV data is not retained</span><span>Deterministic analytics</span></footer>
+      <footer className="app-footer"><span>Browser-only memory</span><span>CSV data is not retained</span><span>Deterministic analytics</span></footer>
     </main>
+  );
+}
+
+export function RelayWorkspace() {
+  const storeRef = useRef<RelayMemoryStore | null>(null);
+  const loadedRef = useRef(false);
+  const [memory, setMemory] = useState<RelayMemoryV1 | null>(null);
+  const [invalidMemory, setInvalidMemory] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (loadedRef.current) return;
+    loadedRef.current = true;
+    const store = createBrowserMemoryStore();
+    storeRef.current = store;
+    const loaded = store.load();
+    let storageWarning = loaded.reason === "unavailable"
+      ? "Relay cannot access browser storage. You can continue, but this session will not be remembered."
+      : null;
+    let nextMemory = loaded.memory;
+    const active = nextMemory.clients.find((client) => client.id === nextMemory.activeClientId);
+    if (loaded.status === "ready" && active?.latestAnalysisSnapshot) {
+      nextMemory = updateClient(nextMemory, active.id, (client) => ({ ...client, workflow: { ...client.workflow, dashboardReturnCount: client.workflow.dashboardReturnCount + 1 } }));
+      try { store.save(nextMemory); } catch { storageWarning = "Relay could not update local browser memory."; }
+    }
+    queueMicrotask(() => {
+      setInvalidMemory(loaded.status === "invalid" && loaded.reason !== "unavailable");
+      setStorageError(storageWarning);
+      setMemory(nextMemory);
+    });
+  }, []);
+
+  function persist(next: RelayMemoryV1) {
+    setMemory(next);
+    setInvalidMemory(false);
+    try {
+      storeRef.current?.save(next);
+      setStorageError(null);
+    } catch {
+      setStorageError("Relay could not save this browser-only memory. Check available site storage or clear local Relay data.");
+    }
+  }
+
+  function reset() {
+    setMemory(createEmptyMemory());
+    setInvalidMemory(false);
+    try {
+      storeRef.current?.reset();
+      setStorageError(null);
+    } catch {
+      setStorageError("Relay could not clear browser memory. The current session was reset, but saved browser data may remain.");
+    }
+  }
+
+  if (memory === null) return <main className="memory-loading" role="status">Loading local Relay memory…</main>;
+  const activeClient = memory.clients.find((client) => client.id === memory.activeClientId) ?? memory.clients[0];
+  if (!activeClient) return <>{storageError ? <div className="storage-banner" role="alert">{storageError}</div> : null}<FirstClient invalidMemory={invalidMemory} onReset={reset} onCreate={(name) => persist(createClient(memory, { id: crypto.randomUUID(), name, now: new Date().toISOString() }))} /></>;
+
+  return (
+    <>
+      {storageError ? <div className="storage-banner" role="alert">{storageError}</div> : null}
+      <WorkspaceSession
+        key={activeClient.id}
+        memory={memory}
+        client={activeClient}
+        onSelectClient={(id) => persist(selectClient(memory, id))}
+        onCreateClient={(name) => persist(createClient(memory, { id: crypto.randomUUID(), name, now: new Date().toISOString() }))}
+        onRenameClient={(name) => persist(renameClient(memory, activeClient.id, name, new Date().toISOString()))}
+        onDeleteClient={() => persist(deleteClient(memory, activeClient.id))}
+        onClientChange={(client) => persist(updateClient(memory, activeClient.id, () => client))}
+        onReset={reset}
+      />
+    </>
   );
 }

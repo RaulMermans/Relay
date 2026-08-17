@@ -60,6 +60,22 @@ describe("multi-source workspace analysis", () => {
     });
   });
 
+  it("does not force an incompatible saved mapping into a new CSV", async () => {
+    const result = await analyzeWorkspace({
+      files: { meta_ads: await fixtureFile("failures/meta-missing-date.csv") },
+      expectedSources: ["meta_ads"],
+      reportingPeriod: { currentPeriod: { start: "2026-08-01", end: "2026-08-02" } },
+      savedMappings: { meta_ads: [{ header: "Campaign name", canonicalField: "date" }] },
+      targets: [],
+      ingestionId: () => "workspace-unsafe-saved-mapping",
+    });
+
+    expect(result).toMatchObject({
+      status: "mapping_required",
+      exceptions: [{ source: "meta_ads", mapping: { requiredMissing: ["date"] } }],
+    });
+  });
+
   it("keeps paid-media-only attribution separate and explains absent commerce", async () => {
     const result = await analyzeWorkspace({
       files: {

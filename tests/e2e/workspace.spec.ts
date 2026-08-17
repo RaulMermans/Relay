@@ -11,12 +11,13 @@ const changeFixture = resolve("fixtures/raw/change-intelligence/meta-deteriorati
 
 async function openSources(page: import("@playwright/test").Page) {
   await page.goto("/");
+  await page.getByLabel("Client name").fill("Workspace Test Client");
+  await page.getByRole("button", { name: "Create client" }).click();
   await page.getByRole("button", { name: "Data Sources" }).click();
 }
 
 test("prepares a complete three-source workspace directly into the dashboard", async ({ page }) => {
   await openSources(page);
-  await page.getByLabel("Workspace name").fill("Acme Skincare");
   await page.getByLabel("Reporting period start").fill("2026-08-01");
   await page.getByLabel("Reporting period end").fill("2026-08-02");
   await page.getByLabel("Meta Ads CSV").setInputFiles(metaFixture);
@@ -72,7 +73,7 @@ test("surfaces a transient CPA target breach in Attention", async ({ page }) => 
   await page.getByLabel("Reporting period start").fill("2026-08-01");
   await page.getByLabel("Reporting period end").fill("2026-08-02");
   await page.getByLabel("Meta Ads CSV").setInputFiles(changeFixture);
-  await page.getByText("Performance targets Optional and session-only").click();
+  await page.getByText("Client reporting memory Saved in this browser").click();
   await page.getByLabel("CPA target below").fill("6");
   await page.getByLabel("CPA target currency").fill("EUR");
   await page.getByRole("button", { name: "Prepare dashboard" }).click();
@@ -84,6 +85,8 @@ test("surfaces a transient CPA target breach in Attention", async ({ page }) => 
 test("keeps the primary shell usable at a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page.getByLabel("Client name").fill("Mobile Client");
+  await page.getByRole("button", { name: "Create client" }).click();
 
   await expect(page.getByRole("button", { name: "Overview" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Data Sources" })).toBeVisible();

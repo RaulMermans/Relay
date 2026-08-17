@@ -4,7 +4,7 @@ import type { KpiMetricKey, KpiMetricResult, KpiResult, KpiUnit } from "../kpi/t
 import type { ChangeEvidence, ChangeScope, ChangeTarget, TargetEvaluation, TargetOperator } from "./types";
 
 const MAX_TARGET_INPUT_CHARACTERS = 8_192;
-const MAX_TARGETS = 10;
+export const MAX_CHANGE_TARGETS = 10;
 const TARGET_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/;
 const CURRENCY_PATTERN = /^[A-Z]{3}$/;
 const METRICS = new Set<KpiMetricKey>([
@@ -87,8 +87,12 @@ export function parseChangeTargets(value: unknown): ChangeTarget[] {
   } catch {
     invalid();
   }
-  if (!Array.isArray(parsed) || parsed.length > MAX_TARGETS) invalid();
-  const targets = parsed.map(parseTarget);
+  return parseChangeTargetList(parsed);
+}
+
+export function parseChangeTargetList(value: unknown): ChangeTarget[] {
+  if (!Array.isArray(value) || value.length > MAX_CHANGE_TARGETS) invalid();
+  const targets = value.map(parseTarget);
   if (new Set(targets.map((target) => target.id)).size !== targets.length) invalid();
   return targets;
 }
