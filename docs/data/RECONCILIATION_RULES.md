@@ -26,4 +26,4 @@ Currency and date compatibility can block downstream readiness. Source-absence f
 
 ## Deferred boundaries
 
-No value conversion, cross-platform attribution deduplication, KPI calculation, persistence, connector, report, or AI behavior is part of reconciliation.
+No value conversion, cross-platform attribution deduplication, KPI calculation, persistence, connector, report, or narrative behavior is part of reconciliation.

@@ -28,11 +28,11 @@ Meta Ads, Google Ads, and Shopify are the initial platforms. CSV uploads and con
 
 ## Core workflow
 
-Client -> restored dashboard or configured workspace -> reporting period -> data sources -> automatic preparation -> exceptions when needed -> performance dashboard -> deterministic change detection -> later grounded commentary, human review, and client-ready PDF.
+Client -> restored dashboard or configured workspace -> reporting period -> data sources -> automatic preparation -> exceptions when needed -> performance dashboard -> deterministic change detection -> deterministic narrative summary -> later client-ready PDF.
 
 ## Cadence, output, and review
 
-The dashboard supports repeat monitoring whenever fresh data is supplied. The initial reporting cadence assumption remains weekly and monthly, and the planned reporting output remains a client-ready PDF. AI-generated commentary, when implemented in a later sprint, must be reviewable by a human before inclusion.
+The dashboard supports repeat monitoring whenever fresh data is supplied. The initial reporting cadence assumption remains weekly and monthly, and the planned reporting output remains a client-ready PDF. Relay V1 does not require a generative model; its commentary is deterministic, evidence-backed, and immediately available after analysis.
 
 Sprint 14 makes repeat use tangible with browser-local client configuration, safe mapping reuse, targets, latest dashboard restoration, explicit freshness, and bounded analysis-cycle history. This memory is single-browser convenience, not cloud persistence or a generated-report library.
 

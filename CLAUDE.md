@@ -6,7 +6,7 @@ Relay combines a focused performance dashboard with recurring reporting automati
 
 ## Current status
 
-Sprint 14: the multi-source dashboard now has versioned browser-local client/configuration memory, safe mapping reuse, target/rule/preference memory, latest-dashboard restoration, explicit freshness, and bounded cycle summaries. Shopify, Meta Ads, and Google Ads CSVs remain usable together; API adapters are implemented but live authorization remains deferred. No database, cloud/multi-device persistence, authentication, automatic sync, AI, report composer, or PDF feature exists. Vercel deployment remains blocked until local authentication and project linking are available.
+Sprint 15: the multi-source dashboard has versioned browser-local client/configuration memory plus deterministic Narrative Intelligence. Shopify, Meta Ads, and Google Ads CSVs remain usable together; API adapters are implemented but live authorization remains deferred. No database, cloud/multi-device persistence, authentication, automatic sync, generative-model dependency, report composer, or PDF feature exists. Vercel deployment remains blocked until local authentication and project linking are available.
 
 ## Working protocol
 

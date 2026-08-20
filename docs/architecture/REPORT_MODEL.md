@@ -14,7 +14,7 @@ The structured report model is the boundary between validated analysis and rende
 | KPI scorecard | Labeled KPI values, changes, targets, availability/caveats | Deterministic analytics facts |
 | Channel performance | Source-specific paid-media performance and commerce context | Canonical/analytics facts |
 | Movers and risks | Deterministically detected positive/negative drivers and efficiency risks | Change-intelligence facts |
-| Insights | Draft commentary, fact references, review state | LLM output plus human review |
+| Narrative | Deterministic narrative package and evidence references | Generated prose, raw data, or KPI recalculation |
 | Recommendations | Data-supported recommendation and separately labeled client context | Structured facts and human context |
 | Reconciliation notes | Commerce versus paid-attribution differences and coverage caveats | Reconciliation facts |
 | Methodology | KPI/revenue basis, source coverage, attribution limitations | Rule/configuration snapshot |
@@ -29,4 +29,4 @@ The structured report model is the boundary between validated analysis and rende
 
 ## Boundary ownership
 
-Analytics produces structured facts. The report composer assembles the report model. The renderer turns the model into presentation. No layer accepts arbitrary AI-generated HTML as the report source of truth.
+Analytics produces structured facts. Narrative Intelligence assembles evidence-backed commentary. The report composer assembles the report model. The renderer turns the model into presentation. No layer accepts arbitrary generated HTML as the report source of truth.

@@ -4,6 +4,8 @@
 
 ### Added
 
+- Deterministic Narrative Intelligence: an immediate evidence-backed Performance Summary with stable IDs, significance-aware stories, source-safe semantics, health/freshness/target attention, and inspectable evidence. Relay V1 requires no generative model.
+
 - Versioned, Zod-validated, bounded browser-local client memory behind `RelayMemoryStore`, with explicit recovery, client deletion, and Relay-only reset.
 - Lightweight create/select/rename/delete client UX, persisted source expectations, compatible provider/header mapping reuse, existing-contract targets, fixed revenue rules, bounded attribution context, and reporting preferences.
 - Compact authoritative dashboard snapshots with per-source data-through metadata, deterministic Current/Needs refresh/Old labels, active-client restoration, and up to 52 local analysis-cycle summaries per client.

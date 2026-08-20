@@ -119,4 +119,4 @@ Sprint 08 adds no database, persistence, connector, AI/LLM call, recommendation 
 
 The engine's structured result and deterministic priority remain authoritative. The dashboard selects at most four distinct default stories and offers **View all** for the remaining observations. Presentation-level story keys suppress prominent repetition between the same source's CPA/ROAS movement and aggregate source-efficiency signal; target breaches remain distinct. This does not remove, rewrite, or reprioritize engine observations.
 
-Human copy states metric polarity directly—for example, “Efficiency declined” and “Meta Ads CPA increased 6.2%.” It preserves the observation's assessment and evidence and never introduces causality, statistical significance, recommendations, or AI narrative.
+Human copy states metric polarity directly—for example, “Efficiency declined” and “Meta Ads CPA increased 6.2%.” It preserves the observation's assessment and evidence and never introduces causality, statistical significance, or recommendations. Sprint 15 Narrative Intelligence consumes this output as bounded evidence; it does not modify or recalculate it.

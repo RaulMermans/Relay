@@ -1,7 +1,7 @@
 # Security policy
 
 - Never commit secrets. `.env` is ignored, and `.env.example` contains names/comments only.
-- Treat user-uploaded files, external API payloads, and AI output as untrusted until validated.
+- Treat user-uploaded files and external API payloads as untrusted until validated.
 - Use least-privilege connector access and minimize sensitive client data.
 - Keep credentials separate from analytical and reporting records; do not expose them in logs.
 - Keep connector tokens server-side, least-privilege, revocable, and outside client-visible analytics/reporting records.

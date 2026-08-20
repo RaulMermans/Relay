@@ -33,7 +33,7 @@ Relay is a single Next.js application intended for Vercel. It accepts CSV upload
                     |
           Change Intelligence
                     |
-               AI Layer
+       Narrative Intelligence
                     |
              Report Model
                     |
@@ -49,10 +49,9 @@ The browser UI uses `RelayMemoryStore -> LocalBrowserMemory` for versioned non-s
 - **Connector adapter:** manages future server-side authorization/session state, account discovery, bounded fetches, pagination/retries, and raw provider results.
 - **Provider normalizer:** maps either raw representation to canonical observations, provenance, and structured findings.
 - **Data Health and reconciliation:** validates coverage, dates, currency, duplicates, mappings, and commerce-versus-attribution caveats.
-- **Analytics and change intelligence:** computes deterministic KPIs, comparisons, movers, and risks from validated canonical data.
+- **Analytics, change, and narrative intelligence:** computes deterministic KPIs, structured changes, and evidence-backed human-readable narrative from validated facts.
 - **Report composer/renderer:** assembles the structured report model and renders PDF without recalculating facts.
 - **Persistence boundary:** a small product-memory interface with a versioned, validated, bounded `localStorage` implementation. It excludes uploads, canonical observations, provider payloads, credentials, report/PDF artifacts, and cloud behavior; a future server-owned implementation can replace it.
-- **LLM provider:** optional draft-commentary dependency after structured facts; it is not an analytical authority.
 
 ## 4. Domain model
 
@@ -69,7 +68,7 @@ The browser UI uses `RelayMemoryStore -> LocalBrowserMemory` for versioned non-s
 | ClientRule | Versioned client-specific reporting/methodology rule. | Revenue basis, included sources, report methodology, explanatory context. | Provider credentials or authoritative source values. |
 | ClientTarget | Client KPI target attached to a rule/period scope. | Metric, target value/unit, applicability, source context. | Observed evidence or model-generated claims. |
 | Report | Versioned report artifact for a client and period. | Input/configuration snapshot, structured report-model snapshot, lifecycle/review/render status. | Mutable raw source payloads or connector tokens. |
-| ReportInsight | Human-reviewable commentary item owned by a report. | Draft text, structured fact references, reviewer state, edits/removal reason. | Authoritative KPI values or unbounded raw data. |
+| NarrativePackage | Deterministic dashboard/report commentary derived from one analysis context. | Headline, summary, narrative items, stable evidence references, methodology note. | Authoritative KPI values, raw data, edits, or model output. |
 
 Campaign/ad entities are dimensions of normalized advertising observations, not independent V1 entities. Authentication and database-column design are deferred to implementation.
 
@@ -85,17 +84,17 @@ The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). 
 | Connector ingestion | Connection/account/fetch/pagination/retry, raw provider representation | CSV parsing and analytics logic |
 | Provider normalizer | Raw representation -> canonical observations, provenance, findings | PDF layout and provider payload exposure downstream |
 | Data Health/reconciliation | Canonical observations -> validation/reconciliation findings | Silent repair of unknown/ambiguous data |
-| Analytics | Valid canonical data -> deterministic KPIs, changes, movers, risks | Transport/provider-response branching and LLM authority |
-| AI commentary | Structured facts/context -> editable draft text with fact references | Authoritative calculations and arbitrary raw-data analysis |
+| Analytics | Valid canonical data -> deterministic KPIs, changes, movers, risks | Transport/provider-response branching and narrative recalculation |
+| Narrative Intelligence | Structured facts/context -> stable narrative package with evidence references | Authoritative calculations, arbitrary raw-data analysis, or causality |
 | Report model | Facts/findings/review state -> renderer-neutral report object | PDF-specific layout or metric recalculation |
 
-[ADR-002](../decisions/ADR-002-unified-source-adapter-contract.md) defines the CSV/connector convergence contract. [ADR-004](../decisions/ADR-004-ai-after-deterministic-analysis.md) defines the AI boundary.
+[ADR-002](../decisions/ADR-002-unified-source-adapter-contract.md) defines the CSV/connector convergence contract. [ADR-004](../decisions/ADR-004-deterministic-narrative-intelligence.md) defines the deterministic narrative boundary.
 
 ## 7. Critical flows
 
 ### Flow A: CSV to report
 
-CSV upload -> file/source validation -> mapping confirmation where needed -> raw representation -> provider normalization -> canonical observations -> Data Health/reconciliation -> deterministic analytics -> report facts -> optional draft commentary/review -> report model -> PDF.
+CSV upload -> file/source validation -> mapping confirmation where needed -> raw representation -> provider normalization -> canonical observations -> Data Health/reconciliation -> deterministic analytics -> Narrative Intelligence -> report model -> PDF.
 
 ### Flow B: Connector to report
 
@@ -105,9 +104,9 @@ Authorized connection/account selection -> bounded provider fetch -> raw result/
 
 The active client restores its latest compact dashboard snapshot, source expectations, compatible provider/header mappings, rules, targets, and reporting preferences from validated browser memory. A new CSV ingestion produces new request-local canonical observations and replaces the latest snapshot while appending a bounded cycle summary. It never mutates a prior server-side canonical dataset because none is retained.
 
-### Flow D: AI commentary to human review
+### Flow D: Narrative Intelligence to report preparation
 
-Validated structured facts and approved context -> draft commentary with fact references -> reviewer accepts, edits, or removes -> report model stores review state -> PDF uses only the reviewed state.
+Validated structured facts and freshness context -> deterministic narrative package with fact references -> report model consumes the package without recalculating facts. Human editing is deferred until report composition establishes a concrete need.
 
 ## 8. Failure handling
 
@@ -117,12 +116,11 @@ Validated structured facts and approved context -> draft commentary with fact re
 | Mapping ambiguity | Stop automatic semantic mapping and request confirmation; Data Health records the ambiguity. |
 | Connector unavailable or expired credential | Mark ingestion/connection state, preserve structured/redacted error, allow reconnect/retry; do not fabricate data. |
 | Mismatched periods/currencies | Block incompatible aggregate/KPI or issue explicit Data Health warning according to severity. |
-| LLM unavailable | Continue with deterministic facts and report model; omit draft commentary and show no invented narrative. |
 | PDF rendering failure | Preserve validated report model and render status; permit retry without recomputing or changing facts. |
 
 ## 9. Security baseline
 
-Credentials remain server-side, separate from analytics/reporting records, least-privilege, revocable, and absent from logs. Uploads, provider payloads, and AI text are untrusted. Data access is scoped through user-to-client ownership; enterprise RBAC is out of scope. See [CONNECTOR_SECURITY.md](../integrations/CONNECTOR_SECURITY.md) and [SECURITY.md](../../SECURITY.md).
+Credentials remain server-side, separate from analytics/reporting records, least-privilege, revocable, and absent from logs. Uploads and provider payloads are untrusted. Data access is scoped through user-to-client ownership; enterprise RBAC is out of scope. See [CONNECTOR_SECURITY.md](../integrations/CONNECTOR_SECURITY.md) and [SECURITY.md](../../SECURITY.md).
 
 ## 10. Observability baseline
 
@@ -133,7 +131,7 @@ Record structured, redacted ingestion status, source/provider, mapping/validatio
 - [ADR-001: Revenue semantics](../decisions/ADR-001-revenue-semantics.md)
 - [ADR-002: Unified source adapter contract](../decisions/ADR-002-unified-source-adapter-contract.md)
 - [ADR-003: Data retention and persistence](../decisions/ADR-003-data-retention-and-persistence.md)
-- [ADR-004: AI after deterministic analysis](../decisions/ADR-004-ai-after-deterministic-analysis.md)
+- [ADR-004: Deterministic Narrative Intelligence](../decisions/ADR-004-deterministic-narrative-intelligence.md)
 - [ADR-005: V1 application stack](../decisions/ADR-005-v1-application-stack.md)
 - [ADR-006: Vercel-native deployment and deferred persistence](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md)
 - [ADR-007: Demo persistence and future database boundary](../decisions/ADR-007-demo-persistence-and-future-database-boundary.md)

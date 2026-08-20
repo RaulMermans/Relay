@@ -10,6 +10,8 @@ Existing suites cover CSV parsing/mapping/normalization, Data Health, KPIs, and 
 
 Sprint 14 adds controlled-storage unit coverage for client lifecycle/isolation, V1 validation, corrupt/unsupported/prototype-key recovery, save/load/reset, bounds, snapshot integrity, history caps, and freshness. Persisted targets are validated by the existing Change Intelligence contract rather than a second target system.
 
+Sprint 15 adds pure Narrative Intelligence coverage for deterministic equality, stable IDs, evidence references, headline precedence, significance gating, deduplication, target/health/freshness attention, source-safe revenue wording, and blocked Data Health behavior.
+
 Sprint 10 adds Shopify shop/order GraphQL validation, safe domain/store identity, store-local date boundaries, cursor translation, throttling/error classification, one-order grain, fixed-decimal gross revenue, currency, null optional fields, safe API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
 
 Sprint 11 adds Meta Graph account/Insights validation, authoritative `act_` identity, account currency/timezone metadata, exact daily ad-grain query parameters, purchase-only action/value extraction, null/zero behavior, safe cursor handling, documented throttle/error classification, API provenance, and implemented-but-unconfigured registry coverage. Network and delay functions are injected; tests contact no provider and never sleep.
@@ -21,6 +23,8 @@ Sprint 12 adds Google Ads v25 REST validation, direct and manager-access custome
 Existing integration tests exercise synthetic raw CSV through Change Intelligence. Sprint 09 runs a labelled provider-neutral mock through account discovery, validated selection, two-page fetch, mock provider normalization, and API canonical provenance. The result is compared with the existing Meta CSV raw fixture after removing only provenance and sorting. Terminal authorization prevents provider page fetch, retryable/terminal errors remain structured, and runaway pagination fails closed.
 
 Sprint 14's repeat-cycle integration creates a client, analyzes period one with a manual mapping, round-trips browser memory, safely reuses that mapping and targets in period two, and preserves bounded history without raw CSV/canonical rows. Separate coverage proves incompatible saved mappings return to review and client configuration/snapshots do not leak.
+
+Sprint 15's integration coverage continues real CSV -> normalization -> Data Health -> KPI -> Change Intelligence -> Narrative Intelligence and asserts that narrative evidence refers to downstream facts only. Complete-workspace cases preserve Shopify commerce revenue, Meta/Google provider attribution, and blocked currency behavior.
 
 Sprint 10 runs labelled synthetic Shopify GraphQL pages through the provider validator/normalizer and compares them with the existing representative Shopify CSV. Comparison ignores transport provenance and identity only where one transport cannot supply it; identity remains strict when both supply it. Focused negative cases change gross revenue, currency, order count, null/zero, and date. API observations then pass through existing Data Health, KPI, and Change Intelligence functions without transport branches.
 
@@ -45,6 +49,8 @@ Sprint 12 adds the truthful Google Ads implemented/live-unavailable state, verif
 Sprint 13 replaces the single-file browser workflow with complete-workspace and exception flows. E2E covers the minimal shell, three-source automatic preparation, mapping correction/re-analysis, safe unsupported-source recovery, transient target Attention, and mobile overflow. Tests require no database, provider credential, or network service.
 
 Sprint 14 E2E adds explicit client creation, latest-dashboard restoration after reload, freshness disclosure, repeat compatible-mapping reuse, expected-source reuse, cycle history, and two-client switching/isolation. Browser storage is reset per test and no upload is restored automatically.
+
+Sprint 15 E2E verifies the immediate Performance Summary, headline, key developments, needs-attention state, and evidence disclosure. It asserts no generation control, loading state, model-provider error, or network requirement exists.
 
 ## Regression fixtures
 

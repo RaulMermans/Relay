@@ -12,6 +12,7 @@ Client
 -> Automatic preparation
 -> Exceptions, only when action is required
 -> Dashboard
+-> Performance Summary
 -> What Changed
 -> Later: report generation
 ```
@@ -34,7 +35,7 @@ Technical ingestion stages are supporting evidence, not primary navigation.
 
 The V1 product shell contains two destinations:
 
-- **Overview** presents performance, curated changes, channels, attention, and a compact data-quality signal.
+- **Overview** presents performance, a deterministic Performance Summary, curated changes, channels, attention, and a compact data-quality signal.
 - **Data Sources** manages the active Meta Ads, Google Ads, and Shopify inputs without discarding dashboard context.
 
 Reports joins the navigation only when a real report experience exists. Settings, Team, Billing, marketplace, Automations, and AI chat are not present until they have working product surfaces.
@@ -51,7 +52,7 @@ Performance is primary after analysis succeeds. Source metadata, mapping detail,
 
 ### Dashboard-first
 
-The overview orders information as Performance, What Changed, Channels, Attention, then Data quality. Upload and mapping controls never remain above performance once a usable analysis exists.
+The overview orders information as Performance, Performance Summary, What Changed, Channels, Attention, then Data quality. The summary has a headline, one-to-three-sentence synthesis, key developments, needs-attention items, and optional evidence inspection. Upload and mapping controls never remain above performance once a usable analysis exists.
 
 ### Human-readable
 

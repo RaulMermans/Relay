@@ -18,7 +18,7 @@ Every V1 capability must either make validated performance understandable or mov
 - Channel analysis and campaign analysis
 - Positive/negative drivers and performance risks
 - KPI targets and client reporting rules
-- Grounded AI commentary and human review
+- Deterministic Narrative Intelligence with evidence inspection
 - Structured report model, PDF export, and report history
 
 The dashboard is a monitoring surface over supplied data, not a real-time BI warehouse. Automatic refresh depends on future live connector activation.
@@ -39,6 +39,7 @@ Current browser-local memory is deliberately narrower than future production per
 - Automated campaign changes, budget optimization, and bid management
 - Attribution modeling, MMM, and predictive forecasting
 - Chat-with-data
+- Generative-model commentary
 - Google Slides export and PPTX export
 - Automated report sending and autonomous scheduled reporting
 - Enterprise RBAC and a mobile application

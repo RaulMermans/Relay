@@ -38,7 +38,12 @@
 - Focused memory E2E covered reload restoration, repeat mapping reuse, client isolation, 820 px tablet, and 390 px mobile with no horizontal overflow.
 - Security/data/architecture/code reviews found no remaining material issue after canonical target reuse, dangerous-key save validation, conservative mixed-source freshness, and ephemeral fallback when storage is unavailable.
 
+## Sprint 15 execution state
+
+- Pre-pivot audit found `main` clean at `77b805b5f1b8c3954da48728f2ffdc79053d9bb7`; the empty recovery patch and untracked-file list were written outside the repository in `/private/tmp`.
+- Relay V1 now uses bounded deterministic Narrative Intelligence after Change Intelligence. It produces a report-ready package from existing structured facts and never receives raw CSV, canonical rows, provider payloads, or credentials.
+- Human narrative overrides are deferred until Sprint 16 proves a report-composition need. Existing browser-memory schema and cycle history remain unchanged; the summary is reproducible from the persisted analytical snapshot.
+
 ## Next action
 
-- Commit the verified documentation and implementation, then confirm clean `main` and record both Sprint 14 SHAs.
-- Sprint 15 only after Sprint 14 closes: bounded deterministic facts + saved context -> grounded draft commentary -> human accept/edit/remove; never provide raw CSV or let AI alter authoritative numbers.
+- Sprint 16 should consume Client, reporting period, Data Health, deterministic KPIs, Change Intelligence, Narrative Intelligence, targets, channels, freshness, preferences, and methodology metadata to create a structured report model, preview, and PDF. Do not add a generative-model dependency.

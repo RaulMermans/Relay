@@ -10,9 +10,8 @@ External source
   -> Reconciliation
   -> Metrics
   -> Change intelligence
-  -> Report facts
-  -> AI commentary
-  -> Human review
+  -> Deterministic Narrative Intelligence
+  -> Dashboard/report commentary
   -> Report model
   -> Renderer
 ```
@@ -27,10 +26,8 @@ External source
 | Data Health -> Reconciliation | Non-mutated canonical observations plus health context | Compatibility/comparison findings | Commerce versus attribution distinction, source coverage, currency compatibility | Warn/block only according to explicit incompatibility; do not fabricate attribution or combined revenue |
 | Reconciliation -> Metrics | Compatible validated canonical data | Deterministic KPIs and period comparisons | Formula inputs, denominator/availability, revenue-basis rules | Mark KPI unavailable with reason rather than calculate from invalid inputs |
 | Metrics -> Change intelligence | KPIs/comparisons | Movers, risks, explanatory facts | Deterministic thresholds/rules and fact provenance | Omit unsupported conclusion; retain source finding |
-| Change intelligence -> Report facts | Analytics facts, health, reconciliation, targets | Renderer-neutral structured facts | Fact completeness, target evidence, provenance references | Report incomplete state; no invented commentary |
-| Report facts -> AI commentary | Approved facts and explicit context | Editable draft commentary with fact references | Grounding and quantitative claim traceability | Continue without commentary if unavailable/invalid |
-| AI commentary -> Human review | Draft text and facts | Accepted, edited, or removed commentary | Reviewer confirms client-facing suitability | Exclude unreviewed/rejected narrative |
-| Human review -> Report model | Reviewed commentary plus facts/findings | Structured report model snapshot | Required sections, methodology, reviewed state | Preserve model error/status; do not mutate facts |
+| Change Intelligence -> Narrative Intelligence | Health, KPIs, observations, targets, source metadata, freshness | Stable headline, summary, items, and evidence references | Rule eligibility, evidence lineage, stable IDs, source semantics | Omit unsupported narrative; blocked health suppresses performance summary |
+| Narrative Intelligence -> Report model | Deterministic narrative package plus facts/findings | Structured report model snapshot | Required sections and methodology; no fact mutation | Preserve deterministic package; future human override remains separate |
 | Report model -> Renderer | Structured report model | PDF and render status | Renderer input completeness and layout/render health | Preserve model, record failure, allow retry |
 
 CSV and connector paths differ only before the raw-representation/normalization boundary. Analytics and report generation operate only on canonical data and structured facts.
@@ -139,7 +136,7 @@ CSV upload
 
 Canonical observations remain request-local and never appear in the response. The browser receives only a health status, safe source-coverage metadata, and safe findings. A one-file request derives its current reporting period from canonical coverage and expects the one detected source. Unit and integration tests cover multi-source Data Health/reconciliation; Sprint 06 deliberately does not introduce a multi-file reporting workflow.
 
-Data Health detects date coverage and alignment, expected source completeness, currency incompatibility, mapping/provenance gaps, duplicate evidence, and revenue semantic compatibility. It never fills missing days with zeroes, deletes duplicates, performs FX conversion, aggregates revenue, calculates KPIs, persists state, connects providers, or invokes AI. `blocked` prevents future KPI use; `review_required` needs local acknowledgement in the current UI before it displays readiness.
+Data Health detects date coverage and alignment, expected source completeness, currency incompatibility, mapping/provenance gaps, duplicate evidence, and revenue semantic compatibility. It never fills missing days with zeroes, deletes duplicates, performs FX conversion, aggregates revenue, calculates KPIs, persists state, or connects providers. `blocked` prevents future KPI use; `review_required` needs local acknowledgement in the current UI before it displays readiness.
 
 ## Sprint 07 implemented KPI boundary
 
@@ -156,7 +153,7 @@ CSV upload
 
 Canonical observations stay request-local. The browser receives auditable metric facts, input metadata, formulas, periods, source breakdowns, and deltas, but never canonical rows or raw CSV content. The server is authoritative for period filtering and calculation; the UI only presents the result.
 
-V1 report-level commerce revenue, MER, and AOV use Shopify gross revenue. Meta/Google attributed revenue is exposed only inside the corresponding provider breakdown for ROAS. Fixed-decimal calculations use bounded `BigInt` arithmetic and 12-place half-up division. Missing inputs and zero denominators produce unavailable/null facts. Sprint 07 adds no interpretation, anomaly detection, recommendation, AI, persistence, connector, dashboard, report, or PDF behavior.
+V1 report-level commerce revenue, MER, and AOV use Shopify gross revenue. Meta/Google attributed revenue is exposed only inside the corresponding provider breakdown for ROAS. Fixed-decimal calculations use bounded `BigInt` arithmetic and 12-place half-up division. Missing inputs and zero denominators produce unavailable/null facts. Sprint 07 adds no interpretation, anomaly detection, recommendation, persistence, connector, dashboard, report, or PDF behavior.
 
 ## Sprint 08 implemented Change Intelligence boundary
 
@@ -168,7 +165,7 @@ CSV -> normalization -> Data Health -> KPI Engine -> Change Intelligence
 
 `blocked` Data Health produces blocked KPI and Change Intelligence results with no rule execution. `healthy` and `review_required` may produce structured metric movement, mover, efficiency, source-spend contribution, explicit-target, and rule-based signal facts. The engine receives only KPI results, resolved period/status, and validated transient targets. Canonical/raw rows never enter the engine or browser response.
 
-Direction remains mathematical and separate from assessment. Shopify gross revenue remains the commerce-revenue/MER basis; provider attributed revenue remains source-specific evidence. Contribution is limited to additive spend. Targets use explicit bounded operators and are never persisted. The browser supplies optional current-period dates and MER/CPA targets, then renders server-owned observation fields as compact deterministic labels. Sprint 08 adds no causation, recommendations, AI, statistics, database, connector, report, or PDF behavior.
+Direction remains mathematical and separate from assessment. Shopify gross revenue remains the commerce-revenue/MER basis; provider attributed revenue remains source-specific evidence. Contribution is limited to additive spend. Targets use explicit bounded operators and are never persisted. The browser supplies optional current-period dates and MER/CPA targets, then renders server-owned observation fields as compact deterministic labels. Sprint 08 adds no causation, recommendations, statistics, database, connector, report, or PDF behavior.
 
 ## Sprint 13 multi-source workspace boundary
 

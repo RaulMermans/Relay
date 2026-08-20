@@ -33,4 +33,4 @@ Each metric is either a hypothesis, a target, or an observed result. Sprint 01 c
 
 Sprint 14 stores bounded local timestamps/counters for first setup, first analysis, cycle starts, mapping reuse/eligibility, and dashboard returns. They are future measurement inputs only: no external telemetry is sent, no identity is established, and no measured adoption or time reduction is claimed.
 
-The initial AI target applies to accepted observations without major factual or analytical correction. It does not establish that an LLM is accurate until observations and reviews are recorded.
+The initial narrative-quality target applies to evidence-backed observations without major factual or analytical correction. It measures usefulness of deterministic commentary, not model accuracy.
