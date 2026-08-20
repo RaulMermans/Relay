@@ -1,0 +1,8 @@
+{
+  "label": "Fixed decimal additions and ratios do not use binary floating point",
+  "metrics": {
+    "spend": { "value": "0.3", "status": "available" },
+    "ctr": { "value": "0.333333333333", "status": "available" },
+    "cpc": { "value": "0.3", "status": "available" }
+  }
+}

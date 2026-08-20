@@ -1,0 +1,50 @@
+{
+  "fixtureType": "synthetic_provider_neutral_mock",
+  "providerCompatibilityClaim": "none",
+  "externalAccount": {
+    "id": "act_mock",
+    "name": "Synthetic Relay Account",
+    "status": "active",
+    "currency": "USD",
+    "timezone": "Europe/Madrid"
+  },
+  "dateRange": {
+    "start": "2026-07-01",
+    "end": "2026-07-01"
+  },
+  "pages": [
+    {
+      "records": [
+        {
+          "recordId": "mock_record_1",
+          "date": "2026-07-01",
+          "campaignName": "Summer launch",
+          "groupName": "Prospecting",
+          "currency": "USD",
+          "spend": "123.45",
+          "impressions": "10000",
+          "clicks": "321",
+          "conversions": "14",
+          "purchaseValue": "567.89"
+        }
+      ],
+      "nextToken": "mock_page_2"
+    },
+    {
+      "records": [
+        {
+          "recordId": "mock_record_2",
+          "date": "2026-07-01",
+          "campaignName": "Summer launch",
+          "groupName": "Remarketing",
+          "currency": "USD",
+          "spend": "67.89",
+          "impressions": "4200",
+          "clicks": "108",
+          "conversions": "8",
+          "purchaseValue": "321.00"
+        }
+      ]
+    }
+  ]
+}

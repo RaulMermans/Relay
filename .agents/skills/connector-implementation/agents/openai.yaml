@@ -1,0 +1,4 @@
+interface:
+  display_name: "Connector Implementation"
+  short_description: "Implement a Relay provider connector safely"
+  default_prompt: "Implement the approved Relay provider connector slice with read-only access, canonical normalization, equivalence fixtures, security review, and focused tests."

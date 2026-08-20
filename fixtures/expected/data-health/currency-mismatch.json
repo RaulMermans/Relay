@@ -1,0 +1,7 @@
+{
+  "status": "blocked",
+  "findingCodes": [
+    "CROSS_SOURCE_CURRENCY_MISMATCH",
+    "COMMERCE_ADVERTISING_CURRENCY_MISMATCH"
+  ]
+}

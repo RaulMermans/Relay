@@ -1,0 +1,11 @@
+{
+  "label": "Supplied zeros preserve primitive availability but make ratios unavailable",
+  "metrics": {
+    "spend": { "value": "0", "status": "available" },
+    "ctr": { "value": null, "status": "unavailable", "unavailableReason": "ZERO_DENOMINATOR" },
+    "cpc": { "value": null, "status": "unavailable", "unavailableReason": "ZERO_DENOMINATOR" },
+    "cpa": { "value": null, "status": "unavailable", "unavailableReason": "ZERO_DENOMINATOR" },
+    "mer": { "value": null, "status": "unavailable", "unavailableReason": "ZERO_DENOMINATOR" },
+    "aov": { "value": null, "status": "unavailable", "unavailableReason": "ZERO_DENOMINATOR" }
+  }
+}

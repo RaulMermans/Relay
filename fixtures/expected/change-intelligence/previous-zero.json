@@ -1,0 +1,1 @@
+{"label":"Synthetic previous-zero comparison","facts":[{"scope":"report","key":"commerce_revenue","unit":"currency","current":"10","previous":"0","percentageChange":null,"currencyCode":"EUR"}],"expectedObservations":[{"type":"COMMERCE_REVENUE_CHANGE","metric":"commerce_revenue","assessment":"favorable","significance":"unavailable"}],"expectedPositiveMovers":[]}

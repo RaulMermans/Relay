@@ -1,0 +1,76 @@
+[
+  {
+    "domain": "advertising",
+    "source": "meta_ads",
+    "sourceAccountId": null,
+    "sourceAccountName": null,
+    "date": "2026-07-01",
+    "sourceTimezone": null,
+    "campaignId": null,
+    "campaignName": "Summer launch",
+    "groupId": null,
+    "groupName": "Prospecting",
+    "adId": null,
+    "adName": null,
+    "currencyCode": "USD",
+    "spend": "123.45",
+    "impressions": "10000",
+    "clicks": "321",
+    "conversions": "14",
+    "attributedRevenue": "567.89",
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-meta",
+      "originalFileName": "representative-export.csv",
+      "sourceRow": 2,
+      "mappingOrigins": {
+        "date": "exact_alias",
+        "campaign_name": "exact_alias",
+        "group_name": "exact_alias",
+        "spend": "exact_alias",
+        "impressions": "exact_alias",
+        "clicks": "exact_alias",
+        "conversions": "exact_alias",
+        "attributed_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  },
+  {
+    "domain": "advertising",
+    "source": "meta_ads",
+    "sourceAccountId": null,
+    "sourceAccountName": null,
+    "date": "2026-07-01",
+    "sourceTimezone": null,
+    "campaignId": null,
+    "campaignName": "Summer launch",
+    "groupId": null,
+    "groupName": "Remarketing",
+    "adId": null,
+    "adName": null,
+    "currencyCode": "USD",
+    "spend": "67.89",
+    "impressions": "4200",
+    "clicks": "108",
+    "conversions": "8",
+    "attributedRevenue": "321",
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-meta",
+      "originalFileName": "representative-export.csv",
+      "sourceRow": 3,
+      "mappingOrigins": {
+        "date": "exact_alias",
+        "campaign_name": "exact_alias",
+        "group_name": "exact_alias",
+        "spend": "exact_alias",
+        "impressions": "exact_alias",
+        "clicks": "exact_alias",
+        "conversions": "exact_alias",
+        "attributed_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  }
+]

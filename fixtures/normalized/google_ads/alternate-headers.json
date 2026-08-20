@@ -1,0 +1,39 @@
+[
+  {
+    "domain": "advertising",
+    "source": "google_ads",
+    "sourceAccountId": null,
+    "sourceAccountName": null,
+    "date": "2026-07-03",
+    "sourceTimezone": null,
+    "campaignId": null,
+    "campaignName": "Shopping",
+    "groupId": null,
+    "groupName": "Popular products",
+    "adId": null,
+    "adName": null,
+    "currencyCode": "EUR",
+    "spend": "109",
+    "impressions": "9400",
+    "clicks": "374",
+    "conversions": "17",
+    "attributedRevenue": "510",
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-google-alt",
+      "originalFileName": "alternate-headers.csv",
+      "sourceRow": 2,
+      "mappingOrigins": {
+        "date": "exact_alias",
+        "campaign_name": "exact_alias",
+        "group_name": "exact_alias",
+        "spend": "exact_alias",
+        "impressions": "exact_alias",
+        "clicks": "exact_alias",
+        "conversions": "exact_alias",
+        "attributed_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  }
+]

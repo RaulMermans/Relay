@@ -1,0 +1,39 @@
+[
+  {
+    "domain": "advertising",
+    "source": "meta_ads",
+    "sourceAccountId": null,
+    "sourceAccountName": null,
+    "date": "2026-07-02",
+    "sourceTimezone": null,
+    "campaignId": null,
+    "campaignName": "Evergreen",
+    "groupId": null,
+    "groupName": "Interest groups",
+    "adId": null,
+    "adName": null,
+    "currencyCode": "USD",
+    "spend": "88",
+    "impressions": "8800",
+    "clicks": "244",
+    "conversions": "11",
+    "attributedRevenue": "440",
+    "provenance": {
+      "transport": "csv",
+      "ingestionId": "fixture-meta-alt",
+      "originalFileName": "alternate-headers.csv",
+      "sourceRow": 2,
+      "mappingOrigins": {
+        "date": "exact_alias",
+        "campaign_name": "exact_alias",
+        "group_name": "exact_alias",
+        "spend": "exact_alias",
+        "impressions": "exact_alias",
+        "clicks": "exact_alias",
+        "conversions": "exact_alias",
+        "attributed_revenue": "exact_alias",
+        "currency": "exact_alias"
+      }
+    }
+  }
+]

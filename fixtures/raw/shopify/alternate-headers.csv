@@ -1,0 +1,2 @@
+Order,Customer email,Paid at,Lineitem price,Lineitem quantity,Total,Currency
+#1003,customer-three@example.test,2026-07-03 12:00:00,75.00,1,90.75,USD

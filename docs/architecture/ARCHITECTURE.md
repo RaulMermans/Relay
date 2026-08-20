@@ -1,0 +1,151 @@
+# Relay V1 architecture snapshot
+
+## 1. System overview
+
+Relay is a single Next.js application intended for Vercel. It accepts CSV uploads and has future provider-connection adapters, normalizes both into daily canonical observations, and computes deterministic facts. [ADR-005](../decisions/ADR-005-v1-application-stack.md) selects the application stack; [ADR-006](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md) selects Vercel and defers production database persistence; [ADR-007](../decisions/ADR-007-demo-persistence-and-future-database-boundary.md) adds bounded browser-local product memory. No database is connected.
+
+## 2. Architecture diagram
+
+```text
+                    VERCEL
+
+             Next.js Application
+        +-------------------------+
+        |       Frontend UI       |
+        |                         |
+        |   Route Handlers /      |
+        |   Server Functions      |
+        +-----------+-------------+
+                    |
+          +---------+----------+
+          |                    |
+       CSV data         External APIs
+                       Meta / Google /
+                          Shopify
+          |                    |
+          +---------+----------+
+                    |
+              Normalization
+                    |
+             Canonical Data
+                    |
+              KPI Engine
+                    |
+          Change Intelligence
+                    |
+       Narrative Intelligence
+                    |
+             Report Model
+                    |
+                  PDF
+```
+
+The browser UI uses `RelayMemoryStore -> LocalBrowserMemory` for versioned non-sensitive configuration and compact dashboard/cycle summaries. CSV files and server-side canonical analysis remain request-scoped. A future authenticated server/API boundary may replace product memory with Postgres, but browser state is never automatically promoted to authenticated ownership.
+
+## 3. Components
+
+- **Web/application service:** client/report workflows, server-side routes, authorization boundary, ingestion orchestration, report composition, and PDF rendering.
+- **CSV ingestion adapter:** validates files, identifies a provider, parses/mapping-checks input, and creates a raw dataset representation.
+- **Connector adapter:** manages future server-side authorization/session state, account discovery, bounded fetches, pagination/retries, and raw provider results.
+- **Provider normalizer:** maps either raw representation to canonical observations, provenance, and structured findings.
+- **Data Health and reconciliation:** validates coverage, dates, currency, duplicates, mappings, and commerce-versus-attribution caveats.
+- **Analytics, change, and narrative intelligence:** computes deterministic KPIs, structured changes, and evidence-backed human-readable narrative from validated facts.
+- **Report composer/renderer:** assembles the structured report model and renders PDF without recalculating facts.
+- **Persistence boundary:** a small product-memory interface with a versioned, validated, bounded `localStorage` implementation. It excludes uploads, canonical observations, provider payloads, credentials, report/PDF artifacts, and cloud behavior; a future server-owned implementation can replace it.
+
+## 4. Domain model
+
+| Entity | Purpose, ownership, and lifecycle | Key conceptual fields and relationships | Does not contain |
+| --- | --- | --- | --- |
+| User | Future authenticated workspace owner; active/disabled lifecycle. | Identity; owns clients and access scope. | Client metrics, connector tokens, report facts. |
+| Client | Reporting subject owned by one workspace/user in V1. | Display identity, reporting timezone/currency context; has source configurations, rules, targets, periods, and reports. | User credentials or raw provider payloads. |
+| SourceConfiguration | A client's saved provider/account/reporting configuration for CSV or connector use. | Provider, selected account/store, mapping version, timezone/currency hints; optionally links DataConnection. | Secret tokens or normalized metrics. |
+| DataConnection | Optional server-side connector credential linkage for a source configuration. | Provider, connection status, granted scopes, external account references, revocation state. | CSV mapping, client report content, raw analytics values. |
+| Ingestion | One upload or connector-fetch attempt. | Client/source configuration, transport, status, time range, findings, provenance references. | Long-lived report presentation or credential material. |
+| RawArtifact | Purpose-limited raw-upload/result reference owned by an ingestion. | Content reference/hash, media type, controlled retention state. | Canonical meaning or report rules. |
+| NormalizedObservation | Persisted daily advertising or commerce fact from an ingestion. | Canonical domain, date, dimensions, measures, currency, provenance; belongs to client via source configuration. | Mutable commentary, credentials, PDF layout. |
+| ReportingPeriod | Client-defined current/comparison date range. | Start/end dates, timezone, comparison reference, status. | Source payloads or derived facts. |
+| ClientRule | Versioned client-specific reporting/methodology rule. | Revenue basis, included sources, report methodology, explanatory context. | Provider credentials or authoritative source values. |
+| ClientTarget | Client KPI target attached to a rule/period scope. | Metric, target value/unit, applicability, source context. | Observed evidence or model-generated claims. |
+| Report | Versioned report artifact for a client and period. | Input/configuration snapshot, structured report-model snapshot, lifecycle/review/render status. | Mutable raw source payloads or connector tokens. |
+| NarrativePackage | Deterministic dashboard/report commentary derived from one analysis context. | Headline, summary, narrative items, stable evidence references, methodology note. | Authoritative KPI values, raw data, edits, or model output. |
+
+Campaign/ad entities are dimensions of normalized advertising observations, not independent V1 entities. Authentication and database-column design are deferred to implementation.
+
+## 5. Data architecture
+
+The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). It uses daily observations, source/entity identity, currency-compatible money, fixed-scale analytics, explicit unavailable values, and ingestion provenance. [ADR-001](../decisions/ADR-001-revenue-semantics.md) prevents commerce revenue from becoming paid-attribution revenue. [ADR-003](../decisions/ADR-003-data-retention-and-persistence.md) sets future retention principles. Canonical observations and raw/provider data remain transient. Browser memory stores only compact derived dashboard facts and configuration and must not be presented as cloud or database persistence.
+
+## 6. Interfaces and boundaries
+
+| Boundary | Contract | Excludes |
+| --- | --- | --- |
+| CSV ingestion | File validation, source detection, parsing, mapping, raw representation | OAuth/session concerns and analytics logic |
+| Connector ingestion | Connection/account/fetch/pagination/retry, raw provider representation | CSV parsing and analytics logic |
+| Provider normalizer | Raw representation -> canonical observations, provenance, findings | PDF layout and provider payload exposure downstream |
+| Data Health/reconciliation | Canonical observations -> validation/reconciliation findings | Silent repair of unknown/ambiguous data |
+| Analytics | Valid canonical data -> deterministic KPIs, changes, movers, risks | Transport/provider-response branching and narrative recalculation |
+| Narrative Intelligence | Structured facts/context -> stable narrative package with evidence references | Authoritative calculations, arbitrary raw-data analysis, or causality |
+| Report model | Facts/findings/review state -> renderer-neutral report object | PDF-specific layout or metric recalculation |
+
+[ADR-002](../decisions/ADR-002-unified-source-adapter-contract.md) defines the CSV/connector convergence contract. [ADR-004](../decisions/ADR-004-deterministic-narrative-intelligence.md) defines the deterministic narrative boundary.
+
+## 7. Critical flows
+
+### Flow A: CSV to report
+
+CSV upload -> file/source validation -> mapping confirmation where needed -> raw representation -> provider normalization -> canonical observations -> Data Health/reconciliation -> deterministic analytics -> Narrative Intelligence -> report model -> PDF.
+
+### Flow B: Connector to report
+
+Authorized connection/account selection -> bounded provider fetch -> raw result/provenance -> provider normalization -> same canonical, Data Health, analytics, report, and review path as CSV.
+
+### Flow C: Repeat analysis using saved local configuration
+
+The active client restores its latest compact dashboard snapshot, source expectations, compatible provider/header mappings, rules, targets, and reporting preferences from validated browser memory. A new CSV ingestion produces new request-local canonical observations and replaces the latest snapshot while appending a bounded cycle summary. It never mutates a prior server-side canonical dataset because none is retained.
+
+### Flow D: Narrative Intelligence to report preparation
+
+Validated structured facts and freshness context -> deterministic narrative package with fact references -> report model consumes the package without recalculating facts. Human editing is deferred until report composition establishes a concrete need.
+
+## 8. Failure handling
+
+| Failure | Behavior |
+| --- | --- |
+| Malformed CSV | Reject/flag at file or parser boundary; preserve a structured error and controlled raw reference only when permitted. |
+| Mapping ambiguity | Stop automatic semantic mapping and request confirmation; Data Health records the ambiguity. |
+| Connector unavailable or expired credential | Mark ingestion/connection state, preserve structured/redacted error, allow reconnect/retry; do not fabricate data. |
+| Mismatched periods/currencies | Block incompatible aggregate/KPI or issue explicit Data Health warning according to severity. |
+| PDF rendering failure | Preserve validated report model and render status; permit retry without recomputing or changing facts. |
+
+## 9. Security baseline
+
+Credentials remain server-side, separate from analytics/reporting records, least-privilege, revocable, and absent from logs. Uploads and provider payloads are untrusted. Data access is scoped through user-to-client ownership; enterprise RBAC is out of scope. See [CONNECTOR_SECURITY.md](../integrations/CONNECTOR_SECURITY.md) and [SECURITY.md](../../SECURITY.md).
+
+## 10. Observability baseline
+
+Record structured, redacted ingestion status, source/provider, mapping/validation findings, row/observation counts, report lifecycle, render outcome, and connector retry/error category. Do not log credentials, raw secrets, or unnecessary client-sensitive payloads. Track data-quality and report-generation failures separately from product success metrics.
+
+## 11. ADR index
+
+- [ADR-001: Revenue semantics](../decisions/ADR-001-revenue-semantics.md)
+- [ADR-002: Unified source adapter contract](../decisions/ADR-002-unified-source-adapter-contract.md)
+- [ADR-003: Data retention and persistence](../decisions/ADR-003-data-retention-and-persistence.md)
+- [ADR-004: Deterministic Narrative Intelligence](../decisions/ADR-004-deterministic-narrative-intelligence.md)
+- [ADR-005: V1 application stack](../decisions/ADR-005-v1-application-stack.md)
+- [ADR-006: Vercel-native deployment and deferred persistence](../decisions/ADR-006-vercel-native-deployment-and-deferred-persistence.md)
+- [ADR-007: Demo persistence and future database boundary](../decisions/ADR-007-demo-persistence-and-future-database-boundary.md)
+
+## 12. Sprint 03 implementation implications
+
+Sprint 03 may scaffold, but not implement reporting features:
+
+- **Stack:** Next.js App Router, TypeScript, Node.js 24 LTS, npm, Zod, Vitest, and Playwright Test. Vercel deploys frontend and server-side execution together.
+- **Expected layout:** `app/` for routes/UI; `lib/env/` for the server environment boundary; `tests/` for unit/integration/E2E support; existing `docs/` and `fixtures/` remain source-of-truth inputs. Do not create feature or persistence directories before their sprint.
+- **Expected base commands after scaffold:** `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e`, and `npm run build`.
+- **Health:** `GET /api/health` returns a non-sensitive deterministic status response; it does not expose credentials, client data, or host details.
+- **Environment validation:** server-side code owns the future single environment access boundary. Sprint 03 has no required runtime variables and does not expose server configuration to the browser.
+- **Persistence:** no database, Prisma schema, `DATABASE_URL`, migrations, or fake repository abstraction exists in Sprint 03.
+- **CI baseline:** install locked dependencies, then lint, typecheck, unit tests, and build. Playwright smoke tests remain runnable locally and can be added to CI when browser-install cost is appropriate; no database-dependent checks exist.
+
+Sprint 03 must not add queues, workers, scheduled sync, additional services, or feature-specific connectors without a new task and evidence-based revisit decision.

@@ -1,0 +1,71 @@
+{
+  "synthetic": true,
+  "description": "Synthetic Meta Marketing API-shaped account and paginated Ads Insights responses equivalent to the representative Meta CSV fixture.",
+  "accounts": {
+    "data": [
+      {
+        "id": "act_100000001",
+        "account_id": "100000001",
+        "name": "Synthetic Relay Ad Account",
+        "currency": "USD",
+        "timezone_name": "America/New_York",
+        "account_status": 1
+      }
+    ]
+  },
+  "pages": [
+    {
+      "data": [
+        {
+          "date_start": "2026-07-01",
+          "date_stop": "2026-07-01",
+          "account_id": "100000001",
+          "account_name": "Synthetic Relay Ad Account",
+          "account_currency": "USD",
+          "campaign_id": "200000001",
+          "campaign_name": "Summer launch",
+          "adset_id": "300000001",
+          "adset_name": "Prospecting",
+          "ad_id": "400000001",
+          "ad_name": "Prospecting creative",
+          "spend": "123.45",
+          "impressions": "10000",
+          "inline_link_clicks": "321",
+          "actions": [
+            { "action_type": "link_click", "value": "321" },
+            { "action_type": "purchase", "value": "14" },
+            { "action_type": "lead", "value": "29" }
+          ],
+          "action_values": [
+            { "action_type": "purchase", "value": "567.89" },
+            { "action_type": "add_to_cart", "value": "920.50" }
+          ]
+        }
+      ],
+      "paging": { "cursors": { "before": "before-1", "after": "after-1" }, "next": "https://graph.facebook.com/v26.0/redacted" }
+    },
+    {
+      "data": [
+        {
+          "date_start": "2026-07-01",
+          "date_stop": "2026-07-01",
+          "account_id": "100000001",
+          "account_name": "Synthetic Relay Ad Account",
+          "account_currency": "USD",
+          "campaign_id": "200000001",
+          "campaign_name": "Summer launch",
+          "adset_id": "300000002",
+          "adset_name": "Remarketing",
+          "ad_id": "400000002",
+          "ad_name": "Remarketing creative",
+          "spend": "67.89",
+          "impressions": "4200",
+          "inline_link_clicks": "108",
+          "actions": [{ "action_type": "purchase", "value": "8" }],
+          "action_values": [{ "action_type": "purchase", "value": "321.00" }]
+        }
+      ],
+      "paging": { "cursors": { "before": "before-2", "after": "after-2" } }
+    }
+  ]
+}

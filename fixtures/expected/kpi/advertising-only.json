@@ -1,0 +1,14 @@
+{
+  "label": "Synthetic Meta advertising only",
+  "metrics": {
+    "spend": { "value": "30.3", "status": "available" },
+    "commerce_revenue": { "value": null, "status": "unavailable" },
+    "ctr": { "value": "0.05", "status": "available" },
+    "cpc": { "value": "0.303", "status": "available" },
+    "cpa": { "value": "6.06", "status": "available" },
+    "conversion_rate": { "value": "0.05", "status": "available" }
+  },
+  "sourceBreakdown": {
+    "meta_ads": { "attributed_revenue": "100", "roas": "3.300330033003" }
+  }
+}

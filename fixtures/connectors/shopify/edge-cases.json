@@ -1,0 +1,82 @@
+{
+  "synthetic": true,
+  "boundaryPage": {
+    "data": {
+      "orders": {
+        "edges": [
+          {
+            "cursor": "boundary-a",
+            "node": {
+              "id": "gid://shopify/Order/2001",
+              "name": "#2001",
+              "createdAt": "2026-07-01T03:59:59Z",
+              "totalPriceSet": {
+                "shopMoney": { "amount": "0.00", "currencyCode": "USD" }
+              }
+            }
+          },
+          {
+            "cursor": "boundary-b",
+            "node": {
+              "id": "gid://shopify/Order/2002",
+              "name": "#2002",
+              "createdAt": "2026-07-01T04:00:00Z",
+              "totalPriceSet": {
+                "shopMoney": { "amount": "12.25", "currencyCode": "EUR" }
+              }
+            }
+          }
+        ],
+        "pageInfo": { "hasNextPage": false, "endCursor": "boundary-b" }
+      }
+    }
+  },
+  "duplicatePage": {
+    "data": {
+      "orders": {
+        "edges": [
+          {
+            "cursor": "duplicate-a",
+            "node": {
+              "id": "gid://shopify/Order/2999",
+              "name": "#2999",
+              "createdAt": "2026-07-01T12:00:00Z",
+              "totalPriceSet": {
+                "shopMoney": { "amount": "10.00", "currencyCode": "USD" }
+              }
+            }
+          },
+          {
+            "cursor": "duplicate-b",
+            "node": {
+              "id": "gid://shopify/Order/2999",
+              "name": "#2999-copy",
+              "createdAt": "2026-07-01T12:00:00Z",
+              "totalPriceSet": {
+                "shopMoney": { "amount": "10.00", "currencyCode": "USD" }
+              }
+            }
+          }
+        ],
+        "pageInfo": { "hasNextPage": false, "endCursor": "duplicate-b" }
+      }
+    }
+  },
+  "malformed": {
+    "data": {
+      "orders": {
+        "edges": [{ "cursor": "broken", "node": { "id": "not-a-shopify-gid" } }],
+        "pageInfo": { "hasNextPage": true, "endCursor": null }
+      }
+    }
+  },
+  "providerError": {
+    "errors": [{ "message": "Synthetic provider error", "extensions": { "code": "THROTTLED" } }],
+    "extensions": {
+      "cost": {
+        "requestedQueryCost": 101,
+        "throttleStatus": { "currentlyAvailable": 0, "restoreRate": 50 }
+      }
+    }
+  }
+}

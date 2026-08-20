@@ -1,0 +1,20 @@
+{
+  "label": "Synthetic Meta + Google + Shopify complete current period",
+  "status": "ready",
+  "period": {
+    "currentPeriod": { "start": "2026-08-01", "end": "2026-08-02" },
+    "comparisonPeriod": { "start": "2026-07-30", "end": "2026-07-31" }
+  },
+  "metrics": {
+    "spend": { "value": "55", "previous": null, "absoluteChange": null, "percentageChange": null },
+    "commerce_revenue": { "value": "225", "previous": null, "absoluteChange": null, "percentageChange": null },
+    "orders": { "value": "2", "previous": null, "absoluteChange": null, "percentageChange": null },
+    "mer": { "value": "4.090909090909", "previous": null, "absoluteChange": null, "percentageChange": null },
+    "aov": { "value": "112.5", "previous": null, "absoluteChange": null, "percentageChange": null }
+  },
+  "sourceBreakdown": {
+    "meta_ads": { "spend": "25", "attributed_revenue": "50", "roas": "2" },
+    "google_ads": { "spend": "30", "attributed_revenue": "60", "roas": "2" },
+    "shopify": { "commerce_revenue": "225", "orders": "2", "aov": "112.5" }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "status": "review_required",
+  "findingCodes": [
+    "PARTIAL_CURRENT_PERIOD_COVERAGE",
+    "SOURCE_PERIODS_DIFFER"
+  ],
+  "coverage": {
+    "shopify": { "start": "2026-08-01", "end": "2026-08-01", "status": "review" }
+  }
+}
