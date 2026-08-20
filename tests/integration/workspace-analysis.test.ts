@@ -40,6 +40,9 @@ describe("multi-source workspace analysis", () => {
       { date: "2026-08-01", paidSpend: "22", commerceRevenue: "100" },
       { date: "2026-08-02", paidSpend: "33", commerceRevenue: "125" },
     ]);
+    expect(result.narrative).toMatchObject({ status: "ready" });
+    expect(result.narrative.methodologyNotes[0]).toContain("deterministic Relay facts");
+    expect(JSON.stringify(result.narrative)).not.toContain("total attributed revenue");
     expect(result.sources).toHaveLength(3);
     expect(result).not.toHaveProperty("observations");
     expect(JSON.stringify(result)).not.toContain("Summer launch");
@@ -94,6 +97,9 @@ describe("multi-source workspace analysis", () => {
     expect(result.dataHealth.findings).toEqual(expect.arrayContaining([expect.objectContaining({ code: "COMMERCE_SOURCE_ABSENT", blocking: false })]));
     expect(result.kpis.status).toBe("ready");
     expect(result.kpis.metrics).toEqual(expect.arrayContaining([expect.objectContaining({ key: "commerce_revenue", value: null })]));
+    expect(result.narrative.attention).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "health", title: "Shopify data isn’t included" }),
+    ]));
   });
 
   it("combines Meta and Shopify without requiring Google", async () => {
@@ -147,6 +153,7 @@ describe("multi-source workspace analysis", () => {
     if (blocked.status !== "ready") throw new Error("Expected blocked result envelope.");
     expect(blocked.dataHealth.status).toBe("blocked");
     expect(blocked.kpis.status).toBe("blocked");
+    expect(blocked.narrative).toMatchObject({ status: "blocked", headline: "Performance is unavailable until data issues are resolved." });
     expect(blocked.sources.every((source) => source.status === "blocked")).toBe(true);
     expect(blocked.trend).toEqual([]);
   });

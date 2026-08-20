@@ -25,10 +25,14 @@ test("prepares a complete three-source workspace directly into the dashboard", a
   await page.getByLabel("Shopify CSV").setInputFiles(shopifyFixture);
   await page.getByRole("button", { name: "Prepare dashboard" }).click();
 
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
   await expect(page.getByTestId("hero-commerce_revenue")).toContainText("€225");
   await expect(page.getByTestId("hero-spend")).toContainText("€55");
   await expect(page.getByTestId("hero-mer")).toContainText("4.09x");
+  await expect(page.getByTestId("performance-summary")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance Summary" })).toBeVisible();
+  await expect(page.getByText("Inspect evidence", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /generate/i })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "What Changed" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Channels" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Meta Ads" })).toBeVisible();
@@ -51,7 +55,8 @@ test("reveals only the ambiguous Meta fields and re-analyzes after correction", 
   await page.getByLabel("Map Campaign name", { exact: true }).selectOption("__ignored");
   await page.getByRole("button", { name: "Re-analyze data" }).click();
 
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance Summary" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Meta Ads" })).toBeVisible();
   await expect(page.getByText("Data quality Good", { exact: true })).toBeVisible();
 });
@@ -78,7 +83,7 @@ test("surfaces a transient CPA target breach in Attention", async ({ page }) => 
   await page.getByLabel("CPA target currency").fill("EUR");
   await page.getByRole("button", { name: "Prepare dashboard" }).click();
 
-  await expect(page.getByRole("heading", { name: "Attention" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Attention", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Attention" }).getByRole("heading", { name: "CPA is outside target" })).toBeVisible();
 });
 

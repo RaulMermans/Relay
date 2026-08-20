@@ -21,7 +21,7 @@ async function analyzeCompleteWorkspace(page: import("@playwright/test").Page) {
   await page.getByLabel("Google Ads CSV").setInputFiles(googleFixture);
   await page.getByLabel("Shopify CSV").setInputFiles(shopifyFixture);
   await page.getByRole("button", { name: "Prepare dashboard" }).click();
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -39,7 +39,7 @@ test("restores the active client, dashboard, history, and freshness after reload
   await page.reload();
 
   await expect(page.getByLabel("Active client").locator("option:checked")).toHaveText("Acme Skincare");
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
   await expect(page.getByTestId("hero-commerce_revenue")).toContainText("€225");
   await expect(page.getByText(/Data through Aug 2/)).toBeVisible();
   await expect(page.getByText("Browser-only memory")).toBeVisible();
@@ -55,7 +55,7 @@ test("reuses an approved mapping in the next reporting cycle", async ({ page }) 
   await page.getByLabel("Map Campaign", { exact: true }).selectOption("campaign_name");
   await page.getByLabel("Map Campaign name", { exact: true }).selectOption("__ignored");
   await page.getByRole("button", { name: "Re-analyze data" }).click();
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
 
   await page.reload();
   await page.getByRole("button", { name: "Update data" }).first().click();
@@ -63,7 +63,7 @@ test("reuses an approved mapping in the next reporting cycle", async ({ page }) 
   await page.getByLabel("Meta Ads CSV").setInputFiles(ambiguousMappingFixture);
   await page.getByRole("button", { name: "Update dashboard" }).click();
 
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Relay needs help/ })).toHaveCount(0);
 });
 
@@ -77,7 +77,7 @@ test("switches between isolated client snapshots and configuration", async ({ pa
   await expect(page.getByRole("heading", { name: "Your performance workspace starts with trusted data." })).toBeVisible();
 
   await page.getByLabel("Active client").selectOption({ label: "Client A" });
-  await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
   await expect(page.getByTestId("hero-commerce_revenue")).toContainText("€225");
 
   await page.getByLabel("Active client").selectOption({ label: "Client B" });
@@ -93,7 +93,7 @@ test("keeps the returning-client dashboard usable at tablet and mobile widths", 
     await page.setViewportSize(viewport);
     await page.reload();
     await expect(page.getByLabel("Active client")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Performance" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Update data" }).first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }

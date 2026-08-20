@@ -295,6 +295,19 @@ a:focus-visible {
 .trend-figure figcaption { color: var(--muted); font-size: 11px; }
 
 .dashboard-section { display: grid; gap: 20px; }
+.narrative-section { gap: 16px; }
+.narrative-overview { max-width: 760px; padding: 22px 24px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.68); }
+.narrative-overview h3 { margin: 0; font-size: clamp(24px, 3vw, 34px); letter-spacing: -0.035em; }
+.narrative-overview p { margin: 10px 0 0; color: var(--ink-soft); font-size: 16px; line-height: 1.55; }
+.narrative-subheading { margin: 0 0 8px; font-size: 14px; letter-spacing: 0.02em; text-transform: uppercase; }
+.narrative-list { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.narrative-list li { display: grid; gap: 3px; padding: 13px 0; border-top: 1px solid var(--line); }
+.narrative-list strong { font-size: 16px; }
+.narrative-list span { color: var(--ink-soft); }
+.narrative-evidence { border-top: 1px solid var(--line); }
+.narrative-evidence summary { padding-top: 12px; color: var(--sea); cursor: pointer; font-weight: 750; }
+.narrative-evidence ul { display: grid; gap: 8px; padding: 12px 0 0; margin: 0; list-style: none; }
+.narrative-evidence li { display: grid; gap: 3px; color: var(--muted); font-size: 12px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
 .section-heading h2 { margin: 0; font-family: "Aptos Display", "Segoe UI", Arial, sans-serif; font-size: clamp(30px, 4vw, 46px); letter-spacing: -0.045em; line-height: 1; }
 .change-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }

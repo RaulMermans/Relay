@@ -4,6 +4,7 @@ import { runDataHealth } from "../data-health/run-data-health";
 import { enumerateDates } from "../data-health/reporting-period";
 import type { DataHealthResult, ProviderSource, ReportingPeriod } from "../data-health/types";
 import { runKpiEngine } from "../kpi/engine";
+import { generateNarrative } from "../narrative/generate";
 import { add } from "../kpi/arithmetic";
 import type { CanonicalField, MappingOverride, MappingProposal } from "../mapping/types";
 import { normalizeCsvFile } from "../normalization/normalize-csv";
@@ -56,6 +57,7 @@ export type WorkspaceAnalysisResult =
       dataHealth: DataHealthResult;
       kpis: ReturnType<typeof runKpiEngine>;
       changeIntelligence: ReturnType<typeof runChangeIntelligence>;
+      narrative: ReturnType<typeof generateNarrative>;
       trend: WorkspaceTrendPoint[];
       mappingMemory: WorkspaceMappingDecision[];
       mappingReuseCount: number;
@@ -208,6 +210,15 @@ export async function analyzeWorkspace(input: WorkspaceAnalysisInput): Promise<W
     dateRange: result.summary.dateRange,
     currencies: result.summary.currencies,
   }));
+  const narrative = generateNarrative({
+    reportingPeriod: dataHealth.reportingPeriod,
+    dataHealth,
+    kpis,
+    observations: changeIntelligence,
+    targets: changeIntelligence.targetEvaluations,
+    sources,
+    freshness: "current",
+  });
 
   return {
     status: "ready",
@@ -215,6 +226,7 @@ export async function analyzeWorkspace(input: WorkspaceAnalysisInput): Promise<W
     dataHealth,
     kpis,
     changeIntelligence,
+    narrative,
     trend: dailyTrend(observations, dataHealth),
     mappingMemory: persistedMappings,
     mappingReuseCount,

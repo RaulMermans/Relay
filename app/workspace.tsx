@@ -8,6 +8,8 @@ import type { ProviderSource } from "../lib/data-health/types";
 import type { KpiMetricKey, KpiMetricResult, KpiSourceBreakdown } from "../lib/kpi/types";
 import type { CanonicalField } from "../lib/mapping/types";
 import { clientMappingRequest, freshnessStatus, recordWorkspaceAnalysis } from "../lib/persistence/analysis-memory";
+import { generateNarrative } from "../lib/narrative/generate";
+import type { NarrativeItem } from "../lib/narrative/types";
 import { createClient, createEmptyMemory, deleteClient, renameClient, selectClient, updateClient } from "../lib/persistence/client-memory";
 import { createBrowserMemoryStore, type RelayMemoryStore } from "../lib/persistence/local-storage";
 import type { AnalysisSnapshot, ClientMemory, RelayMemoryV1, SnapshotChangeIntelligence } from "../lib/persistence/types";
@@ -374,6 +376,42 @@ function WhatChanged({ observations }: { observations: ChangeObservation[] }) {
   );
 }
 
+function NarrativeList({ items }: { items: NarrativeItem[] }) {
+  return (
+    <ul className="narrative-list">
+      {items.map((item) => <li key={item.id}><strong>{item.title}</strong><span>{item.text}</span></li>)}
+    </ul>
+  );
+}
+
+function PerformanceSummary({
+  analysis,
+  freshness,
+}: {
+  analysis: DashboardAnalysis;
+  freshness: ReturnType<typeof freshnessStatus>;
+}) {
+  const narrative = generateNarrative({
+    reportingPeriod: analysis.dataHealth.reportingPeriod,
+    dataHealth: analysis.dataHealth,
+    kpis: analysis.kpis,
+    observations: analysis.changeIntelligence,
+    targets: analysis.changeIntelligence.targetEvaluations,
+    sources: analysis.sources,
+    freshness,
+  });
+  const developments = [...narrative.highlights, ...narrative.channelSummaries].slice(0, 4);
+  return (
+    <section className="dashboard-section narrative-section" aria-labelledby="summary-heading" data-testid="performance-summary">
+      <div className="section-heading"><div><p className="eyebrow">Deterministic narrative</p><h2 id="summary-heading">Performance Summary</h2></div></div>
+      <div className="narrative-overview"><h3>{narrative.headline}</h3><p>{narrative.summary}</p></div>
+      {developments.length > 0 ? <div><h3 className="narrative-subheading">Key developments</h3><NarrativeList items={developments} /></div> : null}
+      {narrative.attention.length > 0 ? <div><h3 className="narrative-subheading">Needs attention</h3><NarrativeList items={narrative.attention} /></div> : null}
+      <details className="narrative-evidence"><summary>Inspect evidence</summary><ul>{[...developments, ...narrative.attention].map((item) => <li key={item.id}><strong>{item.title}</strong><span>{item.evidenceRefs.map((evidence) => `${evidence.kind}: ${evidence.id}`).join(" · ")}</span></li>)}</ul></details>
+    </section>
+  );
+}
+
 function ChannelCard({ source, breakdown, summary }: { source: ProviderSource; breakdown?: KpiSourceBreakdown; summary?: WorkspaceSourceSummary }) {
   const keys: KpiMetricKey[] = source === "shopify" ? ["commerce_revenue", "orders", "aov"] : ["spend", "roas", "cpa", "conversions"];
   const metrics = keys.flatMap((key) => breakdown?.metrics.find((metric) => metric.key === key && metric.status === "available") ?? []);
@@ -418,6 +456,7 @@ function Dashboard({
         {readyKpis ? <div className="hero-kpis">{hero.map((metric, index) => <KpiBlock key={metric.key} metric={metric} className={index === 0 ? "primary-kpi" : ""} />)}</div> : <div className="blocked-panel"><strong>Performance is paused</strong><p>Resolve the blocking data issue before Relay calculates KPIs.</p></div>}
         <TrendChart trend={analysis.trend} currency={spendMetric ? currentCurrency(spendMetric) : null} />
       </section>
+      <PerformanceSummary analysis={analysis} freshness={freshness} />
       <WhatChanged observations={readyChanges?.observations ?? []} />
       <section className="dashboard-section channels-section" aria-labelledby="channels-heading">
         <div className="section-heading"><div><p className="eyebrow">Source view</p><h2 id="channels-heading">Channels</h2></div></div>
