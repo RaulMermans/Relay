@@ -38,7 +38,7 @@ The V1 product shell contains two destinations:
 - **Overview** presents performance, a deterministic Performance Summary, curated changes, channels, attention, and a compact data-quality signal.
 - **Data Sources** manages the active Meta Ads, Google Ads, and Shopify inputs without discarding dashboard context.
 
-Reports joins the navigation only when a real report experience exists. Settings, Team, Billing, marketplace, Automations, and AI chat are not present until they have working product surfaces.
+Reports joins the navigation as a dedicated preview after a valid analysis. It minimizes dashboard chrome, provides Back to dashboard and Export PDF, and prints from the same report markup. Settings, Team, Billing, marketplace, Automations, and AI chat are not present.
 
 ## UX principles
 

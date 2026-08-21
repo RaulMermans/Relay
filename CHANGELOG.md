@@ -4,6 +4,8 @@
 
 ### Added
 
+- A deterministic `ReportDocument` composer, editorial report preview, and browser-native Print/Save-as-PDF path. It reuses the authoritative snapshot and Narrative Intelligence, preserves Shopify/Meta/Google revenue semantics, blocks stale or Data-Health-blocked exports, and persists no PDF bytes or raw inputs.
+
 - Deterministic Narrative Intelligence: an immediate evidence-backed Performance Summary with stable IDs, significance-aware stories, source-safe semantics, health/freshness/target attention, and inspectable evidence. Relay V1 requires no generative model.
 
 - Versioned, Zod-validated, bounded browser-local client memory behind `RelayMemoryStore`, with explicit recovery, client deletion, and Relay-only reset.

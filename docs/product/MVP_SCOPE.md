@@ -19,7 +19,7 @@ Every V1 capability must either make validated performance understandable or mov
 - Positive/negative drivers and performance risks
 - KPI targets and client reporting rules
 - Deterministic Narrative Intelligence with evidence inspection
-- Structured report model, PDF export, and report history
+- Structured deterministic report model and browser-native PDF export; compact analysis-cycle history only (not generated-report or PDF persistence)
 
 The dashboard is a monitoring surface over supplied data, not a real-time BI warehouse. Automatic refresh depends on future live connector activation.
 

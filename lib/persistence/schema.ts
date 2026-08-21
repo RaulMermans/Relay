@@ -156,6 +156,18 @@ const kpiBlockedSchema = z.object({
   sourceBreakdown: z.tuple([]),
 }).strict();
 
+const narrativeItemSchema = z.object({
+  id: z.string().min(1).max(240), type: z.enum(["growth", "decline", "efficiency", "tradeoff", "target", "health", "freshness", "channel"]),
+  title: z.string().min(1).max(500), text: z.string().min(1).max(2_000),
+  evidenceRefs: z.array(z.object({ kind: z.enum(["kpi", "observation", "target", "data_health", "freshness"]), id: z.string().min(1).max(300) }).strict()).max(20),
+  priority: z.number().int().min(0).max(1_000), scope: z.enum(["report", "source", "data_health", "freshness"]),
+}).strict();
+const narrativeSchema = z.object({
+  status: z.enum(["ready", "blocked"]), headline: z.string().min(1).max(1_000), summary: z.string().min(1).max(4_000),
+  highlights: z.array(narrativeItemSchema).max(12), attention: z.array(narrativeItemSchema).max(12), channelSummaries: z.array(narrativeItemSchema).max(12),
+  methodologyNotes: z.array(z.string().min(1).max(2_000)).max(12),
+}).strict();
+
 const sourceSummarySchema = z.object({
   source: providerSchema,
   status: z.enum(["ready", "review", "blocked", "missing"]),
@@ -173,6 +185,7 @@ const snapshotSchema = z.object({
   sources: z.array(sourceSummarySchema).max(3),
   dataHealth: dataHealthSchema,
   kpis: z.discriminatedUnion("status", [kpiReadySchema, kpiBlockedSchema]),
+  narrative: narrativeSchema.optional(),
   changeIntelligence: z.object({
     status: z.enum(["ready", "blocked"]),
     observations: z.array(observationSchema).max(12),

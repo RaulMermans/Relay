@@ -28,7 +28,7 @@ Meta Ads, Google Ads, and Shopify are the initial platforms. CSV uploads and con
 
 ## Core workflow
 
-Client -> restored dashboard or configured workspace -> reporting period -> data sources -> automatic preparation -> exceptions when needed -> performance dashboard -> deterministic change detection -> deterministic narrative summary -> later client-ready PDF.
+Client -> restored dashboard or configured workspace -> reporting period -> data sources -> automatic preparation -> exceptions when needed -> performance dashboard -> deterministic narrative summary -> reviewable client-ready PDF preview.
 
 ## Cadence, output, and review
 

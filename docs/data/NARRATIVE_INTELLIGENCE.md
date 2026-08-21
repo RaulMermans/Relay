@@ -43,3 +43,5 @@ Blocked Data Health suppresses normal performance commentary and produces only a
 ## Deterministic guarantees and unsupported behavior
 
 The same input produces deeply equal output, including IDs, ordering, and wording. The module is synchronous, bounded, dependency-free TypeScript. It does not perform raw-data analysis, independent calculations, causal inference, recommendations, model calls, prompt processing, editing workflows, report/PDF rendering, or narrative-history persistence.
+
+Sprint 16 retains this package in new compact analysis snapshots. The report composer consumes this existing deterministic result and does not regenerate or rewrite it.

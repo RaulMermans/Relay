@@ -149,3 +149,7 @@ Sprint 03 may scaffold, but not implement reporting features:
 - **CI baseline:** install locked dependencies, then lint, typecheck, unit tests, and build. Playwright smoke tests remain runnable locally and can be added to CI when browser-install cost is appropriate; no database-dependent checks exist.
 
 Sprint 03 must not add queues, workers, scheduled sync, additional services, or feature-specific connectors without a new task and evidence-based revisit decision.
+
+## Sprint 16 report boundary
+
+`AnalysisSnapshot -> ReportDocument -> report preview / browser print` is Relay’s single report path. The composer only selects, formats, and asserts existing facts; it receives no raw CSV, canonical observations, provider payloads, or credentials. No PDF bytes are stored or generated server-side.

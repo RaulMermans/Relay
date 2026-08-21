@@ -41,6 +41,13 @@ test("prepares a complete three-source workspace directly into the dashboard", a
   await expect(page.getByText("Data quality Good", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Daily commerce revenue and paid spend trend")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Review field mapping" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Reports" }).click();
+  await expect(page.getByText("Report preview", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Workspace Test Client" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Source-specific results" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How to read this report" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Export PDF" })).toBeVisible();
 });
 
 test("reveals only the ambiguous Meta fields and re-analyzes after correction", async ({ page }) => {

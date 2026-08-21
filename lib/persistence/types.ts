@@ -1,6 +1,7 @@
 import type { ChangeObservation, ChangeTarget, TargetEvaluation } from "../change-intelligence/types";
 import type { DataHealthResult, ProviderSource, ResolvedReportingPeriod } from "../data-health/types";
 import type { KpiExecutionResult, KpiMetricKey, KpiUnit } from "../kpi/types";
+import type { NarrativeResult } from "../narrative/types";
 import type { CanonicalField } from "../mapping/types";
 import type { WorkspaceSourceSummary, WorkspaceTrendPoint } from "../workspace/analyze-workspace";
 
@@ -74,6 +75,8 @@ export type AnalysisSnapshot = {
   sources: WorkspaceSourceSummary[];
   dataHealth: DataHealthResult;
   kpis: KpiExecutionResult;
+  /** Optional only for pre-Sprint-16 browser memory; new snapshots always include it. */
+  narrative?: NarrativeResult;
   changeIntelligence: SnapshotChangeIntelligence;
   trend: WorkspaceTrendPoint[];
 };

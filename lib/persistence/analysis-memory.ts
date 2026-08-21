@@ -46,6 +46,7 @@ export function createAnalysisSnapshot(analysis: ReadyAnalysis, input: { snapsho
     sources: analysis.sources,
     dataHealth: analysis.dataHealth,
     kpis: analysis.kpis,
+    narrative: analysis.narrative,
     changeIntelligence: {
       status: analysis.changeIntelligence.status,
       observations: analysis.changeIntelligence.observations,
