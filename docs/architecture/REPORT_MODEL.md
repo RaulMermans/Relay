@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The structured report model is the boundary between validated analysis and rendering. It is a conceptual object, not a TypeScript interface or PDF implementation. The renderer consumes this model to create a PDF; it does not recalculate metrics or infer facts.
+The structured report model is the boundary between validated analysis and rendering. It is a conceptual object, not a TypeScript interface or PDF implementation. The preview and browser print flow consume this model; they do not recalculate metrics or infer facts.
 
 ## Required sections
 

@@ -59,13 +59,13 @@
 
 ### Changed
 
-- Relay's repeat workflow now restores browser-local configuration and the latest dashboard while keeping CSV files, filenames, canonical observations, provider payloads, credentials, generated reports, and PDFs transient or unimplemented.
+- Relay's repeat workflow now restores browser-local configuration and the latest dashboard while keeping CSV files, filenames, canonical observations, provider payloads, credentials, generated-report artifacts, and PDF bytes transient and unpersisted.
 - The existing Change Intelligence target parser is now reusable by persistence validation, avoiding a second target contract without changing target evaluation semantics.
 - Defined Relay's product contract, V1 boundaries, validation metrics, research protocols, assumption register, and Sprint 02 decision inputs.
 - Added documentation-only validation-experiment design; no application functionality was implemented.
 - Defined V1 architecture, canonical data semantics, revenue rules, ingestion/persistence boundaries, report/AI boundaries, deployment, security, testing, and Sprint 03 handoff.
 - Superseded ADR-005's Railway/PostgreSQL/Prisma deployment assumptions with Vercel and no currently connected database.
-- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, a multi-source daily dashboard, browser-local return memory, the generic connector framework, and implemented Shopify, Meta Ads, and Google Ads API adapters proven through synthetic provider-shaped integration. Live provider auth, automatic sync, cloud persistence, authentication, AI, recommendations, generated reports, and PDFs remain unimplemented.
+- Relay now supports fixture-backed CSV source detection, mapping, canonical normalization, Data Health/reconciliation, deterministic KPI calculation, structured deterministic Change Intelligence, a multi-source daily dashboard, browser-local return memory, the generic connector framework, implemented Shopify, Meta Ads, and Google Ads API adapters proven through synthetic provider-shaped integration, and a deterministic report preview with browser-native PDF saving. Live provider auth, automatic sync, cloud persistence, authentication, generative AI, recommendations, generated-report persistence, and server-generated PDF bytes remain unimplemented.
 
 ### Deployment
 

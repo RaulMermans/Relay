@@ -61,3 +61,5 @@ Store labelled synthetic/anonymized provider CSV input in `fixtures/raw/`, canon
 ## Tooling and CI expectation
 
 Vitest covers unit/integration suites and Playwright covers browser E2E. Expected commands remain `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:unit`, `npm run test:integration`, `npm run build`, and `npm run test:e2e`; all run without external services, databases, or provider credentials.
+
+Sprint 16 adds report-composer coverage for stable identity, source semantics, missing Shopify disclosure, blocked analytics, stale snapshots, report preferences, Data Health warnings, filename sanitization, and print filename generation. Integration coverage carries existing CSV inputs through normalization, Data Health, KPI, Change Intelligence, Narrative Intelligence, and the report composer without duplicating KPI calculations. Playwright covers complete, paid-media-only, stale-refresh, blocked-report, and explicit one-call browser-print flows. Browser Save-as-PDF remains a browser-owned action, so its boundary and print stylesheet—not browser file output—are testable in product automation.

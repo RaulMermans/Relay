@@ -13,7 +13,8 @@ External source
   -> Deterministic Narrative Intelligence
   -> Dashboard/report commentary
   -> Report model
-  -> Renderer
+  -> Browser preview
+  -> Explicit browser print
 ```
 
 | Boundary | Input | Output | Validation responsibility | Failure behavior |
@@ -28,7 +29,8 @@ External source
 | Metrics -> Change intelligence | KPIs/comparisons | Movers, risks, explanatory facts | Deterministic thresholds/rules and fact provenance | Omit unsupported conclusion; retain source finding |
 | Change Intelligence -> Narrative Intelligence | Health, KPIs, observations, targets, source metadata, freshness | Stable headline, summary, items, and evidence references | Rule eligibility, evidence lineage, stable IDs, source semantics | Omit unsupported narrative; blocked health suppresses performance summary |
 | Narrative Intelligence -> Report model | Deterministic narrative package plus facts/findings | Structured report model snapshot | Required sections and methodology; no fact mutation | Preserve deterministic package; future human override remains separate |
-| Report model -> Renderer | Structured report model | PDF and render status | Renderer input completeness and layout/render health | Preserve model, record failure, allow retry |
+| Report model -> Browser preview | Structured report model | Dedicated preview markup | Renderer input completeness and layout/render health | Preserve model and keep the preview inspectable |
+| Browser preview -> Browser print | Explicit user action on a current preview | Browser-owned print/Save-as-PDF flow | Snapshot-current guard, print stylesheet, safe document title | Block stale/blocked export; Relay neither generates nor persists PDF bytes |
 
 CSV and connector paths differ only before the raw-representation/normalization boundary. Analytics and report generation operate only on canonical data and structured facts.
 

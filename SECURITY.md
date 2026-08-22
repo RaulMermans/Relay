@@ -23,3 +23,4 @@
 - The report composer accepts compact snapshot facts and deterministic narrative only; raw CSVs, canonical rows, provider payloads, credentials, arbitrary HTML, and PDF bytes are excluded.
 - React escapes report text normally. Browser print receives no server file path or serialized report URL.
 - The suggested filename is bounded and normalized to an ASCII slug, preventing path separator and control-character use.
+- A stale preview cannot invoke the print boundary; it must be explicitly recomposed from the newer analysis snapshot. Relay has no PDF blob, download, server-renderer, or arbitrary-file export path.

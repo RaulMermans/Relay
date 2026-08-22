@@ -16,4 +16,6 @@ The preview uses a light editorial A4 canvas, readable semantic headings, tables
 
 ## Freshness, Data Health, and export
 
-The report states the oldest included source’s data-through date and explicitly says that data is manually supplied and not automatically refreshed. Blocked Data Health prevents a normal performance report. Browser-native **Export PDF** opens the print flow from the same HTML/CSS preview; it does not persist PDF bytes. The browser controls final Save-as-PDF location, while Relay supplies a deterministic, sanitized suggested document title/filename. Export is disabled when the preview snapshot is no longer current.
+The report states the oldest included source’s data-through date and explicitly says that data is manually supplied and not automatically refreshed. Blocked Data Health prevents a normal performance report. Browser-native **Export PDF** opens the print flow from the same HTML/CSS preview; it does not persist PDF bytes. The browser controls final Save-as-PDF location, while Relay supplies a deterministic, sanitized suggested document title/filename. Export is disabled when the preview snapshot is no longer current; the prior report remains inspectable with an explicit **Refresh report** action rather than silently regenerating during export.
+
+V1 intentionally uses a textual trend-coverage statement instead of a report chart. It communicates the available paid-spend and Shopify-commerce-revenue coverage without inventing a combined series or adding print-specific visualization complexity.

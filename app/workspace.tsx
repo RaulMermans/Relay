@@ -13,7 +13,8 @@ import type { NarrativeItem } from "../lib/narrative/types";
 import { createClient, createEmptyMemory, deleteClient, renameClient, selectClient, updateClient } from "../lib/persistence/client-memory";
 import { createBrowserMemoryStore, type RelayMemoryStore } from "../lib/persistence/local-storage";
 import type { AnalysisSnapshot, ClientMemory, RelayMemoryV1, SnapshotChangeIntelligence } from "../lib/persistence/types";
-import { composeReport, isReportStale, reportFilename } from "../lib/report/compose";
+import { composeReport, isReportStale } from "../lib/report/compose";
+import { exportReport as invokeReportPrint } from "../lib/report/export";
 import type { ReportDocument } from "../lib/report/types";
 import {
   curateObservations,
@@ -582,7 +583,6 @@ function WorkspaceSession({
       const updatedClient = recordWorkspaceAnalysis(client, payload, { snapshotId: crypto.randomUUID(), analyzedAt, targets: client.targets });
       onClientChange(updatedClient);
       setDashboardState({ analysis: payload, snapshot: updatedClient.latestAnalysisSnapshot! });
-      setReport(null);
       setView("overview");
     } catch {
       setError("Relay couldn’t reach the analysis service. Your selected files are still here; try again.");
@@ -591,26 +591,28 @@ function WorkspaceSession({
     }
   }
 
-  function openReport() {
+  function openReport(refresh = false) {
     if (!dashboardState) return;
+    if (report && !refresh) {
+      setView("report");
+      return;
+    }
     try {
       setReport(composeReport({ client, snapshot: dashboardState.snapshot, generatedAt: new Date().toISOString() }));
       setView("report");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Relay couldn’t prepare this report.");
+      setView("sources");
     }
   }
 
   function exportReport() {
-    if (!report || isReportStale(report, dashboardState?.snapshot)) return;
-    const previousTitle = window.document.title;
-    window.document.title = reportFilename(report).replace(/\.pdf$/i, "");
-    window.print();
-    window.setTimeout(() => { window.document.title = previousTitle; }, 0);
+    if (!report) return;
+    invokeReportPrint(report, isReportStale(report, dashboardState?.snapshot));
   }
 
   return (
-    view === "report" && report ? <ReportPreview report={report} stale={isReportStale(report, dashboardState?.snapshot)} onBack={() => setView("overview")} onExport={exportReport} /> : <main className="app-shell">
+    view === "report" && report ? <ReportPreview report={report} stale={isReportStale(report, dashboardState?.snapshot)} onBack={() => setView("overview")} onExport={exportReport} onRefresh={() => openReport(true)} /> : <main className="app-shell">
       <header className="topbar">
         <a className="relay-mark" href="#main-content" aria-label="Relay home"><span aria-hidden="true">R</span><strong>Relay</strong></a>
         <ClientSelector clients={memory.clients} activeClient={client} onSelect={onSelectClient} onCreate={onCreateClient} onRename={onRenameClient} onDelete={onDeleteClient} />
