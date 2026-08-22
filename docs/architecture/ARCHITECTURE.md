@@ -37,20 +37,20 @@ Relay is a single Next.js application intended for Vercel. It accepts CSV upload
                     |
              Report Model
                     |
-                  PDF
+        Preview / browser print
 ```
 
 The browser UI uses `RelayMemoryStore -> LocalBrowserMemory` for versioned non-sensitive configuration and compact dashboard/cycle summaries. CSV files and server-side canonical analysis remain request-scoped. A future authenticated server/API boundary may replace product memory with Postgres, but browser state is never automatically promoted to authenticated ownership.
 
 ## 3. Components
 
-- **Web/application service:** client/report workflows, server-side routes, authorization boundary, ingestion orchestration, report composition, and PDF rendering.
+- **Web/application service:** client/report workflows, server-side routes, authorization boundary, ingestion orchestration, and report composition. Browser-native print renders the final V1 PDF; no server PDF renderer exists.
 - **CSV ingestion adapter:** validates files, identifies a provider, parses/mapping-checks input, and creates a raw dataset representation.
 - **Connector adapter:** manages future server-side authorization/session state, account discovery, bounded fetches, pagination/retries, and raw provider results.
 - **Provider normalizer:** maps either raw representation to canonical observations, provenance, and structured findings.
 - **Data Health and reconciliation:** validates coverage, dates, currency, duplicates, mappings, and commerce-versus-attribution caveats.
 - **Analytics, change, and narrative intelligence:** computes deterministic KPIs, structured changes, and evidence-backed human-readable narrative from validated facts.
-- **Report composer/renderer:** assembles the structured report model and renders PDF without recalculating facts.
+- **Report composer/preview:** assembles the structured report model and renders a dedicated browser preview without recalculating facts. An explicit browser print action is the only V1 PDF boundary.
 - **Persistence boundary:** a small product-memory interface with a versioned, validated, bounded `localStorage` implementation. It excludes uploads, canonical observations, provider payloads, credentials, report/PDF artifacts, and cloud behavior; a future server-owned implementation can replace it.
 
 ## 4. Domain model
@@ -94,7 +94,7 @@ The canonical model is defined in [DATA_CONTRACT.md](../data/DATA_CONTRACT.md). 
 
 ### Flow A: CSV to report
 
-CSV upload -> file/source validation -> mapping confirmation where needed -> raw representation -> provider normalization -> canonical observations -> Data Health/reconciliation -> deterministic analytics -> Narrative Intelligence -> report model -> PDF.
+CSV upload -> file/source validation -> mapping confirmation where needed -> raw representation -> provider normalization -> canonical observations -> Data Health/reconciliation -> deterministic analytics -> Narrative Intelligence -> report model -> browser preview -> explicit browser print.
 
 ### Flow B: Connector to report
 
@@ -116,7 +116,7 @@ Validated structured facts and freshness context -> deterministic narrative pack
 | Mapping ambiguity | Stop automatic semantic mapping and request confirmation; Data Health records the ambiguity. |
 | Connector unavailable or expired credential | Mark ingestion/connection state, preserve structured/redacted error, allow reconnect/retry; do not fabricate data. |
 | Mismatched periods/currencies | Block incompatible aggregate/KPI or issue explicit Data Health warning according to severity. |
-| PDF rendering failure | Preserve validated report model and render status; permit retry without recomputing or changing facts. |
+| Browser print unavailable or dismissed | Preserve the preview; the browser owns its print/save dialog and Relay does not create PDF bytes or a server fallback. |
 
 ## 9. Security baseline
 

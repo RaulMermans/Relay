@@ -10,7 +10,7 @@ function period(start: string, end: string) {
   return `${date(start)} – ${date(end)}`;
 }
 
-export function ReportPreview({ report, stale, onBack, onExport }: { report: ReportDocument; stale: boolean; onBack: () => void; onExport: () => void }) {
+export function ReportPreview({ report, stale, onBack, onExport, onRefresh }: { report: ReportDocument; stale: boolean; onBack: () => void; onExport: () => void; onRefresh: () => void }) {
   const show = (section: ReportDocument["sections"][number]) => report.sections.includes(section);
   const issues = report.healthFindings;
   return (
@@ -19,7 +19,7 @@ export function ReportPreview({ report, stale, onBack, onExport }: { report: Rep
         <button className="text-action" type="button" onClick={onBack}>← Back to dashboard</button>
         <div><span>Report preview</span><button className="primary-action" type="button" onClick={onExport} disabled={stale}>Export PDF</button></div>
       </header>
-      {stale ? <div className="report-stale" role="alert"><strong>This report is based on an older analysis.</strong><span>Refresh the report before exporting.</span></div> : null}
+      {stale ? <div className="report-stale" role="alert"><strong>This report is based on an older analysis.</strong><span>Refresh the report before exporting.</span><button className="text-action" type="button" onClick={onRefresh}>Refresh report</button></div> : null}
       <article className="client-report" aria-labelledby="report-title">
         <header className="report-cover">
           <div className="report-brand"><span aria-hidden="true">R</span> Relay</div>
