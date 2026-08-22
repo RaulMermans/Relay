@@ -17,3 +17,9 @@
 - Raw CSV content, filenames, parsed/canonical observation arrays, provider payloads, customer PII, credentials, tokens, authorization headers, and provider secrets are excluded from the schema and must never enter browser storage.
 - Stored JSON is untrusted. Loads and saves reject unknown schema fields, unsupported versions, oversized documents, dangerous prototype keys, invalid client references, and over-limit collections. React renders stored text with normal escaping; no raw HTML rendering is used.
 - Client deletion removes that client's configuration, snapshot, and history. Reset removes only Relay's namespaced key. Browser storage provides no encryption, authenticated ownership, cross-device sync, or credential security, so live OAuth remains deferred.
+
+## Report export
+
+- The report composer accepts compact snapshot facts and deterministic narrative only; raw CSVs, canonical rows, provider payloads, credentials, arbitrary HTML, and PDF bytes are excluded.
+- React escapes report text normally. Browser print receives no server file path or serialized report URL.
+- The suggested filename is bounded and normalized to an ASCII slug, preventing path separator and control-character use.

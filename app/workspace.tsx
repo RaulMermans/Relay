@@ -13,6 +13,8 @@ import type { NarrativeItem } from "../lib/narrative/types";
 import { createClient, createEmptyMemory, deleteClient, renameClient, selectClient, updateClient } from "../lib/persistence/client-memory";
 import { createBrowserMemoryStore, type RelayMemoryStore } from "../lib/persistence/local-storage";
 import type { AnalysisSnapshot, ClientMemory, RelayMemoryV1, SnapshotChangeIntelligence } from "../lib/persistence/types";
+import { composeReport, isReportStale, reportFilename } from "../lib/report/compose";
+import type { ReportDocument } from "../lib/report/types";
 import {
   curateObservations,
   formatMetricValue,
@@ -26,11 +28,12 @@ import type {
   WorkspaceTrendPoint,
 } from "../lib/workspace/analyze-workspace";
 import { ClientMemorySettings, ClientSelector, FirstClient, RecentReports } from "./client-memory-ui";
+import { ReportPreview } from "./report-preview";
 
 type ReadyAnalysis = Extract<WorkspaceAnalysisResult, { status: "ready" }>;
 type DashboardAnalysis = Pick<ReadyAnalysis, "sources" | "dataHealth" | "kpis" | "trend"> & { changeIntelligence: SnapshotChangeIntelligence };
 type MappingException = Extract<WorkspaceAnalysisResult, { status: "mapping_required" }>["exceptions"][number];
-type View = "overview" | "sources";
+type View = "overview" | "sources" | "report";
 type MappingChoices = Partial<Record<ProviderSource, Record<number, CanonicalField | null>>>;
 type RejectedResponse = { status: "rejected"; error: { code: string; message: string } };
 
@@ -429,11 +432,13 @@ function Dashboard({
   snapshot,
   client,
   onUpdate,
+  onOpenReport,
 }: {
   analysis: DashboardAnalysis;
   snapshot: AnalysisSnapshot;
   client: ClientMemory;
   onUpdate: () => void;
+  onOpenReport: () => void;
 }) {
   const readyKpis = analysis.kpis.status === "ready" ? analysis.kpis : null;
   const readyChanges = analysis.changeIntelligence.status === "ready" ? analysis.changeIntelligence : null;
@@ -451,7 +456,7 @@ function Dashboard({
   return (
     <div className="dashboard">
       <section className="performance-section" aria-labelledby="performance-heading">
-        <div className="performance-heading"><div><p className="eyebrow">Performance</p><h1 id="performance-heading">Performance</h1><p>{periodLabel(analysis.dataHealth.reportingPeriod.currentPeriod.start, analysis.dataHealth.reportingPeriod.currentPeriod.end)} <span>vs {periodLabel(analysis.dataHealth.reportingPeriod.comparisonPeriod.start, analysis.dataHealth.reportingPeriod.comparisonPeriod.end)}</span></p></div><button className="secondary-action" onClick={onUpdate}>Update data</button></div>
+        <div className="performance-heading"><div><p className="eyebrow">Performance</p><h1 id="performance-heading">Performance</h1><p>{periodLabel(analysis.dataHealth.reportingPeriod.currentPeriod.start, analysis.dataHealth.reportingPeriod.currentPeriod.end)} <span>vs {periodLabel(analysis.dataHealth.reportingPeriod.comparisonPeriod.start, analysis.dataHealth.reportingPeriod.comparisonPeriod.end)}</span></p></div><div className="performance-actions"><button className="secondary-action" onClick={onUpdate}>Update data</button><button className="primary-action" onClick={onOpenReport} disabled={analysis.dataHealth.status === "blocked" || !snapshot.narrative}>Open report</button></div></div>
         <div className={`freshness-banner freshness-${freshness}`}><strong>{dataThrough ? `Data through ${formatDate(dataThrough)}` : `Last analyzed ${new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric" }).format(new Date(snapshot.analyzedAt))}`}</strong><span>{freshnessLabel}</span><small>Last analyzed {new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(snapshot.analyzedAt))}. Manual CSV data; no automatic sync.</small></div>
         {readyKpis ? <div className="hero-kpis">{hero.map((metric, index) => <KpiBlock key={metric.key} metric={metric} className={index === 0 ? "primary-kpi" : ""} />)}</div> : <div className="blocked-panel"><strong>Performance is paused</strong><p>Resolve the blocking data issue before Relay calculates KPIs.</p></div>}
         <TrendChart trend={analysis.trend} currency={spendMetric ? currentCurrency(spendMetric) : null} />
@@ -511,6 +516,7 @@ function WorkspaceSession({
   const [choices, setChoices] = useState<MappingChoices>({});
   const [error, setError] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(false);
+  const [report, setReport] = useState<ReportDocument | null>(null);
   const fileSources = useMemo(() => selectedSources(files), [files]);
   const expectedSources = useMemo(() => SOURCES.flatMap((source) => client.sources[source.id].expected || files[source.id] ? [source.id] : []), [client.sources, files]);
 
@@ -576,6 +582,7 @@ function WorkspaceSession({
       const updatedClient = recordWorkspaceAnalysis(client, payload, { snapshotId: crypto.randomUUID(), analyzedAt, targets: client.targets });
       onClientChange(updatedClient);
       setDashboardState({ analysis: payload, snapshot: updatedClient.latestAnalysisSnapshot! });
+      setReport(null);
       setView("overview");
     } catch {
       setError("Relay couldn’t reach the analysis service. Your selected files are still here; try again.");
@@ -584,8 +591,26 @@ function WorkspaceSession({
     }
   }
 
+  function openReport() {
+    if (!dashboardState) return;
+    try {
+      setReport(composeReport({ client, snapshot: dashboardState.snapshot, generatedAt: new Date().toISOString() }));
+      setView("report");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Relay couldn’t prepare this report.");
+    }
+  }
+
+  function exportReport() {
+    if (!report || isReportStale(report, dashboardState?.snapshot)) return;
+    const previousTitle = window.document.title;
+    window.document.title = reportFilename(report).replace(/\.pdf$/i, "");
+    window.print();
+    window.setTimeout(() => { window.document.title = previousTitle; }, 0);
+  }
+
   return (
-    <main className="app-shell">
+    view === "report" && report ? <ReportPreview report={report} stale={isReportStale(report, dashboardState?.snapshot)} onBack={() => setView("overview")} onExport={exportReport} /> : <main className="app-shell">
       <header className="topbar">
         <a className="relay-mark" href="#main-content" aria-label="Relay home"><span aria-hidden="true">R</span><strong>Relay</strong></a>
         <ClientSelector clients={memory.clients} activeClient={client} onSelect={onSelectClient} onCreate={onCreateClient} onRename={onRenameClient} onDelete={onDeleteClient} />
@@ -594,13 +619,14 @@ function WorkspaceSession({
       <nav className="primary-nav" aria-label="Primary navigation">
         <button className={view === "overview" ? "active" : ""} aria-current={view === "overview" ? "page" : undefined} onClick={() => setView("overview")}>Overview</button>
         <button className={view === "sources" ? "active" : ""} aria-current={view === "sources" ? "page" : undefined} onClick={() => setView("sources")}>Data Sources <span>{expectedSources.length}</span></button>
+        {dashboardState ? <button onClick={openReport}>Reports</button> : null}
       </nav>
       <div className="workspace-layout">
         <SourceRail files={files} analysis={dashboardState?.analysis ?? null} client={client} onManage={() => setView("sources")} />
         <div id="main-content" className="main-content">
           {view === "sources" ? (
             <SourceManager files={files} analysis={dashboardState?.analysis ?? null} client={client} start={start} end={end} exceptions={exceptions} choices={choices} error={error} isPreparing={isPreparing} onFile={setFile} onClientChange={onClientChange} onReset={onReset} onStart={setStart} onEnd={setEnd} onChoice={setMappingChoice} onSubmit={submit} />
-          ) : dashboardState ? <Dashboard analysis={dashboardState.analysis} snapshot={dashboardState.snapshot} client={client} onUpdate={() => setView("sources")} /> : <EmptyOverview onAdd={() => setView("sources")} />}
+          ) : dashboardState ? <Dashboard analysis={dashboardState.analysis} snapshot={dashboardState.snapshot} client={client} onUpdate={() => setView("sources")} onOpenReport={openReport} /> : <EmptyOverview onAdd={() => setView("sources")} />}
         </div>
       </div>
       <footer className="app-footer"><span>Browser-only memory</span><span>CSV data is not retained</span><span>Deterministic analytics</span></footer>

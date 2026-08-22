@@ -14,7 +14,7 @@ The structured report model is the boundary between validated analysis and rende
 | KPI scorecard | Labeled KPI values, changes, targets, availability/caveats | Deterministic analytics facts |
 | Channel performance | Source-specific paid-media performance and commerce context | Canonical/analytics facts |
 | Movers and risks | Deterministically detected positive/negative drivers and efficiency risks | Change-intelligence facts |
-| Narrative | Deterministic narrative package and evidence references | Generated prose, raw data, or KPI recalculation |
+| Narrative | Deterministic narrative package and evidence references | Existing deterministic Narrative Intelligence package only |
 | Recommendations | Data-supported recommendation and separately labeled client context | Structured facts and human context |
 | Reconciliation notes | Commerce versus paid-attribution differences and coverage caveats | Reconciliation facts |
 | Methodology | KPI/revenue basis, source coverage, attribution limitations | Rule/configuration snapshot |
@@ -23,9 +23,9 @@ The structured report model is the boundary between validated analysis and rende
 
 - Every quantitative display references a structured fact and its provenance.
 - Commerce revenue, paid-platform attributed revenue, and their permitted KPIs remain labeled according to [ADR-001](../decisions/ADR-001-revenue-semantics.md).
-- Commentary is optional and retains its review state. A reviewer can edit or remove it without changing source data or metrics.
+- Commentary is the existing deterministic Narrative Intelligence package. Human overrides are not part of V1 report composition.
 - The report model records configuration/rule and methodology snapshots so historical reports remain interpretable after settings change.
-- PDF is the only V1 renderer. Web/share URL, PPTX, and Google Slides are future renderers and must consume the same report model if added.
+- Browser print from the report preview is the V1 PDF path. Web/share URL, PPTX, and Google Slides are future renderers and must consume the same report model if added.
 
 ## Boundary ownership
 

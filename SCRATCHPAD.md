@@ -46,4 +46,5 @@
 
 ## Next action
 
-- Sprint 16 should consume Client, reporting period, Data Health, deterministic KPIs, Change Intelligence, Narrative Intelligence, targets, channels, freshness, preferences, and methodology metadata to create a structured report model, preview, and PDF. Do not add a generative-model dependency.
+- Sprint 16 baseline repair fast-forwarded `main` to `2b3fb8d` (Sprint 15). Browser-native print is selected in ADR-009: the pure `ReportDocument` composer consumes the snapshot’s persisted Narrative Intelligence and existing KPI/Data Health facts only. No dependency, server-side PDF renderer, PDF persistence, raw rows, or generative model is permitted.
+- Current implementation: report model/composer, semantic fail-closed guards, source-safe KPI/channel selection, deterministic filename/title, light editorial preview, A4 print CSS, stale export disablement, and initial unit/E2E coverage. Pending closure: run stable test/lint/browser commands in this workspace and complete visual/security review; local Vitest/ESLint wrappers currently hang after startup.

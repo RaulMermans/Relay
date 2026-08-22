@@ -204,3 +204,7 @@ Selected `File` objects remain React-session-only. Raw CSV text, filenames, pars
 ## Persistence posture
 
 Relay has no database. Sprint 14 implements `Product UI -> RelayMemoryStore -> LocalBrowserMemory` for small non-sensitive return-workflow state only. Analysis processing remains transient on the server. Future authenticated cloud ownership requires a separate server/API boundary and Postgres-compatible implementation; browser IDs/state are not automatically trusted or uploaded.
+
+## Sprint 16 report flow
+
+`validated analysis snapshot -> ReportDocument -> report preview -> explicit browser print` is the report flow. The report composer formats and selects the snapshot’s existing KPI, Data Health, Change Intelligence, freshness, and deterministic Narrative Intelligence facts; it does not accept raw source data or run analytics again. A snapshot mismatch disables export, and blocked Data Health has no normal performance-report output.
