@@ -2,11 +2,11 @@
 
 ## Product
 
-Relay combines a focused performance dashboard with recurring reporting automation for freelance performance marketers and small agencies. It accepts supported CSV exports or future connected sources, brings both through one canonical data layer, verifies the resulting facts, and presents them for daily decisions before a later client-report workflow.
+Relay combines a focused performance dashboard with recurring reporting automation for freelance performance marketers and small agencies. It accepts supported CSV exports or future connected sources, brings both through one canonical data layer, verifies the resulting facts, and presents them for daily decisions and a deterministic client-report workflow.
 
 ## Current status
 
-Sprint 15: the multi-source dashboard has versioned browser-local client/configuration memory plus deterministic Narrative Intelligence. Shopify, Meta Ads, and Google Ads CSVs remain usable together; API adapters are implemented but live authorization remains deferred. No database, cloud/multi-device persistence, authentication, automatic sync, generative-model dependency, report composer, or PDF feature exists. Vercel deployment remains blocked until local authentication and project linking are available.
+Sprint 16: Relay has a pure `ReportDocument` composer, dedicated report preview, and explicit browser-native Print/Save-as-PDF flow. Reports consume an authoritative compact analysis snapshot and deterministic Narrative Intelligence without recalculating, persisting PDF bytes, or requiring a generative model. Shopify, Meta Ads, and Google Ads CSVs remain usable together; API adapters are implemented but live authorization remains deferred. No database, cloud/multi-device persistence, authentication, automatic sync, or server-side PDF renderer exists. Vercel deployment remains blocked until local authentication and project linking are available.
 
 ## Working protocol
 

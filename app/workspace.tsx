@@ -14,6 +14,7 @@ import { createClient, createEmptyMemory, deleteClient, renameClient, selectClie
 import { createBrowserMemoryStore, type RelayMemoryStore } from "../lib/persistence/local-storage";
 import type { AnalysisSnapshot, ClientMemory, RelayMemoryV1, SnapshotChangeIntelligence } from "../lib/persistence/types";
 import { composeReport, isReportStale, reportFilename } from "../lib/report/compose";
+import { canExportReport, exportReport as printReport } from "../lib/report/export";
 import type { ReportDocument } from "../lib/report/types";
 import {
   curateObservations,
@@ -582,7 +583,6 @@ function WorkspaceSession({
       const updatedClient = recordWorkspaceAnalysis(client, payload, { snapshotId: crypto.randomUUID(), analyzedAt, targets: client.targets });
       onClientChange(updatedClient);
       setDashboardState({ analysis: payload, snapshot: updatedClient.latestAnalysisSnapshot! });
-      setReport(null);
       setView("overview");
     } catch {
       setError("Relay couldn’t reach the analysis service. Your selected files are still here; try again.");
@@ -593,6 +593,10 @@ function WorkspaceSession({
 
   function openReport() {
     if (!dashboardState) return;
+    if (report) {
+      setView("report");
+      return;
+    }
     try {
       setReport(composeReport({ client, snapshot: dashboardState.snapshot, generatedAt: new Date().toISOString() }));
       setView("report");
@@ -602,15 +606,24 @@ function WorkspaceSession({
   }
 
   function exportReport() {
-    if (!report || isReportStale(report, dashboardState?.snapshot)) return;
+    if (!report || !canExportReport(report, dashboardState?.snapshot)) return;
     const previousTitle = window.document.title;
     window.document.title = reportFilename(report).replace(/\.pdf$/i, "");
-    window.print();
+    printReport(report, dashboardState?.snapshot, () => window.print());
     window.setTimeout(() => { window.document.title = previousTitle; }, 0);
   }
 
+  function refreshReport() {
+    if (!dashboardState) return;
+    try {
+      setReport(composeReport({ client, snapshot: dashboardState.snapshot, generatedAt: new Date().toISOString() }));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Relay couldn’t refresh this report.");
+    }
+  }
+
   return (
-    view === "report" && report ? <ReportPreview report={report} stale={isReportStale(report, dashboardState?.snapshot)} onBack={() => setView("overview")} onExport={exportReport} /> : <main className="app-shell">
+    view === "report" && report ? <ReportPreview report={report} stale={isReportStale(report, dashboardState?.snapshot)} onBack={() => setView("overview")} onExport={exportReport} onRefresh={refreshReport} /> : <main className="app-shell">
       <header className="topbar">
         <a className="relay-mark" href="#main-content" aria-label="Relay home"><span aria-hidden="true">R</span><strong>Relay</strong></a>
         <ClientSelector clients={memory.clients} activeClient={client} onSelect={onSelectClient} onCreate={onCreateClient} onRename={onRenameClient} onDelete={onDeleteClient} />

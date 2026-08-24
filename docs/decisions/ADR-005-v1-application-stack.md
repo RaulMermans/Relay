@@ -2,11 +2,11 @@
 
 ## Status
 
-Accepted for the application-stack decision. Its deployment and immediate-persistence portions are superseded by [ADR-006](ADR-006-vercel-native-deployment-and-deferred-persistence.md).
+Accepted for the application-stack decision. Its deployment and immediate-persistence portions are superseded by [ADR-006](ADR-006-vercel-native-deployment-and-deferred-persistence.md); its historical server-PDF discussion is superseded by [ADR-009](ADR-009-report-composer-and-pdf.md).
 
 ## Context
 
-Relay needs one web application that can support client/report workflows, CSV ingestion, future OAuth connectors, deterministic analysis, PDF rendering, and staged deployment. V1 does not need background sync, autonomous reporting, or a distributed service topology. The original Railway/PostgreSQL/Prisma assumptions are retained below as decision history and superseded where noted by ADR-006.
+Relay needs one web application that can support client/report workflows, CSV ingestion, future OAuth connectors, deterministic analysis, and staged deployment. V1 does not need background sync, autonomous reporting, or a distributed service topology. The original Railway/PostgreSQL/Prisma assumptions are retained below as decision history and superseded where noted by ADR-006; the historical server-PDF option below is superseded by ADR-009's browser-print decision.
 
 ## Options considered
 
@@ -24,7 +24,7 @@ Separates concerns early, but adds service boundaries, deployment coordination, 
 | --- | --- | --- |
 | Implementation speed and solo maintenance | One codebase and deployable; fewer contracts to coordinate. | More deployment, API, and worker contracts from day one. |
 | Connector/OAuth and CSV processing | Server-side routes can own bounded connector/CSV operations. | Separates long-running work earlier, but V1 has no evidence it needs that capacity. |
-| PDF generation | One server process can render the structured report model when that feature is built. | A worker could render later, but adds a service before PDF workload is measured. |
+| PDF generation (superseded) | Historical option: one server process could render the structured report model. ADR-009 selects browser-native print for V1. | A worker could render later, but adds a service before a concrete programmatic-PDF need is measured. |
 | Testing | Pure domain modules plus one app boundary simplify unit/integration/E2E layers. | Adds API and worker integration contracts and test environments. |
 | Deployment and operations | One application service remains the minimum topology; the original Railway/PostgreSQL comparison is superseded by ADR-006's Vercel/no-database posture. | Adds at least an API/worker service and likely queue infrastructure. |
 | Future connectors/background sync | Revisit when measured duration, retries, or scheduling demand it. | Supports future asynchronous work, but prematurely commits V1 to it. |
@@ -44,11 +44,11 @@ Next.js provides App Router conventions and route handlers for a single full-sta
 
 ## Consequences
 
-V1 has one codebase and one application deployable. Under ADR-006, no database service is connected until a feature triggers durable persistence. CSV processing and interactive connector fetches run inside bounded application requests when those features exist. Long-running or scheduled sync is not a V1 commitment. PDF library selection is deferred until report rendering is implemented, as long as it consumes the structured report model.
+V1 has one codebase and one application deployable. Under ADR-006, no database service is connected until a feature triggers durable persistence. CSV processing and interactive connector fetches run inside bounded application requests when those features exist. Long-running or scheduled sync is not a V1 commitment. Under ADR-009, browser print is the active PDF path; any future programmatic renderer must be justified separately and consume the structured report model.
 
 ## Revisit triggers
 
-Revisit when measured request duration, provider rate limits, scheduled sync, upload size, PDF rendering duration, or retry requirements show that a bounded in-process request cannot meet reliability needs. Add a worker/queue/object store only with a documented workload and failure-mode requirement.
+Revisit when measured request duration, provider rate limits, scheduled sync, upload size, a concrete programmatic-PDF requirement, or retry requirements show that a bounded in-process request cannot meet reliability needs. Add a worker/queue/object store only with a documented workload and failure-mode requirement.
 
 ## Validation path
 

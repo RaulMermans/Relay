@@ -44,7 +44,13 @@
 - Relay V1 now uses bounded deterministic Narrative Intelligence after Change Intelligence. It produces a report-ready package from existing structured facts and never receives raw CSV, canonical rows, provider payloads, or credentials.
 - Human narrative overrides are deferred until Sprint 16 proves a report-composition need. Existing browser-memory schema and cycle history remain unchanged; the summary is reproducible from the persisted analytical snapshot.
 
-## Next action
+## Sprint 16 execution state
 
-- Sprint 16 baseline repair fast-forwarded `main` to `2b3fb8d` (Sprint 15). Browser-native print is selected in ADR-009: the pure `ReportDocument` composer consumes the snapshot’s persisted Narrative Intelligence and existing KPI/Data Health facts only. No dependency, server-side PDF renderer, PDF persistence, raw rows, or generative model is permitted.
-- Current implementation: report model/composer, semantic fail-closed guards, source-safe KPI/channel selection, deterministic filename/title, light editorial preview, A4 print CSS, stale export disablement, and initial unit/E2E coverage. Pending closure: run stable test/lint/browser commands in this workspace and complete visual/security review; local Vitest/ESLint wrappers currently hang after startup.
+- The clean Sprint 15 baseline is `2b3fb8d`; Sprint 16 work is on `codex/sprint-16-report-composer-pdf`. Browser-native print is selected in ADR-009: the pure `ReportDocument` composer consumes only the snapshot’s existing Narrative Intelligence, KPI, Data Health, source/freshness, and preference facts.
+- No dependency, server-side PDF renderer, PDF persistence, raw rows, or generative model was introduced. The report title/filename is sanitized; browser print is an explicit action only.
+- Targeted unit and integration coverage pass. Report E2E covers complete export, paid-media-only disclosure, stale refresh, and blocked Data Health. Full closure still requires visual/print review, security/dependency checks, all canonical verification commands, and a clean diff.
+
+## Sprint 17 handoff (do not implement)
+
+- Harden the finished application: threat model, runtime/configuration hardening, browser compatibility, accessibility, performance, recovery, beta operating limits, production/auth decision, observability, deployment configuration, beta test matrix, and beta runbook.
+- Do not add authentication, a database, OAuth activation, scheduled reporting, emailing, or report storage without a separate approved Sprint 17 scope.

@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { createAnalysisSnapshot } from "../../lib/persistence/analysis-memory";
 import { createClient, createEmptyMemory } from "../../lib/persistence/client-memory";
 import { composeReport, isReportStale, reportFilename } from "../../lib/report/compose";
+import { canExportReport, exportReport } from "../../lib/report/export";
 import { ReportCompositionError } from "../../lib/report/types";
 import { analyzeWorkspace } from "../../lib/workspace/analyze-workspace";
 
@@ -54,5 +55,19 @@ describe("report composition", () => {
     const { client, snapshot } = await readyReportInput();
     expect(() => composeReport({ client, snapshot: { ...snapshot, dataHealth: { ...snapshot.dataHealth, status: "blocked" } }, generatedAt: "2026-08-03T12:00:00.000Z" })).toThrow(ReportCompositionError);
     expect(() => composeReport({ client, snapshot: { ...snapshot, narrative: undefined }, generatedAt: "2026-08-03T12:00:00.000Z" })).toThrow(/complete analysis snapshot/);
+  });
+
+  it("sanitizes filenames and only reaches browser print for an exportable current report", async () => {
+    const { client, snapshot } = await readyReportInput();
+    const report = composeReport({ client: { ...client, name: " ../Acme\\Skincare:\u0000 " + "x".repeat(100) }, snapshot, generatedAt: "2026-08-03T12:00:00.000Z" });
+    expect(reportFilename(report)).toMatch(/^relay-acme-skincare-x{1,60}-2026-08-01-to-2026-08-02\.pdf$/);
+
+    const print = vi.fn();
+    expect(canExportReport(report, snapshot)).toBe(true);
+    expect(exportReport(report, snapshot, print)).toBe(true);
+    expect(print).toHaveBeenCalledTimes(1);
+    expect(exportReport(report, { ...snapshot, id: "newer-snapshot" }, print)).toBe(false);
+    expect(exportReport(report, { ...snapshot, dataHealth: { ...snapshot.dataHealth, status: "blocked" } }, print)).toBe(false);
+    expect(print).toHaveBeenCalledTimes(1);
   });
 });

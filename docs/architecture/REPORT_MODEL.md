@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The structured report model is the boundary between validated analysis and rendering. It is a conceptual object, not a TypeScript interface or PDF implementation. The renderer consumes this model to create a PDF; it does not recalculate metrics or infer facts.
+The structured report model is the boundary between validated analysis and rendering. It is implemented as a renderer-neutral TypeScript `ReportDocument`, not a PDF implementation. The preview/print renderer consumes this model; it does not recalculate metrics or infer facts.
 
 ## Required sections
 
@@ -15,7 +15,6 @@ The structured report model is the boundary between validated analysis and rende
 | Channel performance | Source-specific paid-media performance and commerce context | Canonical/analytics facts |
 | Movers and risks | Deterministically detected positive/negative drivers and efficiency risks | Change-intelligence facts |
 | Narrative | Deterministic narrative package and evidence references | Existing deterministic Narrative Intelligence package only |
-| Recommendations | Data-supported recommendation and separately labeled client context | Structured facts and human context |
 | Reconciliation notes | Commerce versus paid-attribution differences and coverage caveats | Reconciliation facts |
 | Methodology | KPI/revenue basis, source coverage, attribution limitations | Rule/configuration snapshot |
 
@@ -24,9 +23,9 @@ The structured report model is the boundary between validated analysis and rende
 - Every quantitative display references a structured fact and its provenance.
 - Commerce revenue, paid-platform attributed revenue, and their permitted KPIs remain labeled according to [ADR-001](../decisions/ADR-001-revenue-semantics.md).
 - Commentary is the existing deterministic Narrative Intelligence package. Human overrides are not part of V1 report composition.
-- The report model records configuration/rule and methodology snapshots so historical reports remain interpretable after settings change.
+- The report model carries the currently selected reporting preferences and methodology so the visible report is interpretable without internal Relay context. It is not persisted as historical report content.
 - Browser print from the report preview is the V1 PDF path. Web/share URL, PPTX, and Google Slides are future renderers and must consume the same report model if added.
 
 ## Boundary ownership
 
-Analytics produces structured facts. Narrative Intelligence assembles evidence-backed commentary. The report composer assembles the report model. The renderer turns the model into presentation. No layer accepts arbitrary generated HTML as the report source of truth.
+Analytics produces structured facts. Narrative Intelligence assembles evidence-backed commentary. The report composer assembles the report model. The preview and browser print stylesheet turn the model into presentation. No layer accepts arbitrary generated HTML as the report source of truth.
