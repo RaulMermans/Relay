@@ -75,7 +75,7 @@ export function composeReport(input: { client: ClientMemory; snapshot: AnalysisS
     healthFindings: snapshot.dataHealth.findings.filter((finding) => finding.blocking || finding.severity === "warning"),
     methodology: [
       "Commerce Revenue is reported from Shopify only.",
-      "Meta Ads and Google Ads revenue, ROAS, and CPA remain provider-specific and are not combined as total revenue.",
+      "Meta Ads and Google Ads revenue, ROAS, and CPA remain provider-specific and are not combined with Commerce Revenue.",
       "MER is Shopify Commerce Revenue divided by compatible paid spend when those facts are available.",
       `Comparison uses the immediately previous equal-length period: ${snapshot.reportingPeriod.comparisonPeriod.start} to ${snapshot.reportingPeriod.comparisonPeriod.end}.`,
       ...snapshot.narrative.methodologyNotes,

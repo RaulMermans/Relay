@@ -621,7 +621,7 @@ function WorkspaceSession({
       <nav className="primary-nav" aria-label="Primary navigation">
         <button className={view === "overview" ? "active" : ""} aria-current={view === "overview" ? "page" : undefined} onClick={() => setView("overview")}>Overview</button>
         <button className={view === "sources" ? "active" : ""} aria-current={view === "sources" ? "page" : undefined} onClick={() => setView("sources")}>Data Sources <span>{expectedSources.length}</span></button>
-        {dashboardState ? <button onClick={openReport}>Reports</button> : null}
+        {dashboardState ? <button onClick={() => openReport()}>Reports</button> : null}
       </nav>
       <div className="workspace-layout">
         <SourceRail files={files} analysis={dashboardState?.analysis ?? null} client={client} onManage={() => setView("sources")} />

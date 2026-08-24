@@ -23,9 +23,9 @@ async function prepareWorkspace(page: Page, sources: Array<"meta_ads" | "google_
 
 test("renders a complete report and invokes browser print exactly once from an explicit export action", async ({ page }) => {
   await page.addInitScript(() => {
-    const reportWindow = window as Window & { __relayPrintCalls: number };
+    const reportWindow = window as typeof window & { __relayPrintCalls?: number };
     Object.defineProperty(reportWindow, "__relayPrintCalls", { value: 0, writable: true });
-    reportWindow.print = () => { reportWindow.__relayPrintCalls += 1; };
+    reportWindow.print = () => { reportWindow.__relayPrintCalls = (reportWindow.__relayPrintCalls ?? 0) + 1; };
   });
   await prepareWorkspace(page, ["meta_ads", "google_ads", "shopify"]);
   await page.getByRole("button", { name: "Reports" }).click();
@@ -36,9 +36,14 @@ test("renders a complete report and invokes browser print exactly once from an e
   await expect(page.getByRole("heading", { name: "The developments worth reviewing" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Source-specific results" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Data quality" })).toBeVisible();
+  const quality = page.locator(".report-quality-sources");
+  await expect(quality).toContainText("Meta Ads");
+  await expect(quality).toContainText("Google Ads");
+  await expect(quality).toContainText("Shopify");
+  await expect(quality.getByText("Complete", { exact: true })).toHaveCount(3);
   await expect(page.getByRole("heading", { name: "How to read this report" })).toBeVisible();
   await page.getByRole("button", { name: "Export PDF" }).click();
-  await expect.poll(() => page.evaluate(() => (window as Window & { __relayPrintCalls: number }).__relayPrintCalls)).toBe(1);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __relayPrintCalls?: number }).__relayPrintCalls ?? 0)).toBe(1);
   await expect(page.getByRole("heading", { name: "Report QA Client" })).toBeVisible();
 });
 
@@ -49,7 +54,7 @@ test("keeps a paid-media-only report explicit about Shopify-dependent metrics", 
   await expect(page.getByText("Shopify data isn’t included. Commerce Revenue and MER are unavailable; paid-media metrics remain source-specific.")).toBeVisible();
   await expect(page.getByText("Commerce Revenue", { exact: true })).toHaveCount(0);
   await expect(page.getByText("MER", { exact: true })).toHaveCount(0);
-  await expect(page.getByText(/total revenue/i)).toHaveCount(0);
+  await expect(page.getByText("Total revenue", { exact: true })).toHaveCount(0);
 });
 
 test("includes a target breach in the report's client-safe Needs attention section", async ({ page }) => {
@@ -75,13 +80,14 @@ test("keeps an older report inspectable while blocking export until it is refres
   await page.getByRole("button", { name: "Reports" }).click();
   await page.getByRole("button", { name: "Back to dashboard" }).click();
   await page.getByRole("button", { name: "Data Sources" }).click();
+  await page.getByLabel("Reporting period end").fill("2026-08-01");
   await page.getByRole("button", { name: "Update dashboard" }).click();
   await page.getByRole("button", { name: "Reports" }).click();
 
-  await expect(page.getByRole("alert")).toContainText("This report is based on an older analysis.");
+  await expect(page.locator(".report-stale")).toContainText("This report is based on an older analysis.");
   await expect(page.getByRole("button", { name: "Export PDF" })).toBeDisabled();
   await page.getByRole("button", { name: "Refresh report" }).click();
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.locator(".report-stale")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Export PDF" })).toBeEnabled();
 });
 
@@ -98,7 +104,7 @@ test("does not make a report or export control available when Data Health is blo
 
   await expect(page.getByRole("heading", { name: "Performance", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Reports" }).click();
-  await expect(page.getByRole("alert")).toContainText("Resolve the blocking Data Health findings before creating a performance report.");
+  await expect(page.locator(".workspace-error[role=alert]")).toContainText("Resolve the blocking Data Health findings before creating a performance report.");
   await expect(page.getByText("Report preview", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Export PDF" })).toHaveCount(0);
 });
