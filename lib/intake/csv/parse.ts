@@ -18,7 +18,9 @@ export class CsvParseError extends Error {
       | "CSV_PARSE_ERROR"
       | "CSV_TOO_MANY_ROWS"
       | "CSV_TOO_MANY_COLUMNS"
-      | "CSV_FIELD_TOO_LARGE" = "CSV_PARSE_ERROR",
+      | "CSV_FIELD_TOO_LARGE"
+      | "CSV_DUPLICATE_HEADERS"
+      | "CSV_NULL_BYTE" = "CSV_PARSE_ERROR",
     message = "The file could not be parsed as CSV.",
   ) {
     super(message);
@@ -27,12 +29,17 @@ export class CsvParseError extends Error {
 }
 
 export function parseCsv(content: string): ParsedCsv {
+  if (content.includes("\0")) {
+    throw new CsvParseError("CSV_NULL_BYTE", "The CSV file contains an unsupported control character.");
+  }
+
   let rows: string[][];
 
   try {
     rows = parse(content, {
       bom: true,
       relax_column_count: false,
+      record_delimiter: ["\r\n", "\n", "\r"],
       skip_empty_lines: true,
       to: MAX_CSV_DATA_ROWS + 2,
     }) as string[][];
@@ -47,6 +54,10 @@ export function parseCsv(content: string): ParsedCsv {
   const [headers = [], ...dataRows] = rows;
   if (headers.length > MAX_CSV_COLUMNS) {
     throw new CsvParseError("CSV_TOO_MANY_COLUMNS", "The CSV file exceeds the 256-column limit.");
+  }
+  const normalizedHeaders = headers.map((header) => header.trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US"));
+  if (new Set(normalizedHeaders).size !== normalizedHeaders.length) {
+    throw new CsvParseError("CSV_DUPLICATE_HEADERS", "The CSV file contains duplicate headers.");
   }
   if (headers.some((header) => header.length > MAX_CSV_FIELD_CHARACTERS) || dataRows.some((row) => row.some((cell) => cell.length > MAX_CSV_FIELD_CHARACTERS))) {
     throw new CsvParseError("CSV_FIELD_TOO_LARGE", "The CSV file contains an oversized field.");

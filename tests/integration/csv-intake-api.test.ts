@@ -45,6 +45,20 @@ describe("POST /api/intake/csv", () => {
     });
   });
 
+  it("rejects an oversized declared multipart request before parsing form data", async () => {
+    const response = await POST(new Request("http://relay.test/api/intake/csv", {
+      method: "POST",
+      headers: { "content-length": String((5 * 1024 * 1024) + (256 * 1024)) },
+      body: new FormData(),
+    }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      status: "rejected",
+      error: { code: "FILE_TOO_LARGE", message: "The CSV file exceeds the 5 MiB limit." },
+    });
+  });
+
   it("returns a needs-review response for an unknown source", async () => {
     const content = await readFile(
       new URL("../../fixtures/raw/unknown/newsletter-export.csv", import.meta.url),

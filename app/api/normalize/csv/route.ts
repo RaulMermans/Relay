@@ -9,6 +9,7 @@ import { DataHealthInputError } from "../../../../lib/data-health/types";
 import { runKpiEngine } from "../../../../lib/kpi/engine";
 import { normalizeCsvFile } from "../../../../lib/normalization/normalize-csv";
 import { type CsvIntakeErrorCode } from "../../../../lib/intake/csv/validate";
+import { exceedsDeclaredRequestSize, MAX_CSV_UPLOAD_REQUEST_SIZE_BYTES } from "../../../../lib/intake/csv/limits";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -36,6 +37,8 @@ const NORMALIZE_ERROR_CODES = new Set<NormalizeErrorCode>([
   "CSV_TOO_MANY_ROWS",
   "CSV_TOO_MANY_COLUMNS",
   "CSV_FIELD_TOO_LARGE",
+  "CSV_DUPLICATE_HEADERS",
+  "CSV_NULL_BYTE",
   "CSV_NO_HEADERS",
   "CSV_NO_DATA",
   "INVALID_MAPPING_REQUEST",
@@ -111,6 +114,9 @@ function rejectedResponse(code: NormalizeErrorCode, message: string): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (exceedsDeclaredRequestSize(request, MAX_CSV_UPLOAD_REQUEST_SIZE_BYTES)) {
+    return rejectedResponse("FILE_TOO_LARGE", "The CSV file exceeds the 5 MiB limit.");
+  }
   try {
     const formData = await request.formData();
     const upload = formData.get("file");

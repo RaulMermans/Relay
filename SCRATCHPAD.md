@@ -48,3 +48,12 @@
 
 - Sprint 16 baseline repair fast-forwarded `main` to `2b3fb8d` (Sprint 15). Browser-native print is selected in ADR-009: the pure `ReportDocument` composer consumes the snapshot’s persisted Narrative Intelligence and existing KPI/Data Health facts only. No dependency, server-side PDF renderer, PDF persistence, raw rows, or generative model is permitted.
 - Current implementation: report model/composer, semantic fail-closed guards, source-safe KPI/channel selection, deterministic filename/title, light editorial preview, A4 print CSS, stale export disablement, and initial unit/E2E coverage. Pending closure: run stable test/lint/browser commands in this workspace and complete visual/security review; local Vitest/ESLint wrappers currently hang after startup.
+
+## Sprint 17 execution state
+
+- Baseline: local `main` and `origin/main` have unrelated histories. Sprint 17 branches from the repository's existing `codex/sprint-16-main-reconciliation` branch at `a211212`, which is also `origin/main`; it contains the reconciled Sprint 16 release path.
+- Node 24.14.0 and npm 11.9.0 were selected with nvm. The initial `npm ci` succeeded. Stale ignored `.next/types/* 2.ts` generated duplicates were moved recoverably to `/private/tmp/relay-next-types-duplicate-backup`; typecheck then passed and the production build regenerated its normal type output.
+- Added request declaration guards, duplicate-normalized-header/null-byte rejection, mixed-newline parsing, and a 256-character fixed-decimal input bound. CSV source rows, report semantics, and persistence schema remain unchanged.
+- Independent security, data-contract, and PR review passes found no P0/P1 issue. `npm audit --audit-level=low` reported 0 vulnerabilities; `npm outdated` is informational and no dependency was upgraded.
+- Verification: lint/typecheck/build passed; 42 Vitest files/304 tests, 26 unit files/209 tests, 16 integration files/95 tests passed; release stress processed a synthetic 50,000-row Meta CSV in 807 ms; full Playwright suite passed 48 tests across Chromium, WebKit, and Firefox.
+- Pending only: tester-facing exploratory QA and visual sign-off are deliberately recorded as pending in the beta matrix/release gate. Do not mark `SPRINT_17_PRIVATE_BETA_READY` or begin Sprint 18 until those checks and actual protected deployment validation are recorded.
