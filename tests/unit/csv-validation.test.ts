@@ -34,4 +34,9 @@ describe("validateCsvFile", () => {
   it("rejects a missing file", async () => {
     await expect(validateCsvFile(null)).rejects.toMatchObject({ code: "FILE_MISSING" });
   });
+
+  it("removes path and control characters from returned filenames", async () => {
+    const file = new File(["Campaign,Spend\nA,1\n"], "../exports/unsafe\u0000-name.csv", { type: "text/csv" });
+    await expect(validateCsvFile(file)).resolves.toMatchObject({ name: "unsafe-name.csv" });
+  });
 });

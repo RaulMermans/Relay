@@ -68,4 +68,14 @@ describe("parseCsv", () => {
       expect(error).toMatchObject({ code: "CSV_FIELD_TOO_LARGE" });
     }
   });
+
+  it("rejects duplicate normalized headers before mapping and preserves formula-like text as inert data", () => {
+    expect(() => parseCsv("Campaign, campaign ,Spend\nA,B,=1+1\n")).toThrow(expect.objectContaining({ code: "CSV_DUPLICATE_HEADERS" }));
+    expect(parseCsv("Campaign,Spend\n=1+1,2\n").rows[0]?.[0]).toBe("=1+1");
+  });
+
+  it("rejects null bytes while accepting a UTF-8 BOM and mixed newline forms", () => {
+    expect(() => parseCsv("Campaign,Spend\nA,1\0\n")).toThrow(expect.objectContaining({ code: "CSV_NULL_BYTE" }));
+    expect(parseCsv("\uFEFFCampaign,Spend\r\nA,1\nB,2\r\n").rowCount).toBe(2);
+  });
 });

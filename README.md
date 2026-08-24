@@ -4,11 +4,11 @@
 
 ## Current status
 
-Sprint 16 adds a deterministic, client-ready report preview and browser-native PDF export. The report consumes the same validated snapshot and Narrative Intelligence as the dashboard; it recalculates nothing, stores no PDF, and requires no generative model.
+Sprint 17 hardens Relay for a controlled private beta: bounded CSV and numeric inputs, browser-memory recovery, cross-browser smoke coverage, a threat model, and an explicit deployment-gated beta contract. The deterministic report preview consumes the same validated snapshot and Narrative Intelligence as the dashboard; it recalculates nothing, stores no PDF, and requires no generative model.
 
 Relay computes deterministic fixture-backed marketing KPIs and Change Intelligence from normalized, Data-Health-gated canonical data. Shopify gross revenue remains commerce truth for Revenue/MER/AOV, while Meta/Google attributed revenue remains provider advertising data for same-source ROAS. Analytics has no CSV/API transport branch.
 
-Relay is not a real-time BI platform and does not yet provide live OAuth, production provider account discovery/fetch, automatic refresh, cloud/multi-device persistence, a database, authentication, causal attribution, statistical anomaly detection, recommendations, or scheduled report delivery. Browser memory belongs to one browser and may disappear when site data is cleared.
+Relay is not a real-time BI platform and does not yet provide live OAuth, production provider account discovery/fetch, automatic refresh, cloud/multi-device persistence, a database, application authentication, causal attribution, statistical anomaly detection, recommendations, or scheduled report delivery. Browser memory belongs to one browser and may disappear when site data is cleared. Private beta access is deployment-gated; Relay is not publicly production-ready.
 
 ## Requirements
 

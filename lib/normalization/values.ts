@@ -13,9 +13,15 @@ export class NormalizationError extends Error {
   }
 }
 
+export const MAX_NORMALIZED_DECIMAL_CHARACTERS = 256;
+
 function normalizeDecimal(value: string, allowNegative: boolean): string | null {
   const input = value.trim();
   if (input.length === 0) return null;
+
+  if (input.length > MAX_NORMALIZED_DECIMAL_CHARACTERS) {
+    throw new NormalizationError("NORMALIZATION_INVALID_VALUE", "The CSV contains an invalid numeric value.");
+  }
 
   const pattern = allowNegative
     ? /^-?(?:(?:\d{1,3}(?:,\d{3})+)|\d+)(?:\.\d+)?$/
@@ -44,6 +50,9 @@ export function normalizeCount(value: string): string | null {
 export function normalizeMicrosMoney(value: string): string | null {
   const micros = value.trim();
   if (micros.length === 0) return null;
+  if (micros.length > MAX_NORMALIZED_DECIMAL_CHARACTERS) {
+    throw new NormalizationError("NORMALIZATION_INVALID_VALUE", "The CSV contains an invalid numeric value.");
+  }
   if (!/^-?\d+$/.test(micros)) {
     throw new NormalizationError("NORMALIZATION_INVALID_VALUE", "The CSV contains an invalid numeric value.");
   }

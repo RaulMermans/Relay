@@ -11,6 +11,8 @@ export type CsvIntakeErrorCode =
   | "CSV_TOO_MANY_ROWS"
   | "CSV_TOO_MANY_COLUMNS"
   | "CSV_FIELD_TOO_LARGE"
+  | "CSV_DUPLICATE_HEADERS"
+  | "CSV_NULL_BYTE"
   | "CSV_NO_HEADERS"
   | "CSV_NO_DATA";
 

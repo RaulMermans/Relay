@@ -1,4 +1,5 @@
 import { processCsvFile } from "../../../../lib/intake/csv/intake";
+import { exceedsDeclaredRequestSize, MAX_CSV_UPLOAD_REQUEST_SIZE_BYTES } from "../../../../lib/intake/csv/limits";
 import { type CsvIntakeErrorCode } from "../../../../lib/intake/csv/validate";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +14,8 @@ const INTAKE_ERROR_CODES = new Set<CsvIntakeErrorCode>([
   "CSV_TOO_MANY_ROWS",
   "CSV_TOO_MANY_COLUMNS",
   "CSV_FIELD_TOO_LARGE",
+  "CSV_DUPLICATE_HEADERS",
+  "CSV_NULL_BYTE",
   "CSV_NO_HEADERS",
   "CSV_NO_DATA",
 ]);
@@ -47,6 +50,9 @@ function rejectedResponse(code: CsvIntakeErrorCode, message: string): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (exceedsDeclaredRequestSize(request, MAX_CSV_UPLOAD_REQUEST_SIZE_BYTES)) {
+    return rejectedResponse("FILE_TOO_LARGE", "The CSV file exceeds the 5 MiB limit.");
+  }
   try {
     const formData = await request.formData();
     const entry = formData.get("file");

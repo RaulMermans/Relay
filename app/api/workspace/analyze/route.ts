@@ -6,6 +6,7 @@ import { ChangeIntelligenceInputError, parseChangeTargets } from "../../../../li
 import { DataHealthInputError, type ProviderSource } from "../../../../lib/data-health/types";
 import { type MappingOverride, MappingError } from "../../../../lib/mapping/field-mapping";
 import { WorkspaceAnalysisError, analyzeWorkspace } from "../../../../lib/workspace/analyze-workspace";
+import { exceedsDeclaredRequestSize, MAX_WORKSPACE_REQUEST_SIZE_BYTES } from "../../../../lib/intake/csv/limits";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -59,6 +60,9 @@ function rejected(code: string, message: string): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (exceedsDeclaredRequestSize(request, MAX_WORKSPACE_REQUEST_SIZE_BYTES)) {
+    return rejected("WORKSPACE_REQUEST_TOO_LARGE", "The workspace upload exceeds Relay's supported limit.");
+  }
   try {
     const formData = await request.formData();
     const context = parseContext(formData.get("workspaceContext"));

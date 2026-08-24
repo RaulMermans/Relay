@@ -4,6 +4,9 @@
 
 ### Added
 
+- Sprint 17 private-beta hardening: threat model, deployment-gated access decision, safe observability/data-inventory contracts, executable beta runbook, known-issues register, release gate, cross-browser smoke matrix, and a maximum-row synthetic stress regression.
+- CSV request/body guards, duplicate-header/null-byte rejection, mixed-newline parsing, and bounded deterministic numeric normalization.
+
 - A deterministic `ReportDocument` composer, editorial report preview, and browser-native Print/Save-as-PDF path. It reuses the authoritative snapshot and Narrative Intelligence, preserves Shopify/Meta/Google revenue semantics, blocks stale or Data-Health-blocked exports, and persists no PDF bytes or raw inputs.
 
 - Deterministic Narrative Intelligence: an immediate evidence-backed Performance Summary with stable IDs, significance-aware stories, source-safe semantics, health/freshness/target attention, and inspectable evidence. Relay V1 requires no generative model.
