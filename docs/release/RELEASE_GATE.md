@@ -24,8 +24,14 @@
 
 ## Current checkpoint
 
-Automated gates are pending final full verification. Manual exploratory QA and visual review have not yet been recorded; therefore this repository is **not yet marked** `SPRINT_17_PRIVATE_BETA_READY`.
+`SPRINT_17_PRIVATE_BETA_READY` is recorded on 2026-08-25 for production commit `c05bd108cc552a945cc1b97f6c311a650d9bd3c8`.
 
-## Sprint 18 handoff (do not start)
+- Automated evidence: lint, typecheck, unit, integration, full Vitest, production build, dependency audit, diff check, and the 48-test Chromium/WebKit/Firefox Playwright suite passed.
+- Production evidence: the protected Vercel deployment served the non-sensitive health response and accepted the synthetic complete-workspace analysis without runtime errors.
+- Manual evidence: a three-source workspace restored after browser reload; dashboard and report values were reviewed at desktop, 390 px, and 768 px; Chrome generated the attached six-page A4 PDF, which preserved the expected KPI and source-semantics disclosures.
 
-Sprint 18 may begin only after this gate is satisfied. Its scope is production deployment/protection validation, production smoke, final cross-browser and PDF validation, environment verification, rollback validation, public documentation/assets, GitHub hygiene, release tag/version, and project closure. It does not expand V1 analytics, storage, OAuth, or application authentication without a separate decision.
+The synthetic fixture ends on 2026-08-02 while the recorded report period ends on 2026-09-01. Its resulting freshness and coverage warnings are expected and are not a release finding.
+
+## Sprint 18 handoff
+
+Sprint 18 may begin. Its scope is production deployment/protection validation, production smoke, final cross-browser and PDF validation, environment verification, rollback validation, public documentation/assets, GitHub hygiene, release tag/version, and project closure. It does not expand V1 analytics, storage, OAuth, or application authentication without a separate decision.
