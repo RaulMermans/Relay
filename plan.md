@@ -34,8 +34,8 @@
 | T-561 | Health endpoint | route/unit/E2E | Cheap, non-sensitive response | Complete |
 | T-562 | Beta diagnostics | runbook | Safe reproduction details specified | Complete |
 | T-563 | Beta matrix | `PRIVATE_BETA_MATRIX.md` | Scenarios/expected results listed | Complete |
-| T-564 | Exploratory QA | QA matrix | Manual beta pass still required | Pending |
-| T-565 | Visual review | E2E responsive checks | Manual visual pass still required | Pending |
+| T-564 | Exploratory QA | QA matrix | Manual beta pass recorded | Complete |
+| T-565 | Visual review | E2E responsive checks | Manual visual pass recorded | Complete |
 | T-566 | Terminology audit | product/report UX | Existing product vocabulary consistent | Complete |
 | T-567 | Determinism | existing unit/integration suites | Deterministic pipeline protected | Complete |
 | T-568 | Reproducibility | workspace/report pipeline tests | Canonical synthetic regression passes | Complete |
@@ -51,5 +51,5 @@
 | T-578 | Release gate | release gate | Explicit beta criteria recorded | Complete |
 | T-579 | Independent review | review skills | Security/data/PR reviews complete | Complete |
 | T-580 | Full verification | repo scripts | Canonical ladder observed green | Complete |
-| T-581 | RC checkpoint | release gate | Requires all gates | Pending |
-| T-582 | Sprint 18 handoff | release gate | Handoff only after RC | Pending |
+| T-581 | RC checkpoint | release gate | All gates recorded | Complete |
+| T-582 | Sprint 18 handoff | release gate | RC handoff unblocked | Complete |
