@@ -57,3 +57,9 @@
 - Independent security, data-contract, and PR review passes found no P0/P1 issue. `npm audit --audit-level=low` reported 0 vulnerabilities; `npm outdated` is informational and no dependency was upgraded.
 - Verification: lint/typecheck/build passed; 42 Vitest files/304 tests, 26 unit files/209 tests, 16 integration files/95 tests passed; release stress processed a synthetic 50,000-row Meta CSV in 807 ms; full Playwright suite passed 48 tests across Chromium, WebKit, and Firefox.
 - Closure evidence (2026-08-25): the protected production deployment at `c05bd108` passed its health and complete-workspace API smoke; no runtime errors were observed. Manual production QA confirmed three-source dashboard/report semantics, browser-local restore after reload, visible primary actions and KPIs at 390 px and 768 px, and Chrome's six-page A4 Save-as-PDF result. The beta matrix and release gate now record PASS; Sprint 18 may begin.
+
+## Sprint 18 closure state
+
+- Authoritative `main` is `e8aff9472fb25f24a4c4e774a75fe48636debe24`, deployed as protected Vercel production deployment `dpl_DpkqQt7grBe2AF3YKhatwJqfN9ze`; `c05bd108` / `dpl_Eb5rB5equRdeTaYaewJuqimFPrzS` remains the rollback candidate.
+- The final gate on `codex/sprint-18-project-closure` passed with Node 24.19.0/npm 11.9.0: lint, typecheck, 304 total tests, 209 unit tests, 95 integration tests, build, 48 Playwright checks, audit with 0 vulnerabilities, and diff check.
+- MIT was selected by the maintainer. Closure documentation, release notes, security disclosure, Vercel record, and synthetic case-study screenshots are complete. `RELAY_V1_COMPLETE` is recorded in the closure candidate and takes effect on `main` when its final PR merges.

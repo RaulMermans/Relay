@@ -127,7 +127,7 @@ See [Vercel operations](docs/deployment/VERCEL.md) for deployment, access, and r
 
 ## License
 
-No repository license has been selected yet. Reuse terms will be added only after the maintainer makes an explicit license decision.
+Relay is available under the [MIT License](LICENSE).
 
 ## Further reading
 

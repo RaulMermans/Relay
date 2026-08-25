@@ -4,6 +4,7 @@
 
 ### Added
 
+- Relay V1 closure materials: MIT licensing, production case-study README, synthetic screenshots, release notes, production/rollback record, and project-closure checklist.
 - Sprint 17 private-beta hardening: threat model, deployment-gated access decision, safe observability/data-inventory contracts, executable beta runbook, known-issues register, release gate, cross-browser smoke matrix, and a maximum-row synthetic stress regression.
 - CSV request/body guards, duplicate-header/null-byte rejection, mixed-newline parsing, and bounded deterministic numeric normalization.
 

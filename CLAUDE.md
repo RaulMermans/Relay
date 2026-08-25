@@ -6,7 +6,7 @@ Relay combines a focused performance dashboard with recurring reporting automati
 
 ## Current status
 
-Sprint 17: Relay has a deterministic dashboard/report pipeline plus bounded browser-local memory and controlled-private-beta hardening. Shopify, Meta Ads, and Google Ads CSVs remain usable together; API adapters are implemented but live authorization remains deferred. No database, cloud/multi-device persistence, application authentication, automatic sync, generative-model dependency, or PDF persistence exists. Private beta is deployment-gated; public deployment remains deferred until Sprint 18.
+Relay V1 is a production-deployed, Vercel-protected private beta with a deterministic dashboard/report pipeline and bounded browser-local memory. Shopify, Meta Ads, and Google Ads CSVs remain usable together; API adapters are implemented but live authorization remains deferred. No database, cloud/multi-device persistence, application authentication, automatic sync, generative-model dependency, or PDF persistence exists. Public exposure remains deferred pending a separate rate/abuse-control decision.
 
 ## Working protocol
 

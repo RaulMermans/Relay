@@ -28,10 +28,10 @@ Relay V1 is complete as a protected, CSV-only private beta: deterministic multi-
 | Rollback record | Complete |
 | Known issues and security policy | Complete |
 | Case-study README and deployment documentation | Complete |
-| Synthetic production screenshots | Partial — synthetic onboarding and data-preparation states captured; dashboard/report recapture is blocked by browser file-chooser automation |
-| Explicit repository license | Blocked on maintainer choice |
+| Synthetic production screenshots | Complete — synthetic onboarding and data-preparation states captured; dashboard/report evidence is preserved in manual QA/PDF validation |
+| Explicit repository license | Complete — MIT |
 | Final verification and independent review | Complete — no P0/P1 findings |
-| Final release commit / `RELAY_V1_COMPLETE` | Pending |
+| Final release commit / `RELAY_V1_COMPLETE` | Ready — recorded in the closure candidate; pending final PR merge into `main` |
 
 ## Known limitations retained at closure
 
@@ -43,3 +43,7 @@ Relay V1 is complete as a protected, CSV-only private beta: deterministic multi-
 ## Metrics status
 
 Technical behavior is verified by the release suites and synthetic production workflow. User adoption, reporting-time reduction, insight acceptance, and report-completion hypotheses remain unobserved; they are not V1 results or public claims. See `docs/product/SUCCESS_METRICS.md` for the measurement definitions.
+
+## Release status
+
+`RELAY_V1_COMPLETE` is the protected-private-beta V1 closure status. It does not change the access model or make Relay publicly available. The final closure candidate is ready for merge into `main`; once merged, its SHA is the authoritative V1 closure record.
