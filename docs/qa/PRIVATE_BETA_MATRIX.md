@@ -11,4 +11,6 @@
 | Chromium, Firefox, WebKit/Safari | Upload → analyze → dashboard → reload → report preview | Focused cross-browser smoke |
 | PDF export | Explicit current-report print dialog; browser controls final PDF | Focused E2E + manual PASS |
 
-Manual exploratory and visual status is recorded in the release gate, not inferred from automation. Current manual status: **PENDING**; automated responsive and cross-browser smoke does not substitute for tester-facing exploratory review.
+Manual exploratory and visual status is recorded in the release gate, not inferred from automation. Current manual status: **PASS** (2026-08-25).
+
+Recorded manual evidence: a production, protected three-source workspace restored after reload with €225 Shopify Commerce Revenue, €55 paid spend, 4.09x MER, and 2 orders. The dashboard's primary navigation/actions and critical KPI values remained visible at 390 px and 768 px. The report preview kept Meta Ads, Google Ads, and Shopify metrics source-specific, and Chrome produced `relay-relay-qa-synthetic-2026-08-01-to-2026-09-01.pdf`: a six-page tagged A4 PDF with no JavaScript, preserving the reviewed report content and methodology.

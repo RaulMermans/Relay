@@ -72,4 +72,4 @@
 
 ### Deployment
 
-- Vercel deployment is blocked locally because the Vercel CLI, authentication, and project linkage are unavailable; no production URL is claimed.
+- A Vercel-protected production deployment at `c05bd108cc552a945cc1b97f6c311a650d9bd3c8` is ready for the deliberately limited private beta. Deployment protection, health, complete-workspace analysis, cross-browser smoke, browser-local restore, responsive dashboard/report review, and browser-native PDF output were verified on 2026-08-25. Public access remains out of scope.
