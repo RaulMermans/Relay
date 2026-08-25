@@ -67,7 +67,15 @@ The same browser restored the named client and latest dashboard after reload. Th
 
 ## Screenshots
 
-Case-study screenshots are captured only with synthetic data and will be stored in `docs/assets/screenshots/` before public portfolio publication. No production client, source-export, or report data is used for repository imagery.
+The following production screenshots use a named synthetic workspace only; no client export or report data is shown.
+
+![Synthetic Relay onboarding](docs/assets/screenshots/onboarding-synthetic.png)
+
+*Create a browser-local workspace before adding data.*
+
+![Synthetic Relay data preparation](docs/assets/screenshots/data-sources-synthetic.png)
+
+*Choose the reporting period and add one transient CSV export per source.*
 
 ## Local setup
 
@@ -116,6 +124,10 @@ See [Vercel operations](docs/deployment/VERCEL.md) for deployment, access, and r
 - CSV refresh is manual; live provider authorization and background refresh are not active.
 - Browser Print/Save-as-PDF layout and destination vary by browser and operating system.
 - Public exposure requires a durable rate/abuse-control design; Relay remains protected until that decision is made.
+
+## License
+
+No repository license has been selected yet. Reuse terms will be added only after the maintainer makes an explicit license decision.
 
 ## Further reading
 

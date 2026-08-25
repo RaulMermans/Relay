@@ -27,10 +27,10 @@ Relay V1 is complete as a protected, CSV-only private beta: deterministic multi-
 | Protected production deployment and health | Complete |
 | Rollback record | Complete |
 | Known issues and security policy | Complete |
-| Case-study README and deployment documentation | In progress |
-| Synthetic production screenshots | Pending |
+| Case-study README and deployment documentation | Complete |
+| Synthetic production screenshots | Partial — synthetic onboarding and data-preparation states captured; dashboard/report recapture is blocked by browser file-chooser automation |
 | Explicit repository license | Blocked on maintainer choice |
-| Final verification and independent review | Pending after documentation/assets settle |
+| Final verification and independent review | Complete — no P0/P1 findings |
 | Final release commit / `RELAY_V1_COMPLETE` | Pending |
 
 ## Known limitations retained at closure
@@ -39,3 +39,7 @@ Relay V1 is complete as a protected, CSV-only private beta: deterministic multi-
 - CSV refresh is manual; no live OAuth or background refresh is enabled.
 - Browser print output is controlled by the browser and operating system.
 - Public access requires a deliberate durable rate/abuse-control decision.
+
+## Metrics status
+
+Technical behavior is verified by the release suites and synthetic production workflow. User adoption, reporting-time reduction, insight acceptance, and report-completion hypotheses remain unobserved; they are not V1 results or public claims. See `docs/product/SUCCESS_METRICS.md` for the measurement definitions.
