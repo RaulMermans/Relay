@@ -1,56 +1,139 @@
 # Relay
 
-> A focused performance dashboard with recurring reporting automation.
+> A deterministic performance workspace for freelancers and small agencies working from Meta Ads, Google Ads, and Shopify CSV exports.
 
-## Current status
+Relay turns a reporting handoff that is often split across exports, spreadsheets, and slides into one browser-local workspace: import supported CSVs, inspect data quality, understand source-safe KPIs and change facts, then prepare a concise browser-printable report.
 
-Sprint 17 hardens Relay for a controlled private beta: bounded CSV and numeric inputs, browser-memory recovery, cross-browser smoke coverage, a threat model, and an explicit deployment-gated beta contract. The deterministic report preview consumes the same validated snapshot and Narrative Intelligence as the dashboard; it recalculates nothing, stores no PDF, and requires no generative model.
+## Project status
 
-Relay computes deterministic fixture-backed marketing KPIs and Change Intelligence from normalized, Data-Health-gated canonical data. Shopify gross revenue remains commerce truth for Revenue/MER/AOV, while Meta/Google attributed revenue remains provider advertising data for same-source ROAS. Analytics has no CSV/API transport branch.
+Relay V1 is production-deployed as a **protected private beta**. It is intentionally not a public analytics service: V1 has no application accounts, database, cloud client persistence, live OAuth, automatic refresh, scheduled reports, email delivery, or generative-model dependency.
 
-Relay is not a real-time BI platform and does not yet provide live OAuth, production provider account discovery/fetch, automatic refresh, cloud/multi-device persistence, a database, application authentication, causal attribution, statistical anomaly detection, recommendations, or scheduled report delivery. Browser memory belongs to one browser and may disappear when site data is cleared. Private beta access is deployment-gated; Relay is not publicly production-ready.
+The protected production deployment is available at [Relay on Vercel](https://relay-9880vu2ib-raulmermans-projects.vercel.app/). Access is deliberately restricted through Vercel Authentication; this is a controlled portfolio demo/private-beta environment, not an invitation to upload production client data.
 
-## Requirements
+## The problem
 
-- Node.js 24 LTS (the project pins 24.14.0)
-- npm 11.9.0
+Performance marketers need a quick, defensible answer to three questions: what happened, which source owns each fact, and whether the underlying data is trustworthy enough to use. Combining advertising-platform attribution with commerce revenue can make an attractive dashboard but a misleading one.
 
-## Local development
+Relay is designed around that constraint. It makes the reporting path faster only when it can preserve the meaning of the supplied data.
+
+## Workflow
+
+1. Create or select a browser-local client and choose the reporting period.
+2. Add one current CSV export per supported source: Meta Ads, Google Ads, and/or Shopify.
+3. Resolve only mapping exceptions; Relay remembers valid non-sensitive configuration in the same browser.
+4. Prepare the workspace. The server normalizes the supplied files in request memory and runs Data Health, KPI, Change Intelligence, and deterministic Narrative Intelligence once.
+5. Review the dashboard, source coverage, evidence, and attention items.
+6. Open the report preview and use the browser’s Print/Save-as-PDF control when the report is current and exportable.
+
+## What makes the analysis trustworthy
+
+- **Shopify is commerce truth.** Commerce Revenue, orders, AOV, and MER use Shopify facts only.
+- **Provider attribution stays provider-specific.** Meta and Google attributed revenue, ROAS, and CPA remain attached to their own sources. Relay never sums provider-attributed revenue into Commerce Revenue.
+- **Data Health gates interpretation.** Coverage, source expectations, currency compatibility, mapping, provenance, duplicates, and revenue semantics are surfaced before KPI and narrative use.
+- **Narrative is deterministic.** It is composed from structured, inspectable facts; it does not call a generative AI service, infer causality, or recalculate KPIs.
+- **Persistence is deliberately narrow.** Relay retains only versioned, bounded browser-local configuration and compact derived snapshots. Raw CSVs, filenames, canonical rows, provider payloads, tokens, credentials, and PDFs are not persisted.
+
+## Architecture
 
 ```text
+Meta Ads CSV ─┐
+Google Ads CSV├─→ Normalization → Data Health → KPI Engine
+Shopify CSV ──┘                                  ↓
+                                   Change Intelligence
+                                              ↓
+                           Deterministic Narrative Intelligence
+                                              ↓
+                              Dashboard → Report Preview → Browser Print/PDF
+                                              ↓
+                               Browser-local client memory only
+```
+
+Future systems—live OAuth, automatic refresh, durable cloud persistence, application authentication, scheduled delivery, and generative AI—are intentionally outside V1.
+
+## Verified production scenario
+
+The protected production deployment was exercised with synthetic complete-workspace data:
+
+| Fact | Verified value |
+| --- | ---: |
+| Shopify Commerce Revenue | €225 |
+| Compatible Meta + Google spend | €55 |
+| MER | 4.09× |
+| Shopify orders | 2 |
+| Meta ROAS | 2× |
+| Google ROAS | 2× |
+
+The same browser restored the named client and latest dashboard after reload. The report preview retained source-specific results and produced a six-page tagged A4 PDF through Chrome’s native print path. Freshness/coverage warnings were expected because the synthetic source data ended on 2026-08-02 while the exercised period extended to 2026-09-01.
+
+## Screenshots
+
+The following production screenshots use a named synthetic workspace only; no client export or report data is shown.
+
+![Synthetic Relay onboarding](docs/assets/screenshots/onboarding-synthetic.png)
+
+*Create a browser-local workspace before adding data.*
+
+![Synthetic Relay data preparation](docs/assets/screenshots/data-sources-synthetic.png)
+
+*Choose the reporting period and add one transient CSV export per source.*
+
+## Local setup
+
+Requirements: Node.js `24.14.x` and npm `11.9.x`.
+
+```bash
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. The health endpoint is available at `http://localhost:3000/api/health`.
+Open `http://localhost:3000`. Health is available at `http://localhost:3000/api/health`.
 
-At `/`, create a named local client, choose a reporting period, and add up to one current CSV for Meta Ads, Google Ads, and Shopify. Relay revalidates every file at `POST /api/workspace/analyze`, prepares deterministic and compatible remembered mappings automatically, and reveals only unresolved fields. The server combines canonical observations in request memory, then runs Data Health, KPI, Change Intelligence, and pure deterministic Narrative Intelligence once. The dashboard presents its immediate Performance Summary, formatted KPIs, a truthful Shopify-revenue/paid-spend trend, curated What Changed facts, channel summaries, Attention, progressive Data Health detail, explicit data-through/analysis time, and bounded recent-cycle summaries.
+## Verification
 
-Relay stores one versioned, validated document under its own browser-storage key. It contains non-sensitive client configuration and compact derived dashboard/history state only. Raw CSVs, filenames, canonical rows, provider payloads, authorization headers, tokens, and credentials are never persisted. Client delete and Relay-only reset are available in the compact client settings.
+The Sprint 17 release candidate completed:
 
-The dashboard's source cards accurately state that CSV is available while live API authorization and automatic synchronization are unavailable. There are no inert Connect controls and no claim that uploaded data is live.
+- 304 Vitest tests across 42 files
+- 209 unit tests across 26 files
+- 95 integration tests across 16 files
+- 48 Playwright checks across Chromium, WebKit, and Firefox
+- lint, typecheck, production build, dependency audit, and diff check
 
-## Commands
+Use the same release commands locally:
 
-```text
-npm run dev
-npm run build
-npm run start
+```bash
 npm run lint
 npm run typecheck
 npm run test
 npm run test:unit
 npm run test:integration
+npm run build
 npm run test:e2e
+npm audit --audit-level=low
+git diff --check
 ```
 
-## Deployment and persistence
+## Deployment and access
 
-Relay deploys as one Next.js project on Vercel. Its server-side Next.js boundaries deploy with the same project. Browser-local memory needs no Vercel database, but it is not cloud persistence. No database, Prisma schema, database migration, provider SDK, OAuth framework, credential store, or production provider configuration is present. Live persisted connectors remain blocked until a secure durable server-side persistence and ownership boundary is selected.
+Relay runs as a single Next.js project on Vercel with Node 24.x and no Relay-specific environment variables. The deployment is protected with Vercel Authentication; unauthorized visitors are redirected before the workspace loads. `GET /api/health` returns only `{ "status": "ok", "service": "relay" }` with `no-store` caching.
 
-## Repository navigation
+See [Vercel operations](docs/deployment/VERCEL.md) for deployment, access, and rollback details.
 
-- Current work: `plan.md`; agent protocol: `CLAUDE.md`
-- Product scope: `docs/product/`; architecture: `docs/architecture/`
-- Data rules: `docs/data/`; connectors: `docs/integrations/`
-- Roadmap: `docs/roadmap/SPRINTS.md`; quality: `docs/qa/`
+## Limitations
+
+- Browser-local memory is not encrypted, synchronized, or recoverable after clearing site data.
+- CSV refresh is manual; live provider authorization and background refresh are not active.
+- Browser Print/Save-as-PDF layout and destination vary by browser and operating system.
+- Public exposure requires a durable rate/abuse-control design; Relay remains protected until that decision is made.
+
+## License
+
+No repository license has been selected yet. Reuse terms will be added only after the maintainer makes an explicit license decision.
+
+## Further reading
+
+- [Product scope](docs/product/)
+- [Data semantics](docs/data/)
+- [Architecture and data flow](docs/architecture/DATA_FLOW.md)
+- [Security policy](SECURITY.md)
+- [Known issues](docs/release/KNOWN_ISSUES.md)
+- [Private-beta contract](docs/release/PRIVATE_BETA.md)

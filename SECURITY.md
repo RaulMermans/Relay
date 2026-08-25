@@ -1,5 +1,11 @@
 # Security policy
 
+## Supported status and reporting
+
+Relay V1 is a protected private beta, not a public multi-tenant service. Report suspected vulnerabilities privately: use GitHub's **Report a vulnerability** flow for this repository when it is available, or contact [@RaulMermans](https://github.com/RaulMermans) privately with a minimal redacted reproduction. Do not open a public issue with exploit steps, production URLs containing access parameters, source exports, client data, cookies, credentials, or tokens.
+
+Relay's current security boundary is intentionally limited. A report that would require public access, durable client storage, live OAuth, or application identity should be treated as a product-scope decision as well as a security finding.
+
 - Never commit secrets. `.env` is ignored, and `.env.example` contains names/comments only.
 - Treat user-uploaded files and external API payloads as untrusted until validated.
 - Use least-privilege connector access and minimize sensitive client data.
