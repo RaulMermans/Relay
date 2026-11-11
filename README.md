@@ -1,5 +1,7 @@
 # Relay
 
+![Status: Protected private beta](https://img.shields.io/badge/status-protected_private_beta-6366f1) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) [![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](LICENSE)
+
 > A deterministic performance workspace for freelancers and small agencies working from Meta Ads, Google Ads, and Shopify CSV exports.
 
 Relay turns a reporting handoff that is often split across exports, spreadsheets, and slides into one browser-local workspace: import supported CSVs, inspect data quality, understand source-safe KPIs and change facts, then prepare a concise browser-printable report.
