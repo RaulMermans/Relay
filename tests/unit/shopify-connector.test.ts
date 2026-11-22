@@ -42,6 +42,8 @@ function connection(overrides: Partial<Connection> = {}): Connection {
   };
 }
 
+// Fix the clock for July fixtures: Shopify only allows 60-day order history without read_all_orders.
+// Otherwise the same tests expire as calendar time advances.
 const request: FetchRequest = {
   provider: "shopify",
   externalAccountId: "gid://shopify/Shop/100000001",
@@ -160,6 +162,7 @@ describe("Shopify connector transport", () => {
       accessToken: "request-scoped-secret",
       fetchImpl,
       fetchRequestId: () => "shopify-fetch-1",
+      now: () => new Date("2026-07-15T12:00:00Z"),
       delay: async () => undefined,
     });
 
@@ -186,7 +189,7 @@ describe("Shopify connector transport", () => {
   it("blocks wrong provider, unready connection, wrong selected store, and missing read scope before order fetch", async () => {
     const representative = await fixture<RepresentativeFixture>("representative-equivalent.json");
     const fetchImpl = vi.fn().mockResolvedValue(response(representative.shop));
-    const connector = new ShopifyConnector({ shopDomain: "synthetic-relay-store.myshopify.com", accessToken: "secret", fetchImpl, delay: async () => undefined });
+    const connector = new ShopifyConnector({ shopDomain: "synthetic-relay-store.myshopify.com", accessToken: "secret", fetchImpl, now: () => new Date("2026-07-15T12:00:00Z"), delay: async () => undefined });
 
     await expect(connector.fetch(connection({ status: "expired" }), request)).rejects.toMatchObject({ code: "AUTH_EXPIRED" });
     await expect(connector.fetch(connection({ grantedScopes: [] }), request)).rejects.toMatchObject({ code: "PERMISSION_DENIED" });
@@ -237,7 +240,7 @@ describe("Shopify connector transport", () => {
       .mockResolvedValueOnce(response(edge.providerError))
       .mockResolvedValueOnce(response(representative.pages[0]))
       .mockResolvedValueOnce(response(representative.pages[1]));
-    const connector = new ShopifyConnector({ shopDomain: "synthetic-relay-store.myshopify.com", accessToken: "secret", fetchImpl, delay });
+    const connector = new ShopifyConnector({ shopDomain: "synthetic-relay-store.myshopify.com", accessToken: "secret", fetchImpl, now: () => new Date("2026-07-15T12:00:00Z"), delay });
     await expect(connector.fetch(connection(), request)).resolves.toMatchObject({ pagesFetched: 2 });
     expect(delay).toHaveBeenCalledWith(2020);
 
@@ -294,7 +297,7 @@ describe("Shopify connector transport", () => {
       .mockResolvedValueOnce(response(representative.shop))
       .mockResolvedValueOnce(response(representative.pages[0]))
       .mockResolvedValueOnce(response(representative.pages[0]));
-    const connector = new ShopifyConnector({ shopDomain: "synthetic-relay-store.myshopify.com", accessToken: "secret", fetchImpl, delay: async () => undefined });
+    const connector = new ShopifyConnector({ shopDomain: "synthetic-relay-store.myshopify.com", accessToken: "secret", fetchImpl, now: () => new Date("2026-07-15T12:00:00Z"), delay: async () => undefined });
 
     await expect(connector.fetch(connection(), request)).rejects.toMatchObject({
       code: "PAGINATION_LIMIT_EXCEEDED",
@@ -319,6 +322,7 @@ describe("Shopify connector transport", () => {
       shopDomain: "synthetic-relay-store.myshopify.com",
       accessToken: "secret",
       fetchImpl: async () => response(providerResponses[providerCall++]),
+      now: () => new Date("2026-07-15T12:00:00Z"),
       delay: async () => undefined,
     });
 
